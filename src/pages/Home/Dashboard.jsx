@@ -1,43 +1,51 @@
-import { useEffect, useState } from "react";
-import { getAlumnos } from "../../services/alumnosService";
+import "./Home.css";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
+import { Link } from "react-router-dom";
 
-function Dashboard() { 
-  const [alumnos, setAlumnos] = useState([]);
-
-  useEffect(() => {
-    getAlumnos().then((data) => setAlumnos(data));
-  }, []);
-
+export default function Home() {
   return (
-    <div className="p-4">
-      <h1>Listado de Alumnos</h1>
+    <>
+      <Header />
 
-      {alumnos.length === 0 ? (
-        <p>No hay datos disponibles</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              
-              <th>Nombre Completo</th>
-              <th>Nivel</th>
-              <th>Tipo Licencia</th>
-            </tr>
-          </thead>
-          <tbody>
-            {alumnos.map((a) => (
-              <tr key={a.id}>
-                
-                <td>{a.nombre_completo}</td>
-                <td>{a.nivel}</td>
-                <td>{a.tipo_licencia}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+      <main className="home">
+        <section className="home__hero">
+          <h1>Gestión de Horarios de Vuelo</h1>
+          <p>
+            Plataforma para alumnos, instructores y personal de programación
+            de la escuela de aviación.
+          </p>
+
+          <Link to="/login" className="home__cta">
+            Iniciar sesión
+          </Link>
+        </section>
+
+        <section className="home__info">
+          <div className="info-card">
+            <h3>Alumnos</h3>
+            <p>
+              Solicita y visualiza tus horarios de vuelo de forma clara y ordenada.
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>Programación</h3>
+            <p>
+              Ajusta horarios según disponibilidad de instructores y aeronaves.
+            </p>
+          </div>
+
+          <div className="info-card">
+            <h3>Administración</h3>
+            <p>
+              Publica y controla el horario final de vuelos.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </>
   );
 }
-
-export default Dashboard; 
