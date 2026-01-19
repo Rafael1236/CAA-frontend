@@ -5,7 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-import Home from "./pages/home/dashboard.jsx";
+import Home from "./pages/Home/Dashboard";
 import Login from "./pages/Login/Login";
 import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
