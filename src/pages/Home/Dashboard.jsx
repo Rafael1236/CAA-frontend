@@ -1,9 +1,22 @@
 import "./Home.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      const rol = user.rol.toUpperCase();
+      if (rol === "ALUMNO") {
+        navigate("/alumno/dashboard");
+      }
+    }
+  }, [navigate]);
+
   return (
     <>
       <Header />

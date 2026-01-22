@@ -1,0 +1,110 @@
+.dashboard-container {
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-container h2 {
+  margin: 0 0 6px 0;
+  color: #0a2239;
+}
+
+.dashboard-subtitle {
+  margin: 0 0 18px 0;
+  color: #556;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 18px 0 22px 0;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+}
+
+.card__label {
+  font-size: 12px;
+  color: #667;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0a2239;
+}
+
+.section {
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+}
+
+.section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.section__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a2239;
+  margin: 0;
+}
+
+.section__hint {
+  font-size: 13px;
+  color: #667;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-container {
+    padding: 24px 16px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.section__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-agendar {
+  background: #0a2239;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-agendar:hover {
+  background: #163a5f;
+}

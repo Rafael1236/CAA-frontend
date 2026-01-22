@@ -1,17 +1,82 @@
-.header__user {
-  margin-right: 20px;
+.header {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e6eaf0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b3c5d;
+  letter-spacing: 0.3px;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__link {
+  color: #0b3c5d;
+  text-decoration: none;
   font-weight: 500;
 }
 
+.header__link:hover {
+  text-decoration: underline;
+}
+
+.header__user-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header__user {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Botón login */
+.btn-login {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #0b3c5d;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-login:hover {
+  background: #082f49;
+}
+
+/* Botón logout */
 .btn-logout {
   padding: 8px 14px;
-  background-color: #e74c3c;
-  border-radius: 6px;
-  color: white;
+  border-radius: 8px;
+  background: #e74c3c;
   border: none;
+  color: #fff;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .btn-logout:hover {
-  background-color: #c0392b;
+  background: #c0392b;
 }

@@ -9,6 +9,8 @@ import Home from "./pages/Home/Dashboard";
 import Login from "./pages/Login/Login";
 import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
+import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
+
 
 
 function App() {
@@ -26,6 +28,15 @@ function App() {
             </ProtectedAlumno>
           }
         />
+        <Route
+  path="/alumno/agendar"
+  element={
+    <ProtectedAlumno>
+      <AgendarVuelo />
+    </ProtectedAlumno>
+  }
+/>
+
       </Routes>
     </Router>
   );

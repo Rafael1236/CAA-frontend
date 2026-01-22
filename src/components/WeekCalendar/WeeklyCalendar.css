@@ -1,0 +1,74 @@
+.calendar-wrapper {
+  overflow: auto;
+  max-height: 600px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* TABLA REAL (NO GRID) */
+.calendar {
+  border-collapse: collapse;
+  min-width: 1200px;
+  width: 100%;
+  table-layout: fixed;
+  background: #fff;
+}
+
+/* HEADER */
+.calendar thead th {
+  background: #1f4b8f;
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 6px;
+  border: 1px solid #1a3f78;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* CELDAS */
+.calendar td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+  font-size: 13px;
+  height: 42px;
+}
+
+/* COLUMNA HORA */
+.hora-cell {
+  background: #f2f2f2;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  width: 110px;
+}
+
+/* COLUMNA AERONAVE */
+.aeronave-cell {
+  background: #fafafa;
+  font-weight: bold;
+  width: 120px;
+}
+
+/* BLOQUES */
+.slot-cell {
+  min-width: 130px;
+}
+
+/* ESTADOS */
+.blk {
+  color: #999;
+  font-style: italic;
+}
+
+.ocupado {
+  display: inline-block;
+  background: #0a2239;
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}

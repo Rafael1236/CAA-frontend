@@ -9,23 +9,27 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        correo,
-        password,
-      });
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      { correo, password }
+    );
 
-      localStorage.setItem("user", JSON.stringify(res.data));
+    localStorage.setItem("user", JSON.stringify(res.data));
 
-      if (res.data.rol === "Alumno") {
-        navigate("/alumno/dashboard");
-      }
-    } catch {
-      alert("Credenciales incorrectas");
+    const rol = res.data.rol.toUpperCase();
+
+    if (rol === "ALUMNO") {
+      navigate("/alumno/dashboard");
     }
-  };
+
+  } catch {
+    alert("Credenciales incorrectas");
+  }
+};
+
 
   return (
     <div className="login">
