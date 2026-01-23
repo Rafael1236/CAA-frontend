@@ -3,11 +3,14 @@ import Header from "../../components/Header/Header";
 import WeeklyCalendar from "../../components/WeekCalendar/WeeklyCalendar";
 import WeekSelector from "../../components/WeekSelector/WeekSelector";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function AlumnoDashboard() {
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const [weekMode, setWeekMode] = useState("current");
+  const navigate = useNavigate();
 
    const handleAgendar = () => {
     navigate("/alumno/agendar");

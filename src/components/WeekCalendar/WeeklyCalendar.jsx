@@ -13,13 +13,14 @@ const BLOQUES = [
   "04:10 PM",
   "05:20 PM",
 ];
+
 const AERONAVES = [
   "YS-334-PE",
   "YS-333-PE",
   "YS-270-PE",
   "YS-127-P",
   "YS-155-PE",
-  "BATD II",
+  "SIM-1",
 ];
 
 const DIA_MAP = {
@@ -37,8 +38,11 @@ function formatHora(hora24) {
   const [h, m] = hora24.split(":").map(Number);
   const ampm = h >= 12 ? "PM" : "AM";
   const hour = h % 12 || 12;
-  return `${String(hour).padStart(2, "0")}:${m.toString().padStart(2, "0")} ${ampm}`;
+  return `${String(hour).padStart(2, "0")}:${m
+    .toString()
+    .padStart(2, "0")} ${ampm}`;
 }
+
 
 export default function WeeklyCalendar({ weekMode }) {
   const [calendar, setCalendar] = useState({});
@@ -55,8 +59,13 @@ export default function WeeklyCalendar({ weekMode }) {
 
         if (!grid[hora]) grid[hora] = {};
         if (!grid[hora][aeronave]) grid[hora][aeronave] = {};
+        if (!grid[hora][aeronave][dia]) {
+          grid[hora][aeronave][dia] = [];
+        }
 
-        grid[hora][aeronave][dia] = { estado: item.estado };
+        grid[hora][aeronave][dia].push({
+          estado: item.estado,
+        });
       });
 
       setCalendar(grid);
@@ -91,14 +100,19 @@ export default function WeeklyCalendar({ weekMode }) {
                 <td className="aeronave-cell">{aeronave}</td>
 
                 {DIAS.map((dia) => {
-                  const celda = calendar?.[hora]?.[aeronave]?.[dia];
+                  const vuelos =
+                    calendar?.[hora]?.[aeronave]?.[dia];
 
                   return (
                     <td key={dia} className="slot-cell">
-                      {celda ? (
-                        <span className="ocupado">{celda.estado}</span>
+                      {vuelos ? (
+                        vuelos.map((v, i) => (
+                          <span key={i} className="ocupado">
+                            {v.estado}
+                          </span>
+                        ))
                       ) : (
-                        <span className="blk">BLK</span>
+                        <span className="blk"></span>
                       )}
                     </td>
                   );

@@ -1,0 +1,123 @@
+.prog-page {
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.prog-container {
+  width: 100%;
+  max-width: 1400px; /* igual que Alumno */
+}
+
+.calendar-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+}
+
+.calendar-wrapper {
+  overflow: auto;
+}
+
+.calendar {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1100px;
+}
+
+.calendar th,
+.calendar td {
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.calendar th {
+  background: #1f4b8f;
+  color: #fff;
+  font-weight: 600;
+}
+
+.hora-cell {
+  white-space: nowrap;
+  font-weight: 600;
+  background: #f8fafc;
+}
+
+.aeronave-cell {
+  font-weight: 600;
+  background: #f8fafc;
+}
+
+.slot-cell {
+  min-width: 160px;
+  transition: background 0.15s;
+}
+
+.slot-cell:hover {
+  background: #f1f5f9;
+}
+
+.slot-empty {
+  opacity: 0.45;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.slot-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+  cursor: grab;
+  background: #fff;
+}
+
+.slot-card:active {
+  cursor: grabbing;
+}
+
+.slot-card.dirty {
+  box-shadow: 0 0 0 2px #facc15 inset;
+}
+
+.alumno {
+  font-size: 13px;
+  opacity: 0.9;
+  display: block;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.estado-BORRADOR {
+  border-color: #cbd5e1;
+}
+
+.estado-EN_REVISION {
+  border-color: #eab308;
+}
+
+.estado-PUBLICADO {
+  border-color: #22c55e;
+}
+
+.prog-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-save {
+  background: #1f4b8f;
+  color: #fff;
+}

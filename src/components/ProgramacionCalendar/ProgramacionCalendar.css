@@ -1,0 +1,93 @@
+.prog-calendar-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.prog-calendar {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.prog-calendar th {
+  background: #1f4c8c;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+.prog-calendar td {
+  border: 1px solid #e0e0e0;
+  padding: 6px;
+  text-align: center;
+}
+
+.hora-cell {
+  font-weight: bold;
+  background: #f4f4f4;
+}
+
+.aeronave-cell {
+  font-weight: 600;
+  background: #fafafa;
+}
+
+.slot-cell {
+  min-width: 120px;
+  height: 60px;
+}
+
+.slot-empty {
+  color: #bbb;
+}
+
+.slot-card {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: grab;
+  font-size: 0.85rem;
+}
+
+.slot-card:active {
+  cursor: grabbing;
+}
+
+.slot-card strong {
+  display: block;
+}
+
+.slot-card .alumno {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  background: #ddd;
+}
+
+.estado-BORRADOR {
+  border-left: 4px solid #999;
+}
+
+.estado-EN_REVISION {
+  border-left: 4px solid orange;
+}
+
+.estado-PUBLICADO {
+  border-left: 4px solid green;
+}
+
+.slot-almuerzo {
+  background: #d1d5db;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: center;
+  font-size: 13px;
+  cursor: not-allowed;
+}

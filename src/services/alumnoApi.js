@@ -18,3 +18,15 @@ export const getMiHorario = async (week) => {
 
   return res.data;
 };
+
+export const getMiLicencia = async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const res = await axios.get(`${API_URL}/alumno/licencia`, {
+    headers: {
+      "x-user": JSON.stringify(user),
+    },
+  });
+
+  return res.data;
+};

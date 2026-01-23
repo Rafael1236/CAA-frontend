@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
 import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
+import DashboardProgramacion from "./pages/Programacion/Dashboard";
 
 
 
@@ -29,14 +30,15 @@ function App() {
           }
         />
         <Route
-  path="/alumno/agendar"
-  element={
-    <ProtectedAlumno>
-      <AgendarVuelo />
-    </ProtectedAlumno>
-  }
-/>
-
+          path="/alumno/agendar"
+          element={
+            <ProtectedAlumno>
+              <AgendarVuelo />
+            </ProtectedAlumno>
+          }
+        />
+        <Route path="/programacion/dashboard" element={<DashboardProgramacion />} />
+        <Route path="/admin/dashboard" element={<div>Admin Dashboard</div>} />
       </Routes>
     </Router>
   );

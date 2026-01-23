@@ -23,6 +23,12 @@ export default function Login() {
 
     if (rol === "ALUMNO") {
       navigate("/alumno/dashboard");
+    } else if (rol === "PROGRAMACION") {
+      navigate("/programacion/dashboard");
+    } else if (rol === "ADMIN") {
+      navigate("/admin/dashboard");
+    } else {
+      alert("Rol de usuario no reconocido");
     }
 
   } catch {
