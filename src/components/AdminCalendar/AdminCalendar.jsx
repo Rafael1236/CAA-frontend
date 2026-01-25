@@ -1,4 +1,4 @@
-import "./ProgramacionCalendar.css";
+import "./AdminCalendar.css";
 
 const DIAS = [
   { id: 1, label: "Lunes" },
@@ -8,28 +8,39 @@ const DIAS = [
   { id: 5, label: "Viernes" },
   { id: 6, label: "Sábado" },
 ];
-  
+
 const formatHora = (h) => h?.slice(0, 5);
 
-export default function ProgramacionCalendar({
-  bloques,
-  aeronaves,
-  items,
-  pendingMoves,
+export default function AdminCalendar({
+  bloques = [],
+  aeronaves = [],
+  items = [],
+  pendingMoves = [],
   setDragging,
   handleDrop,
+  week = "next",
 }) {
-  const findItem = (bloque, dia, aeronave) =>
-    items.find(
+  const isEditable = week === "next";
+
+  const findItem = (bloque, dia, aeronave) => {
+    if (!Array.isArray(items)) return null;
+    return items.find(
       (i) =>
         i.id_bloque === bloque &&
         i.dia_semana === dia &&
         i.id_aeronave === aeronave
     );
+  };
 
   return (
-    <div className="calendar-wrapper">
-      <table className="calendar">
+    <div className="admin-calendar-wrapper">
+      <div className={`week-indicator ${week}`}>
+        {week === "current"
+          ? "Semana actual (solo lectura)"
+          : "Próxima semana (editable y publicable)"}
+      </div>
+
+      <table className="admin-calendar">
         <thead>
           <tr>
             <th>Hora</th>
@@ -56,7 +67,7 @@ export default function ProgramacionCalendar({
                   if (b.es_almuerzo) {
                     return (
                       <td key={d.id} className="slot-almuerzo">
-                        
+                        Almuerzo
                       </td>
                     );
                   }
@@ -74,14 +85,19 @@ export default function ProgramacionCalendar({
                   return (
                     <td
                       key={d.id}
-                      className="slot-cell"
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={() =>
-                        handleDrop({
-                          dia_semana: d.id,
-                          id_bloque: b.id_bloque,
-                          id_aeronave: a.id_aeronave,
-                        })
+                      className={`slot-cell ${!isEditable ? "disabled" : ""}`}
+                      onDragOver={
+                        isEditable ? (e) => e.preventDefault() : undefined
+                      }
+                      onDrop={
+                        isEditable
+                          ? () =>
+                              handleDrop({
+                                dia_semana: d.id,
+                                id_bloque: b.id_bloque,
+                                id_aeronave: a.id_aeronave,
+                              })
+                          : undefined
                       }
                     >
                       {item ? (
@@ -89,8 +105,9 @@ export default function ProgramacionCalendar({
                           className={`slot-card estado-${item.estado_solicitud} ${
                             modified ? "dirty" : ""
                           }`}
-                          draggable
+                          draggable={isEditable}
                           onDragStart={() =>
+                            isEditable &&
                             setDragging({
                               id_detalle: item.id_detalle,
                               id_bloque: item.id_bloque,

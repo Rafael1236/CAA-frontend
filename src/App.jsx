@@ -11,7 +11,7 @@ import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
 import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
 import DashboardProgramacion from "./pages/Programacion/Dashboard";
-
+import DashboardAdmin from "./pages/Admin/Dashboard";
 
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
           }
         />
         <Route path="/programacion/dashboard" element={<DashboardProgramacion />} />
-        <Route path="/admin/dashboard" element={<div>Admin Dashboard</div>} />
+        <Route path="/admin/dashboard" element={<DashboardAdmin />} />
       </Routes>
     </Router>
   );
