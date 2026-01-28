@@ -1,0 +1,102 @@
+.admin-page {
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-page h2 {
+  margin: 0 0 6px 0;
+  color: #0a2239;
+}
+
+.admin-subtitle {
+  margin: 0 0 18px 0;
+  color: #556;
+}
+
+/* Tabs de semana */
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.admin-tabs button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #d6dae3;
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-tabs button.active {
+  background: #0a2239;
+  color: #ffffff;
+  border-color: #0a2239;
+}
+
+/* Section */
+.admin-section {
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+}
+
+.admin-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-section__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a2239;
+  margin: 0;
+}
+
+.admin-section__hint {
+  font-size: 13px;
+  color: #667;
+  margin: 0;
+}
+
+/* Actions */
+.admin-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.admin-actions button {
+  background: #ffffff;
+  border: 1px solid #d6dae3;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-actions button:hover {
+  background: #f6f8fb;
+}
+
+.btn-publish {
+  background: #1f4b8f !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-publish:hover {
+  background: #163a5f !important;
+}
+
+.admin-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

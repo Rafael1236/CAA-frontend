@@ -1,52 +1,76 @@
-.prog-calendar-wrapper {
-  overflow-x: auto;
-  margin-top: 20px;
+.calendar-wrapper {
+  overflow: auto;
+  max-height: 600px;
+  border: 1px solid #e7e9ee;
+  border-radius: 10px;
 }
 
-.prog-calendar {
-  width: 100%;
+.calendar {
   border-collapse: collapse;
+  min-width: 1200px;
+  width: 100%;
+  table-layout: fixed;
+  background: #fff;
 }
 
-.prog-calendar th {
-  background: #1f4c8c;
-  color: white;
-  padding: 10px;
-  text-align: center;
+.calendar thead th {
+  background: #1f4b8f;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 6px;
+  border: 1px solid #1a3f78;
+  position: sticky;
+  top: 0;
 }
 
-.prog-calendar td {
-  border: 1px solid #e0e0e0;
+.calendar td {
+  border: 1px solid #e1e6ef;
   padding: 6px;
   text-align: center;
+  height: 50px;
 }
 
 .hora-cell {
-  font-weight: bold;
-  background: #f4f4f4;
+  background: #f6f8fb;
+  font-weight: 800;
+  color: #0a2239;
+  width: 110px;
 }
 
 .aeronave-cell {
-  font-weight: 600;
-  background: #fafafa;
+  background: #fbfcfe;
+  font-weight: 800;
+  width: 120px;
 }
 
 .slot-cell {
-  min-width: 120px;
-  height: 60px;
+  min-width: 130px;
+  transition: background 0.12s ease;
+}
+
+.slot-cell:hover {
+  background: #f1f5f9;
 }
 
 .slot-empty {
-  color: #bbb;
+  color: #9aa3af;
+}
+
+.slot-almuerzo {
+  background: #e5e7eb;
+  font-weight: 800;
+  cursor: not-allowed;
 }
 
 .slot-card {
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #d6dae3;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: left;
   cursor: grab;
-  font-size: 0.85rem;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
 }
 
 .slot-card:active {
@@ -55,39 +79,46 @@
 
 .slot-card strong {
   display: block;
+  font-size: 13px;
 }
 
 .slot-card .alumno {
-  font-size: 0.75rem;
-  color: #555;
+  font-size: 12px;
+  color: #556;
 }
 
 .badge {
   display: inline-block;
-  margin-top: 4px;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  border-radius: 4px;
-  background: #ddd;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  border-radius: 999px;
+  background: #f6f8fb;
+  border: 1px solid #d6dae3;
+  font-weight: 800;
 }
 
 .estado-BORRADOR {
-  border-left: 4px solid #999;
+  border-left: 5px solid #9aa3af;
 }
 
 .estado-EN_REVISION {
-  border-left: 4px solid orange;
+  border-left: 5px solid #f59e0b;
 }
 
 .estado-PUBLICADO {
-  border-left: 4px solid green;
+  border-left: 5px solid #22c55e;
 }
 
-.slot-almuerzo {
-  background: #d1d5db;
-  color: #1f2937;
-  font-weight: 600;
-  text-align: center;
-  font-size: 13px;
+.dirty {
+  outline: 2px dashed #1f4b8f;
+}
+
+.slot-cell.disabled {
+  background: #f8fafc;
+}
+
+.slot-cell.disabled .slot-card {
+  opacity: 0.6;
   cursor: not-allowed;
 }

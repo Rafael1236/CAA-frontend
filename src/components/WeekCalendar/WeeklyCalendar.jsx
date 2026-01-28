@@ -17,7 +17,7 @@ const BLOQUES = [
 const AERONAVES = [
   "YS-334-PE",
   "YS-333-PE",
-  "YS-270-PE",
+  "YS-270-P",
   "YS-127-P",
   "YS-155-PE",
   "SIM-1",

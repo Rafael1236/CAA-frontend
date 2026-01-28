@@ -1,123 +1,79 @@
 .prog-page {
-  display: flex;
-  justify-content: center;
-  padding: 32px 16px;
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.prog-container {
-  width: 100%;
-  max-width: 1400px; /* igual que Alumno */
+.prog-page h2 {
+  margin: 0 0 6px 0;
+  color: #0a2239;
 }
 
-.calendar-card {
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+.prog-subtitle {
+  margin: 0 0 18px 0;
+  color: #556;
+}
+
+/* Section tipo card */
+.prog-section {
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
   padding: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
 }
 
-.calendar-wrapper {
-  overflow: auto;
+.prog-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.calendar {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 1100px;
+.prog-section__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a2239;
+  margin: 0;
 }
 
-.calendar th,
-.calendar td {
-  border: 1px solid #e5e7eb;
-  padding: 8px;
-  vertical-align: top;
-}
-
-.calendar th {
-  background: #1f4b8f;
-  color: #fff;
-  font-weight: 600;
-}
-
-.hora-cell {
-  white-space: nowrap;
-  font-weight: 600;
-  background: #f8fafc;
-}
-
-.aeronave-cell {
-  font-weight: 600;
-  background: #f8fafc;
-}
-
-.slot-cell {
-  min-width: 160px;
-  transition: background 0.15s;
-}
-
-.slot-cell:hover {
-  background: #f1f5f9;
-}
-
-.slot-empty {
-  opacity: 0.45;
-  text-align: center;
-  padding: 12px 0;
-}
-
-.slot-card {
-  width: 100%;
-  text-align: left;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 6px;
-  cursor: grab;
-  background: #fff;
-}
-
-.slot-card:active {
-  cursor: grabbing;
-}
-
-.slot-card.dirty {
-  box-shadow: 0 0 0 2px #facc15 inset;
-}
-
-.alumno {
+.prog-section__hint {
   font-size: 13px;
-  opacity: 0.9;
-  display: block;
-}
-
-.badge {
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  border: 1px solid #cbd5e1;
-  display: inline-block;
-  margin-top: 4px;
-}
-
-.estado-BORRADOR {
-  border-color: #cbd5e1;
-}
-
-.estado-EN_REVISION {
-  border-color: #eab308;
-}
-
-.estado-PUBLICADO {
-  border-color: #22c55e;
+  color: #667;
+  margin: 0;
 }
 
 .prog-actions {
-  margin-top: 16px;
   display: flex;
   gap: 10px;
 }
 
+.prog-actions button {
+  background: #ffffff;
+  border: 1px solid #d6dae3;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prog-actions button:hover {
+  background: #f6f8fb;
+}
+
 .btn-save {
-  background: #1f4b8f;
-  color: #fff;
+  background: #0a2239 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-save:hover {
+  background: #163a5f !important;
+}
+
+.prog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -9,17 +9,6 @@ import {
 import ProgramacionCalendar from "../../components/ProgramacionCalendar/ProgramacionCalendar";
 import "./Dashboard.css";
 
-const DIAS = [
-  { id: 1, label: "Lunes" },
-  { id: 2, label: "Martes" },
-  { id: 3, label: "Miércoles" },
-  { id: 4, label: "Jueves" },
-  { id: 5, label: "Viernes" },
-  { id: 6, label: "Sábado" },
-];
-
-const formatHora = (h) => h?.slice(0, 5);
-
 export default function ProgramacionDashboard() {
   const [bloques, setBloques] = useState([]);
   const [aeronaves, setAeronaves] = useState([]);
@@ -79,6 +68,9 @@ export default function ProgramacionDashboard() {
 
     setDragging(null);
   };
+const semanaPublicada = items.some(
+  (i) => i.estado_solicitud === "PUBLICADO"
+);
 
   const guardarCambios = async () => {
     if (pendingMoves.length === 0) return;
@@ -93,39 +85,54 @@ export default function ProgramacionDashboard() {
 
   return (
     <>
-      <Header />
-      <div className="prog-page">
-        <div className="prog-container">
-          <h2>Programación – Calendario (Próxima semana)</h2>
+  <Header />
 
-          {loading ? (
-            <p>Cargando…</p>
-          ) : (
-            <ProgramacionCalendar
-              bloques={bloques}
-              aeronaves={aeronaves}
-              items={items}
-              pendingMoves={pendingMoves}
-              setDragging={setDragging}
-              handleDrop={handleDrop}
-            />
-          )}
+  <div className="prog-page">
+    <h2>Programación – Calendario</h2>
+    <p className="prog-subtitle">
+      Próxima semana • arrastrá vuelos para reorganizar
+    </p>
 
-          <div className="prog-actions">
-            <button onClick={reload}>Refrescar</button>
-            <button onClick={deshacerCambios} disabled={!pendingMoves.length}>
-              Deshacer
-            </button>
-            <button
-              className="btn-save"
-              onClick={guardarCambios}
-              disabled={!pendingMoves.length}
-            >
-              Guardar cambios ({pendingMoves.length})
-            </button>
-          </div>
+    <div className="prog-section">
+      <div className="prog-section__header">
+        <div>
+          <h3 className="prog-section__title">Horario semanal</h3>
+          <p className="prog-section__hint">
+            Lunes a sábado • bloques por hora
+          </p>
+        </div>
+
+        <div className="prog-actions">
+          <button onClick={reload}>Refrescar</button>
+          <button onClick={deshacerCambios} disabled={!pendingMoves.length}>
+            Deshacer
+          </button>
+          <button
+            className="btn-save"
+            onClick={guardarCambios}
+            disabled={pendingMoves.length === 0 || semanaPublicada}
+          >
+            Guardar cambios ({pendingMoves.length})
+          </button>
         </div>
       </div>
-    </>
+
+      {loading ? (
+        <p>Cargando…</p>
+      ) : (
+        <ProgramacionCalendar
+          bloques={bloques}
+          aeronaves={aeronaves}
+          items={items}
+          pendingMoves={pendingMoves}
+          setDragging={setDragging}
+          handleDrop={handleDrop}
+          semanaPublicada={semanaPublicada}
+        />
+      )}
+    </div>
+  </div>
+</>
+
   );
 }

@@ -8,7 +8,7 @@ const DIAS = [
   { id: 5, label: "Viernes" },
   { id: 6, label: "Sábado" },
 ];
-  
+
 const formatHora = (h) => h?.slice(0, 5);
 
 export default function ProgramacionCalendar({
@@ -19,8 +19,15 @@ export default function ProgramacionCalendar({
   setDragging,
   handleDrop,
 }) {
+
+  const safeItems = Array.isArray(items) ? items : [];
+
+  const semanaPublicada = safeItems.some(
+    (i) => i.estado_solicitud === "PUBLICADO"
+  );
+
   const findItem = (bloque, dia, aeronave) =>
-    items.find(
+    safeItems.find(
       (i) =>
         i.id_bloque === bloque &&
         i.dia_semana === dia &&
@@ -54,19 +61,10 @@ export default function ProgramacionCalendar({
 
                 {DIAS.map((d) => {
                   if (b.es_almuerzo) {
-                    return (
-                      <td key={d.id} className="slot-almuerzo">
-                        
-                      </td>
-                    );
+                    return <td key={d.id} className="slot-almuerzo">Almuerzo</td>;
                   }
 
-                  const item = findItem(
-                    b.id_bloque,
-                    d.id,
-                    a.id_aeronave
-                  );
-
+                  const item = findItem(b.id_bloque, d.id, a.id_aeronave);
                   const modified = pendingMoves.some(
                     (m) => m.id_detalle === item?.id_detalle
                   );
@@ -74,9 +72,12 @@ export default function ProgramacionCalendar({
                   return (
                     <td
                       key={d.id}
-                      className="slot-cell"
-                      onDragOver={(e) => e.preventDefault()}
+                      className={`slot-cell ${semanaPublicada ? "disabled" : ""}`}
+                      onDragOver={(e) =>
+                        !semanaPublicada && e.preventDefault()
+                      }
                       onDrop={() =>
+                        !semanaPublicada &&
                         handleDrop({
                           dia_semana: d.id,
                           id_bloque: b.id_bloque,
@@ -89,8 +90,9 @@ export default function ProgramacionCalendar({
                           className={`slot-card estado-${item.estado_solicitud} ${
                             modified ? "dirty" : ""
                           }`}
-                          draggable
+                          draggable={!semanaPublicada}
                           onDragStart={() =>
+                            !semanaPublicada &&
                             setDragging({
                               id_detalle: item.id_detalle,
                               id_bloque: item.id_bloque,
@@ -100,12 +102,8 @@ export default function ProgramacionCalendar({
                           }
                         >
                           <strong>{item.aeronave_codigo}</strong>
-                          <span className="alumno">
-                            {item.alumno_nombre}
-                          </span>
-                          <span className="badge">
-                            {item.estado_solicitud}
-                          </span>
+                          <span className="alumno">{item.alumno_nombre}</span>
+                          <span className="badge">{item.estado_solicitud}</span>
                         </div>
                       ) : (
                         <span className="slot-empty">—</span>

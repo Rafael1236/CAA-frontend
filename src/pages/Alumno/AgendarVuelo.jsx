@@ -52,64 +52,79 @@ export default function AgendarVuelo() {
 
   const bloqueado = estadoSolicitud !== "BORRADOR";
 
-  return (
-    <>
-      <Header />
+return (
+  <>
+    <Header />
 
-      <div className="agendar-container">
-        <h2>Agendar vuelos (próxima semana)</h2>
+    <div className="agendar-container">
+      <h2>Agendar vuelos</h2>
+      <p className="agendar-subtitle">Próxima semana</p>
 
-        {licencia && (
-          <p className="licencia-info">
-            Licencia: <strong>{licencia.nombre}</strong>
+      {licencia && (
+        <div className="info-box">
+          <span className="info-label">Licencia</span>
+          <span className="info-value">{licencia.nombre}</span>
+        </div>
+      )}
+
+      {bloqueado && (
+        <div className="alerta">
+          Tu solicitud está en <strong>{estadoSolicitud}</strong> y no puede
+          modificarse.
+        </div>
+      )}
+
+      <div className="section">
+        <div className="section__header">
+          <h3 className="section__title">Aeronaves permitidas</h3>
+          <p className="section__hint">
+            Solo podés agendar vuelos con estas aeronaves
           </p>
-        )}
-
-        {bloqueado && (
-          <p className="alerta">
-            Tu solicitud está en <strong>{estadoSolicitud}</strong> y no puede modificarse.
-          </p>
-        )}
-
-        <div className="aeronaves">
-          <h3>Aeronaves permitidas</h3>
-          <div className="aeronaves-grid">
-            {aeronaves.map((a) => (
-              <div key={a.id_aeronave} className="aeronave-card">
-                <strong>{a.codigo}</strong>
-                <span>{a.modelo}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
-        <div className="agenda-calendario">
-          <h3>Seleccione sus vuelos</h3>
-
-          <AgendarCalendar
-            selecciones={selecciones}
-            setSelecciones={setSelecciones}
-            bloqueado={bloqueado}
-          />
-        </div>
-
-        <div className="acciones">
-          <button
-            className="btn-cancelar"
-            onClick={() => navigate("/alumno/dashboard")}
-          >
-            Cancelar
-          </button>
-
-          <button
-            className="btn-guardar"
-            disabled={bloqueado || selecciones.length === 0}
-            onClick={handleGuardar}
-          >
-            Guardar ({selecciones.length}/3)
-          </button>
+        <div className="aeronaves-grid">
+          {aeronaves.map((a) => (
+            <div key={a.id_aeronave} className="aeronave-card">
+              <strong>{a.codigo}</strong>
+              <span>{a.modelo}</span>
+            </div>
+          ))}
         </div>
       </div>
-    </>
-  );
+
+      <div className="section">
+        <div className="section__header">
+          <h3 className="section__title">Seleccioná tus vuelos</h3>
+          <p className="section__hint">
+            Máximo 3 bloques · lunes a sábado
+          </p>
+        </div>
+
+        <AgendarCalendar
+          selecciones={selecciones}
+          setSelecciones={setSelecciones}
+          bloqueado={bloqueado}
+        />
+      </div>
+
+      <div className="acciones">
+        <button
+          className="btn-cancelar"
+          onClick={() => navigate("/alumno/dashboard")}
+        >
+          Cancelar
+        </button>
+
+        <button
+          className="btn-guardar"
+          disabled={bloqueado || selecciones.length === 0}
+          onClick={handleGuardar}
+        >
+          Guardar ({selecciones.length}/3)
+        </button>
+      </div>
+    </div>
+  </>
+);
+
 }

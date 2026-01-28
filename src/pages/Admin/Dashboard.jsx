@@ -77,13 +77,17 @@ export default function AdminDashboard() {
     load();
   };
 
-  return (
+return (
     <>
       <Header />
-      <div className="admin-page">
-        <h2>Admin – Programación</h2>
 
-        <div className="week-tabs">
+      <div className="admin-page">
+        <h2>Administración – Programación</h2>
+        <p className="admin-subtitle">
+          Gestión de horarios y publicación semanal
+        </p>
+
+        <div className="admin-tabs">
           <button
             className={week === "current" ? "active" : ""}
             onClick={() => setWeek("current")}
@@ -98,34 +102,47 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {loading ? (
-          <p>Cargando…</p>
-        ) : (
-          <AdminCalendar
-            bloques={bloques}
-            aeronaves={aeronaves}
-            items={items}
-            pendingMoves={pendingMoves}
-            setDragging={setDragging}
-            handleDrop={handleDrop}
-            week={week}
-          />
-        )}
+        <div className="admin-section">
+          <div className="admin-section__header">
+            <div>
+              <h3 className="admin-section__title">Horario semanal</h3>
+              <p className="admin-section__hint">
+                {week === "current"
+                  ? "Vista solo lectura"
+                  : "Editable y publicable"}
+              </p>
+            </div>
 
-        {week === "next" && (
-          <div className="admin-actions">
-            <button
-              onClick={guardarCambios}
-              disabled={pendingMoves.length === 0}
-            >
-              Guardar cambios ({pendingMoves.length})
-            </button>
+            {week === "next" && (
+              <div className="admin-actions">
+                <button
+                  onClick={guardarCambios}
+                  disabled={pendingMoves.length === 0}
+                >
+                  Guardar cambios ({pendingMoves.length})
+                </button>
 
-            <button className="publish" onClick={publicar}>
-              Publicar semana
-            </button>
+                <button className="btn-publish" onClick={publicar}>
+                  Publicar semana
+                </button>
+              </div>
+            )}
           </div>
-        )}
+
+          {loading ? (
+            <p>Cargando…</p>
+          ) : (
+            <AdminCalendar
+              bloques={bloques}
+              aeronaves={aeronaves}
+              items={items}
+              pendingMoves={pendingMoves}
+              setDragging={setDragging}
+              handleDrop={handleDrop}
+              week={week}
+            />
+          )}
+        </div>
       </div>
     </>
   );

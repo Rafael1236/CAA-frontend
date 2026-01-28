@@ -67,7 +67,7 @@ export default function AdminCalendar({
                   if (b.es_almuerzo) {
                     return (
                       <td key={d.id} className="slot-almuerzo">
-                        Almuerzo
+                        
                       </td>
                     );
                   }

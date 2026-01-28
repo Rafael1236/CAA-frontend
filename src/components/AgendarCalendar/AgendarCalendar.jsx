@@ -69,7 +69,7 @@ export default function AgendarCalendar({
     setSelecciones([...selecciones, item]);
   };
 
-  return (
+return (
   <div className="calendar-wrapper">
     <table className="calendar">
       <thead>
@@ -97,11 +97,8 @@ export default function AgendarCalendar({
               {DIAS.map((d) => {
                 if (b.es_almuerzo) {
                   return (
-                    <td
-                      key={d.id}
-                      className="slot-almuerzo"
-                    >
-                      
+                    <td key={d.id} className="slot-almuerzo">
+                      Almuerzo
                     </td>
                   );
                 }
@@ -121,8 +118,11 @@ export default function AgendarCalendar({
                 );
 
                 return (
-                  <td key={d.id}>
+                  <td key={d.id} className="slot-cell">
                     <button
+                      className={`slot-btn ${
+                        ocupado ? "ocupado" : selected ? "selected" : ""
+                      }`}
                       disabled={bloqueado || ocupado}
                       onClick={() =>
                         toggle({
