@@ -30,15 +30,6 @@ export const getCalendarioProgramacion = async () => {
   return res.data;
 };
 
-export const moverVuelo = async (id_detalle, payload) => {
-  const res = await axios.patch(
-    `${API_URL}/programacion/vuelos/${id_detalle}`,
-    payload,
-    { headers: getUserHeader() }
-  );
-  return res.data;
-};
-
 export const pasarSolicitudEnRevision = async (id_solicitud) => {
   const res = await axios.post(
     `${API_URL}/programacion/solicitudes/${id_solicitud}/en-revision`,

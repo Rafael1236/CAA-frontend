@@ -69,11 +69,12 @@ export default function AgendarCalendar({
     setSelecciones([...selecciones, item]);
   };
 
+
 return (
   <div className="calendar-wrapper">
     <table className="calendar">
       <thead>
-        <tr>
+        <tr>  
           <th>Hora</th>
           <th>Aeronave</th>
           {DIAS.map((d) => (
@@ -98,7 +99,7 @@ return (
                 if (b.es_almuerzo) {
                   return (
                     <td key={d.id} className="slot-almuerzo">
-                      Almuerzo
+                      
                     </td>
                   );
                 }
@@ -146,3 +147,5 @@ return (
 );
 
 }
+
+

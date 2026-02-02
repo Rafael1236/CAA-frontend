@@ -87,6 +87,12 @@
   color: #556;
 }
 
+.slot-card .instructor {
+  font-size: 0.85rem;
+  color: #555;
+  display: block;
+}
+
 .badge {
   display: inline-block;
   margin-top: 6px;

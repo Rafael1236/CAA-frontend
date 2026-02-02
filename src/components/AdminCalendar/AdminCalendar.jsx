@@ -116,12 +116,12 @@ export default function AdminCalendar({
                             })
                           }
                         >
-                          <strong>{item.aeronave_codigo}</strong>
+                          
                           <span className="alumno">
                             {item.alumno_nombre}
                           </span>
-                          <span className="badge">
-                            {item.estado_solicitud}
+                          <span className="instructor">
+                            {item.instructor_nombre}
                           </span>
                         </div>
                       ) : (

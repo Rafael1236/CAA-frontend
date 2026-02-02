@@ -61,7 +61,7 @@ export default function ProgramacionCalendar({
 
                 {DIAS.map((d) => {
                   if (b.es_almuerzo) {
-                    return <td key={d.id} className="slot-almuerzo">Almuerzo</td>;
+                    return <td key={d.id} className="slot-almuerzo"></td>;
                   }
 
                   const item = findItem(b.id_bloque, d.id, a.id_aeronave);
@@ -103,7 +103,7 @@ export default function ProgramacionCalendar({
                         >
                           <strong>{item.aeronave_codigo}</strong>
                           <span className="alumno">{item.alumno_nombre}</span>
-                          <span className="badge">{item.estado_solicitud}</span>
+                          <span className="instructor">{item.instructor_nombre}</span>
                         </div>
                       ) : (
                         <span className="slot-empty">—</span>

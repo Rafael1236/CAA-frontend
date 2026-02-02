@@ -38,36 +38,48 @@ export default function ProgramacionDashboard() {
   }, []);
 
   const handleDrop = (target) => {
-    if (!dragging) return;
+      if (!dragging) return;
 
-    const ocupado = originalItems.some(
-      (i) =>
-        i.id_bloque === target.id_bloque &&
-        i.dia_semana === target.dia_semana &&
-        i.id_aeronave === target.id_aeronave
-    );
+      if (
+        dragging.id_bloque === target.id_bloque &&
+        dragging.dia_semana === target.dia_semana &&
+        dragging.id_aeronave === target.id_aeronave
+      ) {
+        setDragging(null);
+        return;
+      }
 
-    if (ocupado) {
-      alert("Ese bloque ya está ocupado.");
+      const ocupado = items.some(
+        (i) =>
+          i.id_bloque === target.id_bloque &&
+          i.dia_semana === target.dia_semana &&
+          i.id_aeronave === target.id_aeronave &&
+          i.id_detalle !== dragging.id_detalle
+      );
+
+      if (ocupado) {
+        alert("Ese bloque ya está ocupado.");
+        setDragging(null);
+        return;
+      }
+
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id_detalle === dragging.id_detalle
+            ? { ...i, ...target }
+            : i
+        )
+      );
+
+      setPendingMoves((prev) => [
+        ...prev.filter((p) => p.id_detalle !== dragging.id_detalle),
+        { id_detalle: dragging.id_detalle, ...target },
+      ]);
+
       setDragging(null);
-      return;
-    }
+    };
 
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id_detalle === dragging.id_detalle
-          ? { ...i, ...target }
-          : i
-      )
-    );
 
-    setPendingMoves((prev) => [
-      ...prev.filter((p) => p.id_detalle !== dragging.id_detalle),
-      { id_detalle: dragging.id_detalle, ...target },
-    ]);
-
-    setDragging(null);
-  };
 const semanaPublicada = items.some(
   (i) => i.estado_solicitud === "PUBLICADO"
 );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMiHorario } from "../../services/alumnoApi";
+import { getMiHorario, cancelarVuelo } from "../../services/alumnoApi";
 import "./WeeklyCalendar.css";
 
 const BLOQUES = [
@@ -43,39 +43,70 @@ function formatHora(hora24) {
     .padStart(2, "0")} ${ampm}`;
 }
 
-
 export default function WeeklyCalendar({ weekMode }) {
   const [calendar, setCalendar] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const loadHorario = async () => {
+    setLoading(true);
+
+    const data = await getMiHorario(weekMode);
+    console.log("📦 DATA DESDE BACKEND:", data);
+    const grid = {};
+
+    data.forEach((item) => {
+  const hora = formatHora(item.hora_inicio);
+  const dia = DIA_MAP[item.dia_semana];
+  const aeronave = item.aeronave_codigo;
+
+  console.log("🧩 PROCESANDO ITEM:", {
+    hora_db: item.hora_inicio,
+    hora_formateada: hora,
+    aeronave_db: aeronave,
+    dia_db: item.dia_semana,
+    dia_label: dia,
+  });
+
+  if (!grid[hora]) grid[hora] = {};
+  if (!grid[hora][aeronave]) grid[hora][aeronave] = {};
+  if (!grid[hora][aeronave][dia]) {
+    grid[hora][aeronave][dia] = [];
+  }
+
+  grid[hora][aeronave][dia].push({
+    id_vuelo: item.id_vuelo,
+    estado: item.estado,
+  });
+});
+
+
+    setCalendar(grid);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    async function load() {
-      const data = await getMiHorario(weekMode);
-      const grid = {};
-
-      data.forEach((item) => {
-        const hora = formatHora(item.hora_inicio);
-        const dia = DIA_MAP[item.dia_semana];
-        const aeronave = item.aeronave;
-
-        if (!grid[hora]) grid[hora] = {};
-        if (!grid[hora][aeronave]) grid[hora][aeronave] = {};
-        if (!grid[hora][aeronave][dia]) {
-          grid[hora][aeronave][dia] = [];
-        }
-
-        grid[hora][aeronave][dia].push({
-          estado: item.estado,
-        });
-      });
-
-      setCalendar(grid);
-    }
-
-    load();
+    loadHorario();
   }, [weekMode]);
+
+  const onCancelar = async (id_vuelo) => {
+    if (!window.confirm("¿Cancelar este vuelo?")) return;
+
+    try {
+      await cancelarVuelo(id_vuelo);
+      alert("Vuelo cancelado correctamente");
+      await loadHorario();
+    } catch (e) {
+      alert(
+        e.response?.data?.message ||
+          "No se pudo cancelar el vuelo"
+      );
+    }
+  };
 
   return (
     <div className="calendar-wrapper">
+      {loading && <p>Cargando horario…</p>}
+
       <table className="calendar">
         <thead>
           <tr>
@@ -106,10 +137,25 @@ export default function WeeklyCalendar({ weekMode }) {
                   return (
                     <td key={dia} className="slot-cell">
                       {vuelos ? (
-                        vuelos.map((v, i) => (
-                          <span key={i} className="ocupado">
-                            {v.estado}
-                          </span>
+                        vuelos.map((v) => (
+                          <div
+                            key={v.id_vuelo}
+                            className={`ocupado estado-${v.estado}`}
+                          >
+                            <span>{v.estado}</span>
+
+                            {v.estado !== "CANCELADO" &&
+                              weekMode === "current" && (
+                                <button
+                                  className="btn-cancelar-vuelo"
+                                  onClick={() =>
+                                    onCancelar(v.id_vuelo)
+                                  }
+                                >
+                                  Cancelar
+                                </button>
+                              )}
+                          </div>
                         ))
                       ) : (
                         <span className="blk"></span>

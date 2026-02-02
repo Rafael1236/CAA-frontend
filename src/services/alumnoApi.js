@@ -30,3 +30,12 @@ export const getMiLicencia = async () => {
 
   return res.data;
 };
+
+export const cancelarVuelo = async (id_vuelo) => {
+  const res = await axios.patch(
+    `${API_URL}/alumno/vuelos/${id_vuelo}/cancelar`,
+    {},
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};

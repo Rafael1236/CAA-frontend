@@ -72,3 +72,22 @@
   font-size: 12px;
   font-weight: 600;
 }
+.btn-cancelar-vuelo {
+  margin-top: 6px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancelar-vuelo:hover {
+  background: #b91c1c;
+}
+
+.estado-CANCELADO {
+  opacity: 0.6;
+  text-decoration: line-through;
+}

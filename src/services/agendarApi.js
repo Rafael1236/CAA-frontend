@@ -48,6 +48,8 @@ export const getMisSolicitudes = async (week = "next") => {
 };
 
 export const guardarSolicitud = async (vuelos) => {
+  console.log("POST vuelos:", vuelos);
+
   const res = await axios.post(
     `${API_URL}/agendar/solicitar-vuelos`,
     { vuelos },

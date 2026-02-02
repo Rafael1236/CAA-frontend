@@ -43,22 +43,50 @@ export default function AdminDashboard() {
   }, [week]);
 
   const handleDrop = (target) => {
-    if (!dragging) return;
+  if (!dragging) return;
 
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id_detalle === dragging.id_detalle
-          ? { ...i, ...target }
-          : i
-      )
-    );
-
-    setPendingMoves((prev) => [
-      ...prev.filter((m) => m.id_detalle !== dragging.id_detalle),
-      { id_detalle: dragging.id_detalle, ...target },
-    ]);
-
+  if (
+    dragging.id_bloque === target.id_bloque &&
+    dragging.dia_semana === target.dia_semana &&
+    dragging.id_aeronave === target.id_aeronave
+  ) {
     setDragging(null);
+    return;
+  }
+
+  const ocupado = items.some(
+    (i) =>
+      i.id_bloque === target.id_bloque &&
+      i.dia_semana === target.dia_semana &&
+      i.id_aeronave === target.id_aeronave &&
+      i.id_detalle !== dragging.id_detalle
+  );
+
+  if (ocupado) {
+    alert("Ese bloque ya está ocupado");
+    setDragging(null);
+    return;
+  }
+
+  setItems((prev) =>
+    prev.map((i) =>
+      i.id_detalle === dragging.id_detalle
+        ? { ...i, ...target }
+        : i
+    )
+  );
+
+  setPendingMoves((prev) => [
+    ...prev.filter((m) => m.id_detalle !== dragging.id_detalle),
+    { id_detalle: dragging.id_detalle, ...target },
+  ]);
+
+  setDragging(null);
+};
+
+  const deshacerCambios = () => {
+    setItems(originalItems);
+    setPendingMoves([]);
   };
 
   const guardarCambios = async () => {
@@ -115,6 +143,9 @@ return (
 
             {week === "next" && (
               <div className="admin-actions">
+                <button onClick={deshacerCambios} disabled={!pendingMoves.length}>
+                  Deshacer
+                </button>
                 <button
                   onClick={guardarCambios}
                   disabled={pendingMoves.length === 0}
