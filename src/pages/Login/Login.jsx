@@ -1,7 +1,7 @@
 import "./Login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { login } from "../../services/loginApi";
 
 export default function Login() {
   const [correo, setCorreo] = useState("");
@@ -9,33 +9,31 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
-      { correo, password }
-    );
+    try {
+      const data = await login(correo, password);
 
-    localStorage.setItem("user", JSON.stringify(res.data));
+      const user = {
+        ...data,
+        expiresAt: Date.now() + 1000 * 60 * 30
+      };
 
-    const rol = res.data.rol.toUpperCase();
+      localStorage.setItem("user", JSON.stringify(user));
 
-    if (rol === "ALUMNO") {
-      navigate("/alumno/dashboard");
-    } else if (rol === "PROGRAMACION") {
-      navigate("/programacion/dashboard");
-    } else if (rol === "ADMIN") {
-      navigate("/admin/dashboard");
-    } else {
-      alert("Rol de usuario no reconocido");
+      if (user.must_change_password) {
+        navigate("/perfil");
+        return;
+      }
+
+      if (user.rol === "ALUMNO") navigate("/alumno/dashboard");
+      else if (user.rol === "PROGRAMACION") navigate("/programacion/dashboard");
+      else if (user.rol === "ADMIN") navigate("/admin/dashboard");
+
+    } catch {
+      alert("Credenciales incorrectas");
     }
-
-  } catch {
-    alert("Credenciales incorrectas");
-  }
-};
-
+  };
 
   return (
     <div className="login">

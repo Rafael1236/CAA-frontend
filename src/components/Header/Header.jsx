@@ -30,6 +30,9 @@ export default function Header() {
               <span className="header__user">
                 Hola, <strong>{user.nombre}</strong>
               </span>
+              <button onClick={() => navigate("/perfil")} className="btn-profile">
+                Mi perfil
+              </button>
               <button onClick={handleLogout} className="btn-logout">
                 Cerrar sesión
               </button>

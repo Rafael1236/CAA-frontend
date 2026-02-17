@@ -5,7 +5,6 @@
   border-radius: 6px;
 }
 
-/* TABLA REAL (NO GRID) */
 .calendar {
   border-collapse: collapse;
   min-width: 1200px;
@@ -14,7 +13,6 @@
   background: #fff;
 }
 
-/* HEADER */
 .calendar thead th {
   background: #1f4b8f;
   color: #fff;
@@ -27,7 +25,6 @@
   z-index: 5;
 }
 
-/* CELDAS */
 .calendar td {
   border: 1px solid #ccc;
   padding: 6px;
@@ -36,7 +33,6 @@
   height: 42px;
 }
 
-/* COLUMNA HORA */
 .hora-cell {
   background: #f2f2f2;
   font-weight: bold;
@@ -45,19 +41,16 @@
   width: 110px;
 }
 
-/* COLUMNA AERONAVE */
 .aeronave-cell {
   background: #fafafa;
   font-weight: bold;
   width: 120px;
 }
 
-/* BLOQUES */
 .slot-cell {
   min-width: 130px;
 }
 
-/* ESTADOS */
 .blk {
   color: #999;
   font-style: italic;

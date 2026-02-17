@@ -65,7 +65,6 @@
   background: #082f49;
 }
 
-/* Botón logout */
 .btn-logout {
   padding: 8px 14px;
   border-radius: 8px;
@@ -79,4 +78,15 @@
 
 .btn-logout:hover {
   background: #c0392b;
+}
+
+.btn-profile {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #0b3c5d;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }

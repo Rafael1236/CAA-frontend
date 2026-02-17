@@ -47,3 +47,10 @@ export const guardarCambiosProgramacion = async (movimientos) => {
   );
   return res.data;
 };
+
+export const getBloquesBloqueados = async () => {
+  const res = await axios.get(`${API_URL}/programacion/bloques-bloqueados`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};

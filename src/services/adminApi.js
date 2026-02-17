@@ -48,3 +48,9 @@ export const getBloquesHorario = async () => {
   return res.data;
 };
 
+export const getBloquesBloqueadosAdmin = async () => {
+  const res = await axios.get(`${API_URL}/bloques-bloqueados`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};

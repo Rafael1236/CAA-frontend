@@ -2,6 +2,11 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api";
 
+function getUserHeader() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user ? { "x-user": JSON.stringify(user) } : {};
+}
+
 export const getMiHorario = async (week) => {
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -11,9 +16,7 @@ export const getMiHorario = async (week) => {
 
   const res = await axios.get(`${API_URL}/alumno/mi-horario`, {
     params: { week },
-    headers: {
-      "x-user": JSON.stringify(user),
-    },
+    headers: getUserHeader(),
   });
 
   return res.data;
@@ -37,5 +40,12 @@ export const cancelarVuelo = async (id_vuelo) => {
     {},
     { headers: getUserHeader() }
   );
+  return res.data;
+};
+
+export const getBloquesBloqueadosAlumno = async () => {
+  const res = await axios.get(`${API_URL}/alumno/bloques-bloqueados`, {
+    headers: getUserHeader(),
+  });
   return res.data;
 };

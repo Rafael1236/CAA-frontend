@@ -48,8 +48,6 @@ export const getMisSolicitudes = async (week = "next") => {
 };
 
 export const guardarSolicitud = async (vuelos) => {
-  console.log("POST vuelos:", vuelos);
-
   const res = await axios.post(
     `${API_URL}/agendar/solicitar-vuelos`,
     { vuelos },
@@ -58,5 +56,12 @@ export const guardarSolicitud = async (vuelos) => {
       headers: getUserHeader(),
     }
   );
+  return res.data;
+};
+
+export const getBloquesBloqueados = async () => {
+  const res = await axios.get(`${API_URL}/agendar/bloques-bloqueados`, {
+    headers: getUserHeader(),
+  });
   return res.data;
 };

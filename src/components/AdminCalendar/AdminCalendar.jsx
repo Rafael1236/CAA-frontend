@@ -16,21 +16,26 @@ export default function AdminCalendar({
   aeronaves = [],
   items = [],
   pendingMoves = [],
+  bloqueos = [],
   setDragging,
   handleDrop,
   week = "next",
 }) {
   const isEditable = week === "next";
 
-  const findItem = (bloque, dia, aeronave) => {
-    if (!Array.isArray(items)) return null;
-    return items.find(
+  const safeItems = Array.isArray(items) ? items : [];
+  const safeBloqueos = Array.isArray(bloqueos) ? bloqueos : [];
+
+  const isBloqueado = (dia_semana, id_bloque) =>
+    safeBloqueos.some((x) => x.dia_semana === dia_semana && x.id_bloque === id_bloque);
+
+  const findItem = (id_bloque, dia_semana, id_aeronave) =>
+    safeItems.find(
       (i) =>
-        i.id_bloque === bloque &&
-        i.dia_semana === dia &&
-        i.id_aeronave === aeronave
+        i.id_bloque === id_bloque &&
+        i.dia_semana === dia_semana &&
+        i.id_aeronave === id_aeronave
     );
-  };
 
   return (
     <div className="admin-calendar-wrapper">
@@ -64,40 +69,34 @@ export default function AdminCalendar({
                 <td className="aeronave-cell">{a.codigo}</td>
 
                 {DIAS.map((d) => {
-                  if (b.es_almuerzo) {
-                    return (
-                      <td key={d.id} className="slot-almuerzo">
-                        
-                      </td>
-                    );
+                  const bloqueado = isBloqueado(d.id, b.id_bloque);
+
+                  if (bloqueado) {
+                    return <td key={d.id} className="slot-almuerzo"></td>;
                   }
 
-                  const item = findItem(
-                    b.id_bloque,
-                    d.id,
-                    a.id_aeronave
-                  );
+                  const item = findItem(b.id_bloque, d.id, a.id_aeronave);
 
                   const modified = pendingMoves.some(
                     (m) => m.id_detalle === item?.id_detalle
                   );
 
+                  const disabled = !isEditable;
+
                   return (
                     <td
                       key={d.id}
-                      className={`slot-cell ${!isEditable ? "disabled" : ""}`}
-                      onDragOver={
-                        isEditable ? (e) => e.preventDefault() : undefined
-                      }
+                      className={`slot-cell ${disabled ? "disabled" : ""}`}
+                      onDragOver={disabled ? undefined : (e) => e.preventDefault()}
                       onDrop={
-                        isEditable
-                          ? () =>
+                        disabled
+                          ? undefined
+                          : () =>
                               handleDrop({
                                 dia_semana: d.id,
                                 id_bloque: b.id_bloque,
                                 id_aeronave: a.id_aeronave,
                               })
-                          : undefined
                       }
                     >
                       {item ? (
@@ -105,9 +104,9 @@ export default function AdminCalendar({
                           className={`slot-card estado-${item.estado_solicitud} ${
                             modified ? "dirty" : ""
                           }`}
-                          draggable={isEditable}
+                          draggable={!disabled}
                           onDragStart={() =>
-                            isEditable &&
+                            !disabled &&
                             setDragging({
                               id_detalle: item.id_detalle,
                               id_bloque: item.id_bloque,
@@ -116,13 +115,8 @@ export default function AdminCalendar({
                             })
                           }
                         >
-                          
-                          <span className="alumno">
-                            {item.alumno_nombre}
-                          </span>
-                          <span className="instructor">
-                            {item.instructor_nombre}
-                          </span>
+                          <span className="alumno">{item.alumno_nombre}</span>
+                          <span className="instructor">{item.instructor_nombre}</span>
                         </div>
                       ) : (
                         <span className="slot-empty">—</span>
