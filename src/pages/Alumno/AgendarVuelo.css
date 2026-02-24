@@ -14,7 +14,6 @@
   color: #667;
 }
 
-/* Info */
 .info-box {
   background: #ffffff;
   border: 1px solid #e7e9ee;
@@ -38,7 +37,6 @@
   color: #0a2239;
 }
 
-/* Alerta */
 .alerta {
   background: #fff7ed;
   border: 1px solid #fcd34d;
@@ -49,7 +47,6 @@
   font-size: 14px;
 }
 
-/* Section */
 .section {
   margin-top: 18px;
   background: #ffffff;
@@ -76,7 +73,6 @@
   margin: 0;
 }
 
-/* Aeronaves */
 .aeronaves-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -101,7 +97,6 @@
   color: #667;
 }
 
-/* Acciones */
 .acciones {
   margin-top: 22px;
   display: flex;

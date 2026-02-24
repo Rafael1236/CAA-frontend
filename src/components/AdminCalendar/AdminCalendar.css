@@ -118,3 +118,18 @@
 .dirty {
   outline: 2px dashed #2563eb;
 }
+
+.btn-cancelar-vuelo {
+  margin-top: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #ef4444;
+  background: #fff;
+  color: #ef4444;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-cancelar-vuelo:hover {
+  background: #fee2e2;
+}

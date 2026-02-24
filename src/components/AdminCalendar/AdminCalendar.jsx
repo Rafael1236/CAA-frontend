@@ -20,6 +20,7 @@ export default function AdminCalendar({
   setDragging,
   handleDrop,
   week = "next",
+  onCancelar,
 }) {
   const isEditable = week === "next";
 
@@ -77,6 +78,9 @@ export default function AdminCalendar({
 
                   const item = findItem(b.id_bloque, d.id, a.id_aeronave);
 
+                  const estadoMostrar =
+                    item?.estado_mostrar ?? item?.estado_vuelo ?? item?.estado_solicitud;
+
                   const modified = pendingMoves.some(
                     (m) => m.id_detalle === item?.id_detalle
                   );
@@ -101,7 +105,7 @@ export default function AdminCalendar({
                     >
                       {item ? (
                         <div
-                          className={`slot-card estado-${item.estado_solicitud} ${
+                          className={`slot-card estado-${estadoMostrar} ${
                             modified ? "dirty" : ""
                           }`}
                           draggable={!disabled}
@@ -117,6 +121,21 @@ export default function AdminCalendar({
                         >
                           <span className="alumno">{item.alumno_nombre}</span>
                           <span className="instructor">{item.instructor_nombre}</span>
+                          {week === "current" &&
+                            item.id_vuelo &&
+                            estadoMostrar !== "CANCELADO" && (
+                              <button
+                                className="btn-cancelar-vuelo"
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onCancelar?.(item.id_vuelo);
+                                }}
+                              >
+                                Cancelar
+                              </button>
+                            )}
                         </div>
                       ) : (
                         <span className="slot-empty">—</span>

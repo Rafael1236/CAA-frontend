@@ -84,3 +84,9 @@
   opacity: 0.6;
   text-decoration: line-through;
 }
+
+.estado-PUBLICADO {
+  background: #e0f2fe !important;
+  border-left: 4px solid #0284c7 !important;
+  color: #0f172a !important;
+}

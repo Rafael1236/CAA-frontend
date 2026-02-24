@@ -54,3 +54,12 @@ export const getBloquesBloqueadosAdmin = async () => {
   });
   return res.data;
 };
+
+export const cancelarVueloAdmin = async (id_vuelo, motivo = null) => {
+  const res = await axios.patch(
+    `${API_URL}/admin/vuelos/${id_vuelo}/cancelar`,
+    motivo ? { motivo } : {},
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};

@@ -81,6 +81,7 @@ return (
             Solo podés agendar vuelos con estas aeronaves
           </p>
         </div>
+        
 
         <div className="aeronaves-grid">
           {aeronaves.map((a) => (
@@ -90,21 +91,6 @@ return (
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="section">
-        <div className="section__header">
-          <h3 className="section__title">Seleccioná tus vuelos</h3>
-          <p className="section__hint">
-            Máximo 3 bloques · lunes a sábado
-          </p>
-        </div>
-
-        <AgendarCalendar
-          selecciones={selecciones}
-          setSelecciones={setSelecciones}
-          bloqueado={bloqueado}
-        />
       </div>
 
       <div className="acciones">
@@ -123,6 +109,24 @@ return (
           Guardar ({selecciones.length}/3)
         </button>
       </div>
+
+
+      <div className="section">
+        <div className="section__header">
+          <h3 className="section__title">Seleccioná tus vuelos</h3>
+          <p className="section__hint">
+            Máximo 3 bloques · lunes a sábado
+          </p>
+        </div>
+
+        <AgendarCalendar
+          selecciones={selecciones}
+          setSelecciones={setSelecciones}
+          bloqueado={bloqueado}
+        />
+      </div>
+
+      
     </div>
   </>
 );

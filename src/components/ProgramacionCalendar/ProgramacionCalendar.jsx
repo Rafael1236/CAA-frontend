@@ -12,6 +12,7 @@ const DIAS = [
 const formatHora = (h) => h?.slice(0, 5);
 
 export default function ProgramacionCalendar({
+  week = "next",
   bloques = [],
   aeronaves = [],
   items = [],
@@ -19,21 +20,29 @@ export default function ProgramacionCalendar({
   bloqueos = [],
   setDragging,
   handleDrop,
+  onCancelar,
 }) {
   const safeItems = Array.isArray(items) ? items : [];
   const safeBloqueos = Array.isArray(bloqueos) ? bloqueos : [];
 
-  const semanaPublicada = safeItems.some((i) => i.estado_solicitud === "PUBLICADO");
+  const isEditable = week === "next";
+
+  const semanaPublicadaNext =
+    week === "next" && safeItems.some((i) => i.estado_solicitud === "PUBLICADO");
+
+  const disabled = !isEditable || semanaPublicadaNext;
 
   const isBloqueado = (dia_semana, id_bloque) =>
-    safeBloqueos.some((x) => x.dia_semana === dia_semana && x.id_bloque === id_bloque);
+    safeBloqueos.some(
+      (x) => Number(x.dia_semana) === Number(dia_semana) && Number(x.id_bloque) === Number(id_bloque)
+    );
 
   const findItem = (id_bloque, dia_semana, id_aeronave) =>
     safeItems.find(
       (i) =>
-        i.id_bloque === id_bloque &&
-        i.dia_semana === dia_semana &&
-        i.id_aeronave === id_aeronave
+        Number(i.id_bloque) === Number(id_bloque) &&
+        Number(i.dia_semana) === Number(dia_semana) &&
+        Number(i.id_aeronave) === Number(id_aeronave)
     );
 
   return (
@@ -62,16 +71,19 @@ export default function ProgramacionCalendar({
                 <td className="aeronave-cell">{a.codigo}</td>
 
                 {DIAS.map((d) => {
-                  const bloqueado = isBloqueado(d.id, b.id_bloque);
-
-                  if (bloqueado) {
+                  if (isBloqueado(d.id, b.id_bloque)) {
                     return <td key={d.id} className="slot-almuerzo"></td>;
                   }
 
                   const item = findItem(b.id_bloque, d.id, a.id_aeronave);
-                  const modified = pendingMoves.some((m) => m.id_detalle === item?.id_detalle);
+                  const modified = pendingMoves.some(
+                    (m) => m.id_detalle === item?.id_detalle
+                  );
 
-                  const disabled = semanaPublicada;
+                  const estadoMostrar =
+                    item?.estado_mostrar ??
+                    item?.estado_vuelo ??
+                    item?.estado_solicitud;
 
                   return (
                     <td
@@ -91,7 +103,7 @@ export default function ProgramacionCalendar({
                     >
                       {item ? (
                         <div
-                          className={`slot-card estado-${item.estado_solicitud} ${
+                          className={`slot-card estado-${estadoMostrar} ${
                             modified ? "dirty" : ""
                           }`}
                           draggable={!disabled}
@@ -106,7 +118,21 @@ export default function ProgramacionCalendar({
                           }
                         >
                           <span className="alumno">{item.alumno_nombre}</span>
-                          <span className="instructor">{item.instructor_nombre}</span>
+                          <span className="instructor">
+                            {item.instructor_nombre}
+                          </span>
+
+                          {week === "current" &&
+                            item.id_vuelo &&
+                            estadoMostrar !== "CANCELADO" && (
+                              <button
+                                className="btn-cancelar-vuelo"
+                                type="button"
+                                onClick={() => onCancelar?.(item.id_vuelo)}
+                              >
+                                Cancelar
+                              </button>
+                            )}
                         </div>
                       ) : (
                         <span className="slot-empty">—</span>

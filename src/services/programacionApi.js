@@ -3,7 +3,9 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api";
 
 function getUserHeader() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const raw = localStorage.getItem("user");
+  if (!raw) return {};
+  const user = JSON.parse(raw);
   return { "x-user": JSON.stringify(user) };
 }
 
@@ -22,9 +24,9 @@ export const getAeronavesActivas = async () => {
   return res.data;
 };
 
-export const getCalendarioProgramacion = async () => {
+export const getCalendarioProgramacion = async (week = "next") => {
   const res = await axios.get(`${API_URL}/programacion/calendario`, {
-    params: { week: "next" },
+    params: { week },
     headers: getUserHeader(),
   });
   return res.data;
@@ -52,5 +54,14 @@ export const getBloquesBloqueados = async () => {
   const res = await axios.get(`${API_URL}/programacion/bloques-bloqueados`, {
     headers: getUserHeader(),
   });
+  return res.data;
+};
+
+export const cancelarVueloProgramacion = async (id_vuelo) => {
+  const res = await axios.patch(
+    `${API_URL}/programacion/vuelos/${id_vuelo}/cancelar`,
+    {},
+    { headers: getUserHeader() }
+  );
   return res.data;
 };

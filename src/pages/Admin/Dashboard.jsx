@@ -8,6 +8,7 @@ import {
   guardarCambiosAdmin,
   publicarSemana,
   getBloquesBloqueadosAdmin as getBloquesBloqueados,
+  cancelarVueloAdmin,
 } from "../../services/adminApi";
 import "./Dashboard.css";
 
@@ -109,12 +110,40 @@ export default function AdminDashboard() {
     load();
   };
 
+  const onCancelar = async (id_vuelo) => {
+      if (!window.confirm("¿Cancelar este vuelo/clase?")) return;
+
+      try {
+        await cancelarVueloAdmin(id_vuelo);
+        alert("Vuelo cancelado");
+        load();
+      } catch (e) {
+        const msg = e.response?.data?.message || "No se pudo cancelar";
+
+        if (e.response?.status === 400) {
+          const motivo = window.prompt("Motivo de cancelación (obligatorio para cancelar con <24h):");
+          if (!motivo) return;
+
+          try {
+            await cancelarVueloAdmin(id_vuelo, motivo);
+            alert("Vuelo cancelado");
+            load();
+          } catch (e2) {
+            alert(e2.response?.data?.message || "No se pudo cancelar");
+          }
+
+          return;
+        }
+
+        alert(msg);
+      }
+    };
   return (
     <>
       <Header />
 
       <div className="admin-page">
-        <h2>Administración – Programación</h2>
+        <h2>Administración </h2>
         <p className="admin-subtitle">Gestión de horarios y publicación semanal</p>
 
         <div className="admin-tabs">
@@ -168,6 +197,7 @@ export default function AdminDashboard() {
               setDragging={setDragging}
               handleDrop={handleDrop}
               week={week}
+              onCancelar={onCancelar}
             />
           )}
         </div>

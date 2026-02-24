@@ -14,7 +14,7 @@ export default function Header() {
     <header className="header">
       <div className="header__container">
         <div className="header__logo">
-          ✈️ Escuela de Aviación
+          ✈️ CAAA
         </div>
 
         <nav className="header__nav">
