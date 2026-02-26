@@ -1,0 +1,29 @@
+.week-selector {
+  display: flex;
+  gap: 10px;
+  margin: 6px 0 14px 0;
+}
+
+.week-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #d6dbe6;
+  background: #fff;
+  color: #0a2239;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.week-btn.active {
+  background: #0a2239;
+  color: #fff;
+  border-color: #0a2239;
+}
+
+.week-btn:hover {
+  background: #f3f6fb;
+}
+
+.week-btn.active:hover {
+  background: #061727;
+}

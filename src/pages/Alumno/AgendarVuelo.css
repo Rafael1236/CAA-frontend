@@ -1,0 +1,137 @@
+.agendar-container {
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.agendar-container h2 {
+  margin: 0 0 4px 0;
+  color: #0a2239;
+}
+
+.agendar-subtitle {
+  margin-bottom: 18px;
+  color: #667;
+}
+
+.info-box {
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.05);
+}
+
+.info-label {
+  font-size: 12px;
+  color: #667;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.info-value {
+  display: block;
+  font-weight: 700;
+  font-size: 15px;
+  color: #0a2239;
+}
+
+.alerta {
+  background: #fff7ed;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.section {
+  margin-top: 18px;
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+}
+
+.section__header {
+  margin-bottom: 12px;
+}
+
+.section__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a2239;
+  margin: 0;
+}
+
+.section__hint {
+  font-size: 13px;
+  color: #667;
+  margin: 0;
+}
+
+.aeronaves-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.aeronave-card {
+  background: #f9fafb;
+  border: 1px solid #d6dae3;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.aeronave-card strong {
+  display: block;
+  font-size: 14px;
+  color: #0a2239;
+}
+
+.aeronave-card span {
+  font-size: 13px;
+  color: #667;
+}
+
+.acciones {
+  margin-top: 22px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancelar {
+  background: #e5e7eb;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar:hover {
+  background: #d1d5db;
+}
+
+.btn-guardar {
+  background: #0a2239;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-guardar:hover {
+  background: #163a5f;
+}
+
+.btn-guardar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

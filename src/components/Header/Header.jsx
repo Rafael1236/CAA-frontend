@@ -12,30 +12,34 @@ export default function Header() {
 
   return (
     <header className="header">
-      <div className="header__logo">
-        Escuela de Aviación
+      <div className="header__container">
+        <div className="header__logo">
+          ✈️ CAAA
+        </div>
+
+        <nav className="header__nav">
+          {!user && (
+            <>
+              <Link to="/" className="header__link">Inicio</Link>
+              <Link to="/login" className="btn-login">Iniciar sesión</Link>
+            </>
+          )}
+
+          {user && (
+            <div className="header__user-box">
+              <span className="header__user">
+                Hola, <strong>{user.nombre}</strong>
+              </span>
+              <button onClick={() => navigate("/perfil")} className="btn-profile">
+                Mi perfil
+              </button>
+              <button onClick={handleLogout} className="btn-logout">
+                Cerrar sesión
+              </button>
+            </div>
+          )}
+        </nav>
       </div>
-
-      <nav className="header__nav">
-        {!user && <Link to="/">Inicio</Link>}
-
-        {!user && (
-          <Link to="/login" className="btn-login">
-            Iniciar sesión
-          </Link>
-        )}
-
-        {user && (
-          <>
-            <span className="header__user">
-              Hola, {user.nombre}
-            </span>
-            <button onClick={handleLogout} className="btn-logout">
-              Cerrar sesión
-            </button>
-          </>
-        )}
-      </nav>
     </header>
   );
 }

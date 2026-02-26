@@ -1,0 +1,79 @@
+.prog-page {
+  padding: 32px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.prog-page h2 {
+  margin: 0 0 6px 0;
+  color: #0a2239;
+}
+
+.prog-subtitle {
+  margin: 0 0 18px 0;
+  color: #556;
+}
+
+/* Section tipo card */
+.prog-section {
+  background: #ffffff;
+  border: 1px solid #e7e9ee;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+}
+
+.prog-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.prog-section__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a2239;
+  margin: 0;
+}
+
+.prog-section__hint {
+  font-size: 13px;
+  color: #667;
+  margin: 0;
+}
+
+.prog-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.prog-actions button {
+  background: #ffffff;
+  border: 1px solid #d6dae3;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.prog-actions button:hover {
+  background: #f6f8fb;
+}
+
+.btn-save {
+  background: #0a2239 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-save:hover {
+  background: #163a5f !important;
+}
+
+.prog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,7 +1,7 @@
 import "./Login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { login } from "../../services/loginApi";
 
 export default function Login() {
   const [correo, setCorreo] = useState("");
@@ -12,16 +12,24 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        correo,
-        password,
-      });
+      const data = await login(correo, password);
 
-      localStorage.setItem("user", JSON.stringify(res.data));
+      const user = {
+        ...data,
+        expiresAt: Date.now() + 1000 * 60 * 30
+      };
 
-      if (res.data.rol === "Alumno") {
-        navigate("/alumno/dashboard");
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (user.must_change_password) {
+        navigate("/perfil");
+        return;
       }
+
+      if (user.rol === "ALUMNO") navigate("/alumno/dashboard");
+      else if (user.rol === "PROGRAMACION") navigate("/programacion/dashboard");
+      else if (user.rol === "ADMIN") navigate("/admin/dashboard");
+
     } catch {
       alert("Credenciales incorrectas");
     }

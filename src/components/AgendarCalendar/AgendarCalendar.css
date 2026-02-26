@@ -1,0 +1,37 @@
+.slot-btn {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+.slot-btn:hover {
+  background: #f1f5f9;
+}
+
+.slot-btn.selected {
+  background: #1f4b8f;
+  color: white;
+}
+
+.slot-btn.ocupado {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.slot-btn:disabled {
+  cursor: not-allowed;
+}
+
+.slot-almuerzo {
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 600;
+  text-align: center;
+  font-size: 13px;
+  cursor: not-allowed;
+}
