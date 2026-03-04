@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../../services/loginApi";
 
 export default function Login() {
-  const [correo, setCorreo] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
@@ -12,16 +12,16 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const data = await login(correo, password);
+      const data = await login(username, password);
 
       const user = {
         ...data,
-        expiresAt: Date.now() + 1000 * 60 * 30
+        expiresAt: Date.now() + 10 * 60 * 1000,
       };
 
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user.must_change_password) {
+      if (user.must_change_password || user.must_set_email) {
         navigate("/perfil");
         return;
       }
@@ -29,7 +29,6 @@ export default function Login() {
       if (user.rol === "ALUMNO") navigate("/alumno/dashboard");
       else if (user.rol === "PROGRAMACION") navigate("/programacion/dashboard");
       else if (user.rol === "ADMIN") navigate("/admin/dashboard");
-
     } catch {
       alert("Credenciales incorrectas");
     }
@@ -41,10 +40,11 @@ export default function Login() {
         <h2>Iniciar sesión</h2>
 
         <input
-          type="email"
-          placeholder="Correo"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
+          type="text"
+          placeholder="Usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          autoComplete="username"
         />
 
         <input
@@ -52,6 +52,7 @@ export default function Login() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
         />
 
         <button type="submit">Ingresar</button>
