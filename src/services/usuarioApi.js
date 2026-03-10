@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/usuario";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function getUserHeader() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -8,7 +8,7 @@ function getUserHeader() {
 }
 
 export const getPerfil = async () => {
-  const res = await axios.get(`${API_URL}/perfil`, {
+  const res = await axios.get(`${API_URL}/usuario/perfil`, {
     headers: getUserHeader()
   });
   return res.data;
@@ -16,7 +16,7 @@ export const getPerfil = async () => {
 
 export const cambiarPassword = async (nuevaPassword) => {
   const res = await axios.put(
-    `${API_URL}/cambiar-password`,
+    `${API_URL}/usuario/cambiar-password`,
     { nuevaPassword },
     { headers: getUserHeader() }
   );
@@ -25,7 +25,7 @@ export const cambiarPassword = async (nuevaPassword) => {
 
 export const cambiarCorreo = async (nuevoCorreo) => {
   const res = await axios.put(
-    `${API_URL}/cambiar-correo`,
+    `${API_URL}/usuario/cambiar-correo`,
     { nuevoCorreo },
     { headers: getUserHeader() }
   );

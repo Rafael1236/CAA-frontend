@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/admin";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function getUserHeader() {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -8,7 +8,7 @@ function getUserHeader() {
 }
 
 export const getCalendarioAdmin = async (week = "next") => {
-  const res = await axios.get(`${API_URL}/calendario`, {
+  const res = await axios.get(`${API_URL}/admin/calendario`, {
     params: { week },
     headers: getUserHeader(),
   });
@@ -17,7 +17,7 @@ export const getCalendarioAdmin = async (week = "next") => {
 
 export const guardarCambiosAdmin = async (moves) => {
   const res = await axios.put(
-    `${API_URL}/guardar-cambios`,
+    `${API_URL}/admin/guardar-cambios`,
     { moves },
     { headers: getUserHeader() }
   );
@@ -26,7 +26,7 @@ export const guardarCambiosAdmin = async (moves) => {
 
 export const publicarSemana = async () => {
   const res = await axios.post(
-    `${API_URL}/publicar-semana`,
+    `${API_URL}/admin/publicar-semana`,
     {},
     { headers: getUserHeader() }
   );
@@ -34,7 +34,7 @@ export const publicarSemana = async () => {
 };
 
 export const getAeronavesActivasAdmin = async () => {
-  const res = await axios.get(`${API_URL}/aeronaves`, {
+  const res = await axios.get(`${API_URL}/admin/aeronaves`, {
     headers: getUserHeader(),
   });
   return res.data;
@@ -42,14 +42,14 @@ export const getAeronavesActivasAdmin = async () => {
 
 export const getBloquesHorario = async () => {
   const res = await axios.get(
-    `${API_URL}/bloques-horario`,
+    `${API_URL}/admin/bloques-horario`,
     { headers: getUserHeader() }
   );
   return res.data;
 };
 
 export const getBloquesBloqueadosAdmin = async () => {
-  const res = await axios.get(`${API_URL}/bloques-bloqueados`, {
+  const res = await axios.get(`${API_URL}/admin/bloques-bloqueados`, {
     headers: getUserHeader(),
   });
   return res.data;
