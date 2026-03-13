@@ -13,15 +13,19 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header__container">
-        <div className="header__logo">
-          ✈️ CAAA
-        </div>
+
+        <Link to="/" className="header__logo">
+          <span className="header__logo-icon">✈</span>
+          CAAA
+        </Link>
 
         <nav className="header__nav">
           {!user && (
             <>
               <Link to="/" className="header__link">Inicio</Link>
-              <Link to="/login" className="btn-login">Iniciar sesión</Link>
+              <Link to="/#nosotros" className="header__link">Nosotros</Link>
+              <Link to="/programacion" className="header__link">Programación</Link>
+              <Link to="/login" className="header__btn-login">Iniciar sesión</Link>
             </>
           )}
 
@@ -30,15 +34,19 @@ export default function Header() {
               <span className="header__user">
                 Hola, <strong>{user.nombre}</strong>
               </span>
-              <button onClick={() => navigate("/perfil")} className="btn-profile">
+              <button
+                onClick={() => navigate("/perfil")}
+                className="header__btn-profile"
+              >
                 Mi perfil
               </button>
-              <button onClick={handleLogout} className="btn-logout">
+              <button onClick={handleLogout} className="header__btn-logout">
                 Cerrar sesión
               </button>
             </div>
           )}
         </nav>
+
       </div>
     </header>
   );

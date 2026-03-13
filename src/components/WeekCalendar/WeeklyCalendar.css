@@ -1,92 +1,172 @@
+/* ── WRAPPER ── */
 .calendar-wrapper {
   overflow: auto;
-  max-height: 600px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  max-height: 620px;
+  background: #0A0E1A;
+  scrollbar-width: thin;
+  scrollbar-color: #243350 transparent;
+}
+.calendar-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
+.calendar-wrapper::-webkit-scrollbar-track { background: transparent; }
+.calendar-wrapper::-webkit-scrollbar-thumb { background: #243350; border-radius: 3px; }
+
+.calendar-wrapper > p {
+  padding: 20px 22px;
+  color: #7B8DAB;
+  font-size: 0.85rem;
+  font-family: 'Outfit', sans-serif;
 }
 
+/* ── TABLE ── */
 .calendar {
   border-collapse: collapse;
-  min-width: 1200px;
+  min-width: 1100px;
   width: 100%;
   table-layout: fixed;
-  background: #fff;
+  background: #0A0E1A;
+  font-family: 'Outfit', sans-serif;
 }
 
+/* ── HEAD ── */
 .calendar thead th {
-  background: #1f4b8f;
-  color: #fff;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 10px 6px;
-  border: 1px solid #1a3f78;
+  background: #0f1929;
+  color: #E8EDF5;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 8px;
+  border: 1px solid #1A2840;
   position: sticky;
   top: 0;
   z-index: 5;
+  white-space: nowrap;
 }
 
+/* ── CELLS (base) ── */
 .calendar td {
-  border: 1px solid #ccc;
-  padding: 6px;
+  border: 1px solid #111a2b;
+  padding: 6px 8px;
   text-align: center;
-  font-size: 13px;
-  height: 42px;
+  font-size: 0.8rem;
+  height: 44px;
+  vertical-align: middle;
+  color: #E8EDF5;
 }
 
+/* ── HORA column ── */
 .hora-cell {
-  background: #f2f2f2;
-  font-weight: bold;
+  background: #060912;          /* más oscuro que el body para contrastar */
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #00C9A7;
   text-align: center;
   vertical-align: middle;
-  width: 110px;
+  width: 100px;
+  border-right: 2px solid #00C9A7 !important;   /* borde teal visible */
+  letter-spacing: 0.04em;
 }
 
+/* ── AERONAVE column ── */
 .aeronave-cell {
-  background: #fafafa;
-  font-weight: bold;
-  width: 120px;
-}
-
-.slot-cell {
-  min-width: 130px;
-}
-
-.blk {
-  color: #999;
-  font-style: italic;
-}
-
-.ocupado {
-  display: inline-block;
-  background: #0a2239;
-  color: white;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 12px;
+  background: #0d1624;
+  font-family: 'Exo 2', sans-serif;
   font-weight: 600;
-}
-.btn-cancelar-vuelo {
-  margin-top: 6px;
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  font-size: 11px;
-  border-radius: 4px;
-  cursor: pointer;
+  font-size: 0.76rem;
+  color: #a8bcd4;
+  letter-spacing: 0.04em;
+  width: 110px;
+  border-right: 2px solid #1A2840 !important;
 }
 
-.btn-cancelar-vuelo:hover {
-  background: #b91c1c;
+/* ── SLOT cells ── */
+.slot-cell {
+  min-width: 120px;
+  background: #080c15;
+}
+.slot-cell:hover { background: #0c1220; }
+
+/* Blocked slot */
+.slot-almuerzo {
+  background: repeating-linear-gradient(
+    45deg,
+    #080c15,
+    #080c15 5px,
+    #0d1220 5px,
+    #0d1220 10px
+  );
 }
 
-.estado-CANCELADO {
-  opacity: 0.6;
-  text-decoration: line-through;
+/* Empty dot */
+.blk {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #1c2e47;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+/* ── FLIGHT CHIP ── */
+.ocupado {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 201, 167, 0.12);
+  border: 1px solid rgba(0, 201, 167, 0.3);
+  color: #00C9A7;
 }
 
 .estado-PUBLICADO {
-  background: #e0f2fe !important;
-  border-left: 4px solid #0284c7 !important;
-  color: #0f172a !important;
+  background: rgba(2, 132, 199, 0.12) !important;
+  border: 1px solid rgba(2, 132, 199, 0.35) !important;
+  color: #38bdf8 !important;
+}
+.estado-CANCELADO {
+  background: rgba(255, 76, 76, 0.08) !important;
+  border: 1px solid rgba(255, 76, 76, 0.25) !important;
+  color: #FF4C4C !important;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+.estado-PENDIENTE {
+  background: rgba(245, 166, 35, 0.1) !important;
+  border: 1px solid rgba(245, 166, 35, 0.3) !important;
+  color: #F5A623 !important;
+}
+
+/* Cancel button */
+.btn-cancelar-vuelo {
+  background: rgba(255, 76, 76, 0.12);
+  color: #FF4C4C;
+  border: 1px solid rgba(255, 76, 76, 0.3);
+  padding: 3px 8px;
+  font-size: 0.65rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  border-radius: 5px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-cancelar-vuelo:hover {
+  background: rgba(255, 76, 76, 0.25);
+  border-color: #FF4C4C;
+}
+.aeronave-extra-note {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #19d3b4;
+  opacity: 0.9;
 }

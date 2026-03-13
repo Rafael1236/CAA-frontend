@@ -1,126 +1,193 @@
+/* ── WRAPPER ── */
 .calendar-wrapper {
   overflow: auto;
-  max-height: 600px;
-  border: 1px solid #e7e9ee;
-  border-radius: 10px;
+  max-height: 640px;
+  background: #0A0E1A;
+  scrollbar-width: thin;
+  scrollbar-color: #243350 transparent;
 }
+.calendar-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
+.calendar-wrapper::-webkit-scrollbar-track { background: transparent; }
+.calendar-wrapper::-webkit-scrollbar-thumb { background: #243350; border-radius: 3px; }
 
+/* ── TABLE ── */
 .calendar {
   border-collapse: collapse;
-  min-width: 1200px;
+  min-width: 1100px;
   width: 100%;
   table-layout: fixed;
-  background: #fff;
+  background: #0A0E1A;
+  font-family: 'Outfit', sans-serif;
 }
 
+/* ── HEAD ── */
 .calendar thead th {
-  background: #1f4b8f;
-  color: #fff;
+  background: #0f1929;
+  color: #E8EDF5;
   font-weight: 700;
-  font-size: 13px;
-  padding: 10px 6px;
-  border: 1px solid #1a3f78;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 8px;
+  border: 1px solid #1A2840;
   position: sticky;
   top: 0;
+  z-index: 5;
+  white-space: nowrap;
 }
 
+/* ── BASE CELLS ── */
 .calendar td {
-  border: 1px solid #e1e6ef;
-  padding: 6px;
+  border: 1px solid #111a2b;
+  padding: 5px 6px;
   text-align: center;
-  height: 50px;
+  font-size: 0.8rem;
+  height: 52px;
+  vertical-align: middle;
+  color: #E8EDF5;
 }
 
+/* ── HORA column — máximo contraste ── */
 .hora-cell {
-  background: #f6f8fb;
-  font-weight: 800;
-  color: #0a2239;
-  width: 110px;
+  background: #060912;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #00C9A7;
+  text-align: center;
+  vertical-align: middle;
+  width: 90px;
+  white-space: nowrap;
+  border-right: 2px solid #00C9A7 !important;
+  letter-spacing: 0.04em;
 }
 
+/* ── AERONAVE column ── */
 .aeronave-cell {
-  background: #fbfcfe;
-  font-weight: 800;
-  width: 120px;
+  background: #0d1624;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.74rem;
+  color: #a8bcd4;
+  letter-spacing: 0.04em;
+  width: 100px;
+  border-right: 2px solid #1A2840 !important;
 }
 
+/* ── SLOT cells ── */
 .slot-cell {
-  min-width: 130px;
-  transition: background 0.12s ease;
+  min-width: 120px;
+  background: #080c15;
+  transition: background 0.15s;
 }
+.slot-cell:not(.disabled):hover { background: #0c1220; }
 
-.slot-cell:hover {
-  background: #f1f5f9;
+/* Disabled slot */
+.slot-cell.disabled {
+  background: #080c15;
+  cursor: not-allowed;
 }
-
-.slot-empty {
-  color: #9aa3af;
-}
-
-.slot-almuerzo {
-  background: #e5e7eb;
-  font-weight: 800;
+.slot-cell.disabled .slot-card {
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
+/* Blocked / lunch slot */
+.slot-almuerzo {
+  background: repeating-linear-gradient(
+    45deg,
+    #080c15,
+    #080c15 5px,
+    #0d1220 5px,
+    #0d1220 10px
+  );
+  cursor: not-allowed;
+}
+
+/* Empty cell */
+.slot-empty {
+  color: #1c2e47;
+  font-size: 0.8rem;
+}
+
+/* ── FLIGHT CARD ── */
 .slot-card {
-  background: #ffffff;
-  border: 1px solid #d6dae3;
-  border-radius: 10px;
-  padding: 8px;
+  background: rgba(0, 201, 167, 0.08);
+  border: 1px solid rgba(0, 201, 167, 0.22);
+  border-radius: 8px;
+  padding: 6px 8px;
   text-align: left;
   cursor: grab;
-  box-shadow: 0 6px 18px rgba(10, 34, 57, 0.06);
+  transition: box-shadow 0.15s, border-color 0.15s;
 }
-
-.slot-card:active {
-  cursor: grabbing;
-}
-
-.slot-card strong {
-  display: block;
-  font-size: 13px;
+.slot-card:active { cursor: grabbing; }
+.slot-card:hover {
+  border-color: rgba(0, 201, 167, 0.45);
+  box-shadow: 0 0 10px rgba(0, 201, 167, 0.14);
 }
 
 .slot-card .alumno {
-  font-size: 12px;
-  color: #556;
-}
-
-.slot-card .instructor {
-  font-size: 0.85rem;
-  color: #555;
+  font-weight: 700;
+  font-size: 0.74rem;
+  color: #E8EDF5;
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.slot-card .instructor {
+  font-size: 0.68rem;
+  color: #7B8DAB;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
 }
 
-.badge {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: 999px;
-  background: #f6f8fb;
-  border: 1px solid #d6dae3;
-  font-weight: 800;
-}
-
+/* ── ESTADO VARIANTS ── */
 .estado-BORRADOR {
-  border-left: 5px solid #9aa3af;
+  border-left: 3px solid #7B8DAB !important;
+  background: rgba(123, 141, 171, 0.07) !important;
 }
-
 .estado-EN_REVISION {
-  border-left: 5px solid #f59e0b;
+  border-left: 3px solid #F5A623 !important;
+  background: rgba(245, 166, 35, 0.08) !important;
 }
-
-.dirty {
-  outline: 2px dashed #1f4b8f;
+.estado-PUBLICADO {
+  border-left: 3px solid #00C9A7 !important;
+  background: rgba(0, 201, 167, 0.1) !important;
 }
-
-.slot-cell.disabled {
-  background: #f8fafc;
-}
-
-.slot-cell.disabled .slot-card {
+.estado-CANCELADO {
+  border-left: 3px solid #FF4C4C !important;
+  background: rgba(255, 76, 76, 0.07) !important;
   opacity: 0.6;
-  cursor: not-allowed;
+}
+
+/* Pending move highlight */
+.dirty {
+  outline: 2px dashed #3B82F6;
+  outline-offset: 1px;
+}
+
+/* Cancel button */
+.btn-cancelar-vuelo {
+  margin-top: 5px;
+  width: 100%;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 76, 76, 0.35);
+  background: rgba(255, 76, 76, 0.08);
+  color: #FF4C4C;
+  font-weight: 700;
+  font-size: 0.62rem;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-cancelar-vuelo:hover {
+  background: rgba(255, 76, 76, 0.22);
+  border-color: #FF4C4C;
 }

@@ -1,29 +1,35 @@
 .week-selector {
   display: flex;
-  gap: 10px;
-  margin: 6px 0 14px 0;
+  gap: 8px;
 }
 
 .week-btn {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #d6dbe6;
-  background: #fff;
-  color: #0a2239;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #1E2D4A;
+  background: transparent;
+  color: #7B8DAB;
   cursor: pointer;
-  font-weight: 700;
-}
-
-.week-btn.active {
-  background: #0a2239;
-  color: #fff;
-  border-color: #0a2239;
+  font-weight: 600;
+  font-size: 0.82rem;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .week-btn:hover {
-  background: #f3f6fb;
+  border-color: #243350;
+  color: #E8EDF5;
+  background: rgba(255,255,255,0.03);
+}
+
+.week-btn.active {
+  background: rgba(0, 201, 167, 0.12);
+  border-color: #00C9A7;
+  color: #00C9A7;
 }
 
 .week-btn.active:hover {
-  background: #061727;
+  background: rgba(0, 201, 167, 0.18);
 }

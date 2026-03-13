@@ -1,12 +1,27 @@
 import "./Footer.css";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
     <footer className="footer">
-      <p>
-        © {new Date().getFullYear()} Escuela de Aviación.  
-        Todos los derechos reservados.
-      </p>
+      <div className="footer__container">
+
+        <div className="footer__logo">
+          <span className="footer__logo-icon">✈</span>
+          CAAA
+        </div>
+
+        <div className="footer__links">
+          <Link to="/" className="footer__link">Inicio</Link>
+          <Link to="/#nosotros" className="footer__link">Nosotros</Link>
+          <Link to="/programacion" className="footer__link">Programación</Link>
+        </div>
+
+        <p className="footer__copy">
+          © {new Date().getFullYear()} Centro de Adiestramiento Aéreo Académico
+        </p>
+
+      </div>
     </footer>
   );
 }

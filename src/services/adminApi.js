@@ -63,3 +63,56 @@ export const cancelarVueloAdmin = async (id_vuelo, motivo = null) => {
   );
   return res.data;
 };
+
+export const getEventosWebhookDisponibles = async () => {
+  const res = await axios.get(`${API_URL}/webhooks/eventos-disponibles`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const getWebhooks = async () => {
+  const res = await axios.get(`${API_URL}/webhooks`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const getWebhookById = async (id) => {
+  const res = await axios.get(`${API_URL}/webhooks/${id}`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const createWebhook = async (data) => {
+  const res = await axios.post(`${API_URL}/webhooks`, data, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const updateWebhook = async (id, data) => {
+  const res = await axios.put(`${API_URL}/webhooks/${id}`, data, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const updateWebhookEventos = async (id, eventos) => {
+  const res = await axios.put(
+    `${API_URL}/webhooks/${id}/eventos`,
+    { eventos },
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
+export const testWebhook = async (id) => {
+  const res = await axios.post(
+    `${API_URL}/webhooks/${id}/test`,
+    {},
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
