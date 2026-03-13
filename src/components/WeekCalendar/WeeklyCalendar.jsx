@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   getMiHorario,
   cancelarVuelo,
@@ -33,15 +33,16 @@ function formatHora12(hora24) {
 
 export default function WeeklyCalendar({ weekMode }) {
   const [bloques, setBloques] = useState([]);
-  const [aeronaves, setAeronaves] = useState([]);
+  const [aeronavesPermitidas, setAeronavesPermitidas] = useState([]);
   const [bloqueos, setBloqueos] = useState([]);
   const [calendar, setCalendar] = useState({});
   const [loading, setLoading] = useState(false);
+  const [horarioRaw, setHorarioRaw] = useState([]);
 
   const isBloqueado = (id_bloque, dia_semana) => {
     if (!Array.isArray(bloqueos)) return false;
     return bloqueos.some(
-      (x) => x.id_bloque === id_bloque && x.dia_semana === dia_semana
+      (x) => Number(x.id_bloque) === Number(id_bloque) && Number(x.dia_semana) === Number(dia_semana)
     );
   };
 
@@ -53,7 +54,7 @@ export default function WeeklyCalendar({ weekMode }) {
     ]);
 
     setBloques(Array.isArray(b) ? b : []);
-    setAeronaves(Array.isArray(a) ? a : []);
+    setAeronavesPermitidas(Array.isArray(a) ? a : []);
     setBloqueos(Array.isArray(blq) ? blq : []);
   };
 
@@ -61,9 +62,10 @@ export default function WeeklyCalendar({ weekMode }) {
     setLoading(true);
 
     const data = await getMiHorario(weekMode);
+    const safeData = Array.isArray(data) ? data : [];
     const grid = {};
 
-    (Array.isArray(data) ? data : []).forEach((item) => {
+    safeData.forEach((item) => {
       const id_bloque = item.id_bloque;
       if (!id_bloque) return;
 
@@ -80,6 +82,7 @@ export default function WeeklyCalendar({ weekMode }) {
       });
     });
 
+    setHorarioRaw(safeData);
     setCalendar(grid);
     setLoading(false);
   };
@@ -89,10 +92,32 @@ export default function WeeklyCalendar({ weekMode }) {
   }, []);
 
   useEffect(() => {
-    if (bloques.length > 0 && aeronaves.length > 0) {
+    if (bloques.length > 0) {
       loadHorario();
     }
-  }, [weekMode, bloques.length, aeronaves.length]);
+  }, [weekMode, bloques.length]);
+
+  const aeronavesVisibles = useMemo(() => {
+    const base = Array.isArray(aeronavesPermitidas) ? aeronavesPermitidas : [];
+
+    const porCodigo = new Map(
+      base.map((a) => [a.codigo, { ...a, fueraLicencia: false }])
+    );
+
+    for (const item of horarioRaw) {
+      const codigo = item.aeronave_codigo;
+      if (!codigo) continue;
+
+      if (!porCodigo.has(codigo)) {
+        porCodigo.set(codigo, {
+          codigo,
+          fueraLicencia: true,
+        });
+      }
+    }
+
+    return Array.from(porCodigo.values());
+  }, [aeronavesPermitidas, horarioRaw]);
 
   const onCancelar = async (id_vuelo) => {
     if (!window.confirm("¿Cancelar este vuelo?")) return;
@@ -123,15 +148,20 @@ export default function WeeklyCalendar({ weekMode }) {
 
         <tbody>
           {bloques.map((b) =>
-            aeronaves.map((a, idx) => (
+            aeronavesVisibles.map((a, idx) => (
               <tr key={`${b.id_bloque}-${a.codigo}`}>
                 {idx === 0 && (
-                  <td rowSpan={aeronaves.length} className="hora-cell">
+                  <td rowSpan={aeronavesVisibles.length} className="hora-cell">
                     {formatHora12(b.hora_inicio)}
                   </td>
                 )}
 
-                <td className="aeronave-cell">{a.codigo}</td>
+                <td className="aeronave-cell">
+                  {a.codigo}
+                  {a.fueraLicencia && (
+                    <div className="aeronave-extra-note">Asignada</div>
+                  )}
+                </td>
 
                 {DIAS.map((d) => {
                   if (isBloqueado(b.id_bloque, d.id)) {

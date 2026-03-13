@@ -5,17 +5,15 @@ import WeekSelector from "../../components/WeekSelector/WeekSelector";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 
-
-
 export default function AlumnoDashboard() {
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const [weekMode, setWeekMode] = useState("current");
   const navigate = useNavigate();
 
-   const handleAgendar = () => {
+  const handleAgendar = () => {
     navigate("/alumno/agendar");
   };
-  
+
   const alumnoInfo = useMemo(() => {
     return {
       licencia: "PPL",
@@ -29,52 +27,72 @@ export default function AlumnoDashboard() {
     <>
       <Header />
 
-      <div className="dashboard-container">
-        <h2>Hola, {user.nombre || "Alumno"}</h2>
-        <p className="dashboard-subtitle">
-          Aquí podés ver tu horario semanal.
-        </p>
+      <div className="dash">
 
-        <div className="cards">
-          <div className="card">
-            <div className="card__label">Licencia</div>
-            <div className="card__value">{alumnoInfo.licencia}</div>
+        {/* ── PAGE HEADER ── */}
+        <div className="dash__top">
+          <div className="dash__top-left">
+            <p className="dash__eyebrow">Panel del alumno</p>
+            <h2 className="dash__title">
+              Hola, <span className="dash__title-name">{user.nombre || "Alumno"}</span>
+            </h2>
+            <p className="dash__subtitle">Revisá y gestioná tu horario semanal de vuelos.</p>
+          </div>
+          <button className="btn-agendar" onClick={handleAgendar}>
+            <span>＋</span> Agendar clase
+          </button>
+        </div>
+
+        {/* ── STAT CARDS ── */}
+        <div className="dash__cards">
+          <div className="dash__card">
+            <span className="dash__card-icon">🪪</span>
+            <div>
+              <div className="dash__card-label">Licencia</div>
+              <div className="dash__card-value">{alumnoInfo.licencia}</div>
+            </div>
           </div>
 
-          <div className="card">
-            <div className="card__label">Instructor</div>
-            <div className="card__value">{alumnoInfo.instructor}</div>
+          <div className="dash__card">
+            <span className="dash__card-icon">🧑‍✈️</span>
+            <div>
+              <div className="dash__card-label">Instructor</div>
+              <div className="dash__card-value">{alumnoInfo.instructor}</div>
+            </div>
           </div>
 
-          <div className="card">
-            <div className="card__label">Semana</div>
-            <div className="card__value">{alumnoInfo.semanaLabel}</div>
+          <div className="dash__card">
+            <span className="dash__card-icon">📅</span>
+            <div>
+              <div className="dash__card-label">Semana</div>
+              <div className="dash__card-value">{alumnoInfo.semanaLabel}</div>
+            </div>
           </div>
 
-          <div className="card">
-            <div className="card__label">Estado</div>
-            <div className="card__value">{alumnoInfo.estadoSemana}</div>
+          <div className="dash__card">
+            <span className="dash__card-icon">🟢</span>
+            <div>
+              <div className="dash__card-label">Estado</div>
+              <div className="dash__card-value dash__card-value--status">
+                {alumnoInfo.estadoSemana}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="section">
-          <div className="section__header">
-            <div>
-              <h3 className="section__title">Horario semanal</h3>
-              <p className="section__hint">Lunes a sábado • bloques por hora</p>
+        {/* ── CALENDAR SECTION ── */}
+        <div className="dash__section">
+          <div className="dash__section-header">
+            <div className="dash__section-info">
+              <h3 className="dash__section-title">Horario semanal</h3>
+              <p className="dash__section-hint">Lunes a sábado · bloques por hora</p>
             </div>
-            
-            <div className="section__actions">
-              <button className="btn-agendar" onClick={handleAgendar}>
-                Agendar clase
-              </button>
-            </div>
-
             <WeekSelector selected={weekMode} onChange={setWeekMode} />
           </div>
 
           <WeeklyCalendar weekMode={weekMode} />
         </div>
+
       </div>
     </>
   );

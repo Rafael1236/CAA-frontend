@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import AdminCalendar from "../../components/AdminCalendar/AdminCalendar";
+import WebhookConfigModal from "../../components/WebhookConfigModal/WebhookConfigModal";
 import {
   getCalendarioAdmin,
   getAeronavesActivasAdmin,
@@ -13,16 +14,16 @@ import {
 import "./Dashboard.css";
 
 export default function AdminDashboard() {
-  const [week, setWeek] = useState("next");
-  const [bloques, setBloques] = useState([]);
-  const [aeronaves, setAeronaves] = useState([]);
-  const [items, setItems] = useState([]);
+  const [week, setWeek]                   = useState("next");
+  const [bloques, setBloques]             = useState([]);
+  const [aeronaves, setAeronaves]         = useState([]);
+  const [items, setItems]                 = useState([]);
   const [originalItems, setOriginalItems] = useState([]);
-  const [pendingMoves, setPendingMoves] = useState([]);
-  const [dragging, setDragging] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const [bloqueos, setBloqueos] = useState([]);
+  const [pendingMoves, setPendingMoves]   = useState([]);
+  const [dragging, setDragging]           = useState(null);
+  const [loading, setLoading]             = useState(true);
+  const [bloqueos, setBloqueos]           = useState([]);
+  const [showWebhookModal, setShowWebhookModal] = useState(false);
 
   const load = async (w = week) => {
     setLoading(true);
@@ -31,77 +32,208 @@ export default function AdminDashboard() {
         getBloquesHorario(),
         getAeronavesActivasAdmin(),
         getCalendarioAdmin(w),
-        getBloquesBloqueados(), 
+        getBloquesBloqueados(),
       ]);
-
       setBloques(b);
       setAeronaves(a);
       setItems(cal);
       setOriginalItems(cal);
-      setBloqueos(blq); 
+      setBloqueos(blq);
       setPendingMoves([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    load();
-  }, [week]);
+  useEffect(() => { load(); }, [week]);
 
-  const handleDrop = (target) => {
-    if (!dragging) return;
+const handleDrop = (target) => {
+  if (!dragging) return;
 
-    if (
-      dragging.id_bloque === target.id_bloque &&
-      dragging.dia_semana === target.dia_semana &&
-      dragging.id_aeronave === target.id_aeronave
-    ) {
-      setDragging(null);
-      return;
-    }
+  const origen = {
+    id_bloque: dragging.id_bloque,
+    dia_semana: dragging.dia_semana,
+    id_aeronave: dragging.id_aeronave,
+  };
 
-    const ocupado = items.some(
+  if (
+    Number(origen.id_bloque) === Number(target.id_bloque) &&
+    Number(origen.dia_semana) === Number(target.dia_semana) &&
+    Number(origen.id_aeronave) === Number(target.id_aeronave)
+  ) {
+    setDragging(null);
+    return;
+  }
+
+  const vueloArrastrado = items.find(
+    (i) => Number(i.id_detalle) === Number(dragging.id_detalle)
+  );
+
+  if (!vueloArrastrado) {
+    setDragging(null);
+    return;
+  }
+
+  const ocupado = items.find(
+    (i) =>
+      Number(i.id_bloque) === Number(target.id_bloque) &&
+      Number(i.dia_semana) === Number(target.dia_semana) &&
+      Number(i.id_aeronave) === Number(target.id_aeronave) &&
+      Number(i.id_detalle) !== Number(dragging.id_detalle)
+  );
+
+  const hayConflictoHorario = (vuelo, destino, excluirIds = []) => {
+    const conflictoAlumno = items.find(
       (i) =>
-        i.id_bloque === target.id_bloque &&
-        i.dia_semana === target.dia_semana &&
-        i.id_aeronave === target.id_aeronave &&
-        i.id_detalle !== dragging.id_detalle
+        !excluirIds.includes(Number(i.id_detalle)) &&
+        Number(i.dia_semana) === Number(destino.dia_semana) &&
+        Number(i.id_bloque) === Number(destino.id_bloque) &&
+        Number(i.id_alumno) === Number(vuelo.id_alumno)
     );
 
-    if (ocupado) {
-      alert("Ese bloque ya está ocupado");
+    if (conflictoAlumno) {
+      return "El alumno ya tiene un vuelo en ese horario";
+    }
+
+    const conflictoInstructor = items.find(
+      (i) =>
+        !excluirIds.includes(Number(i.id_detalle)) &&
+        Number(i.dia_semana) === Number(destino.dia_semana) &&
+        Number(i.id_bloque) === Number(destino.id_bloque) &&
+        Number(i.id_instructor) === Number(vuelo.id_instructor)
+    );
+
+    if (conflictoInstructor) {
+      return "El instructor ya tiene un vuelo en ese horario";
+    }
+
+    return null;
+  };
+
+  if (!ocupado) {
+    const conflicto = hayConflictoHorario(vueloArrastrado, target, [
+      Number(vueloArrastrado.id_detalle),
+    ]);
+
+    if (conflicto) {
+      alert(conflicto);
       setDragging(null);
       return;
     }
 
     setItems((prev) =>
       prev.map((i) =>
-        i.id_detalle === dragging.id_detalle ? { ...i, ...target } : i
+        Number(i.id_detalle) === Number(dragging.id_detalle)
+          ? { ...i, ...target }
+          : i
       )
     );
 
     setPendingMoves((prev) => [
-      ...prev.filter((m) => m.id_detalle !== dragging.id_detalle),
+      ...prev.filter((m) => Number(m.id_detalle) !== Number(dragging.id_detalle)),
       { id_detalle: dragging.id_detalle, ...target },
     ]);
 
     setDragging(null);
-  };
+    return;
+  }
+
+  const confirmar = window.confirm(
+    `Ese bloque ya está ocupado por ${ocupado.alumno_nombre}. ¿Querés intercambiar ambos vuelos?`
+  );
+
+  if (!confirmar) {
+    setDragging(null);
+    return;
+  }
+
+  const conflictoArrastrado = hayConflictoHorario(vueloArrastrado, target, [
+    Number(vueloArrastrado.id_detalle),
+    Number(ocupado.id_detalle),
+  ]);
+
+  if (conflictoArrastrado) {
+    alert(conflictoArrastrado);
+    setDragging(null);
+    return;
+  }
+
+  const conflictoOcupado = hayConflictoHorario(ocupado, origen, [
+    Number(vueloArrastrado.id_detalle),
+    Number(ocupado.id_detalle),
+  ]);
+
+  if (conflictoOcupado) {
+    alert(conflictoOcupado);
+    setDragging(null);
+    return;
+  }
+
+  setItems((prev) =>
+    prev.map((i) => {
+      if (Number(i.id_detalle) === Number(vueloArrastrado.id_detalle)) {
+        return { ...i, ...target };
+      }
+
+      if (Number(i.id_detalle) === Number(ocupado.id_detalle)) {
+        return {
+          ...i,
+          id_bloque: origen.id_bloque,
+          dia_semana: origen.dia_semana,
+          id_aeronave: origen.id_aeronave,
+        };
+      }
+
+      return i;
+    })
+  );
+
+  setPendingMoves((prev) => {
+    const sinAmbos = prev.filter(
+      (m) =>
+        Number(m.id_detalle) !== Number(vueloArrastrado.id_detalle) &&
+        Number(m.id_detalle) !== Number(ocupado.id_detalle)
+    );
+
+    return [
+      ...sinAmbos,
+      {
+        id_detalle: vueloArrastrado.id_detalle,
+        ...target,
+      },
+      {
+        id_detalle: ocupado.id_detalle,
+        id_bloque: origen.id_bloque,
+        dia_semana: origen.dia_semana,
+        id_aeronave: origen.id_aeronave,
+      },
+    ];
+  });
+
+  setDragging(null);
+};
 
   const deshacerCambios = () => {
     setItems(originalItems);
     setPendingMoves([]);
   };
 
-  const guardarCambios = async () => {
-    if (pendingMoves.length === 0) return;
-    if (!window.confirm("¿Guardar los cambios realizados?")) return;
+const guardarCambios = async () => {
+  if (pendingMoves.length === 0) {
+    alert("No hay cambios para guardar");
+    return;
+  }
 
-    await guardarCambiosAdmin(pendingMoves);
-    alert("Cambios guardados");
+  if (!window.confirm("¿Guardar los cambios realizados?")) return;
+
+  try {
+    const resp = await guardarCambiosAdmin(pendingMoves);
+    alert(resp.message || "Cambios guardados correctamente");
     load();
-  };
+  } catch (e) {
+    alert(e.response?.data?.message || "No se pudieron guardar los cambios");
+  }
+};
 
   const publicar = async () => {
     if (!window.confirm("¿Publicar la próxima semana?")) return;
@@ -111,82 +243,143 @@ export default function AdminDashboard() {
   };
 
   const onCancelar = async (id_vuelo) => {
-      if (!window.confirm("¿Cancelar este vuelo/clase?")) return;
-
-      try {
-        await cancelarVueloAdmin(id_vuelo);
-        alert("Vuelo cancelado");
-        load();
-      } catch (e) {
-        const msg = e.response?.data?.message || "No se pudo cancelar";
-
-        if (e.response?.status === 400) {
-          const motivo = window.prompt("Motivo de cancelación (obligatorio para cancelar con <24h):");
-          if (!motivo) return;
-
-          try {
-            await cancelarVueloAdmin(id_vuelo, motivo);
-            alert("Vuelo cancelado");
-            load();
-          } catch (e2) {
-            alert(e2.response?.data?.message || "No se pudo cancelar");
-          }
-
-          return;
+    if (!window.confirm("¿Cancelar este vuelo/clase?")) return;
+    try {
+      await cancelarVueloAdmin(id_vuelo);
+      alert("Vuelo cancelado");
+      load();
+    } catch (e) {
+      const msg = e.response?.data?.message || "No se pudo cancelar";
+      if (e.response?.status === 400) {
+        const motivo = window.prompt(
+          "Motivo de cancelación (obligatorio para cancelar con <24h):"
+        );
+        if (!motivo) return;
+        try {
+          await cancelarVueloAdmin(id_vuelo, motivo);
+          alert("Vuelo cancelado");
+          load();
+        } catch (e2) {
+          alert(e2.response?.data?.message || "No se pudo cancelar");
         }
-
-        alert(msg);
+        return;
       }
-    };
+      alert(msg);
+    }
+  };
+
+  const modeIsNext = week === "next";
+
   return (
     <>
       <Header />
 
-      <div className="admin-page">
-        <h2>Administración </h2>
-        <p className="admin-subtitle">Gestión de horarios y publicación semanal</p>
+      <div className="adm">
 
-        <div className="admin-tabs">
+        <div className="adm__top">
+          <div className="adm__top-left">
+            <p className="adm__eyebrow">Panel de administración</p>
+            <h2 className="adm__title">Gestión de horarios</h2>
+            <p className="adm__subtitle">
+              Programación y publicación semanal de vuelos
+            </p>
+          </div>
           <button
-            className={week === "current" ? "active" : ""}
+            className="adm__btn-webhook"
+            onClick={() => setShowWebhookModal(true)}
+          >
+            ⚙ Webhooks
+          </button>
+        </div>
+
+        <div className="adm__stats">
+          <div className="adm__stat">
+            <span className="adm__stat-num">{items.length}</span>
+            <span className="adm__stat-lbl">Vuelos en calendario</span>
+          </div>
+          <div className="adm__stat">
+            <span className="adm__stat-num">{aeronaves.length}</span>
+            <span className="adm__stat-lbl">Aeronaves activas</span>
+          </div>
+          <div className="adm__stat">
+            <span
+              className="adm__stat-num"
+              style={{ color: pendingMoves.length > 0 ? "var(--adm-gold)" : "var(--adm-teal)" }}
+            >
+              {pendingMoves.length}
+            </span>
+            <span className="adm__stat-lbl">Cambios pendientes</span>
+          </div>
+          <div className="adm__stat">
+            <span
+              className="adm__stat-num"
+              style={{ fontSize: "0.85rem", color: "var(--adm-text-sub)" }}
+            >
+              {modeIsNext ? "PRÓXIMA" : "ACTUAL"}
+            </span>
+            <span className="adm__stat-lbl">Semana activa</span>
+          </div>
+        </div>
+
+        <div className="adm__tabs">
+          <button
+            className={`adm__tab ${week === "current" ? "adm__tab--active" : ""}`}
             onClick={() => setWeek("current")}
           >
             Semana actual
           </button>
           <button
-            className={week === "next" ? "active" : ""}
+            className={`adm__tab ${week === "next" ? "adm__tab--active" : ""}`}
             onClick={() => setWeek("next")}
           >
             Próxima semana
           </button>
         </div>
 
-        <div className="admin-section">
-          <div className="admin-section__header">
-            <div>
-              <h3 className="admin-section__title">Horario semanal</h3>
-              <p className="admin-section__hint">
-                {week === "current" ? "Vista solo lectura" : "Editable y publicable"}
+        <div className="adm__section">
+          <div className="adm__section-header">
+            <div className="adm__section-info">
+              <h3 className="adm__section-title">Horario semanal</h3>
+              <p className="adm__section-hint">
+                {modeIsNext
+                  ? "Editable · arrastrá para reorganizar · publicable"
+                  : "Vista de solo lectura · podés cancelar vuelos individuales"}
               </p>
             </div>
 
-            {week === "next" && (
-              <div className="admin-actions">
-                <button onClick={deshacerCambios} disabled={!pendingMoves.length}>
-                  Deshacer
+            {modeIsNext && (
+              <div className="adm__actions">
+                <button
+                  className="adm__btn"
+                  onClick={deshacerCambios}
+                  disabled={!pendingMoves.length}
+                >
+                  ✕ Deshacer
                 </button>
-                <button onClick={guardarCambios} disabled={pendingMoves.length === 0}>
-                  Guardar cambios ({pendingMoves.length})
+                <button
+                  className="adm__btn"
+                  onClick={guardarCambios}
+                  disabled={pendingMoves.length === 0}
+                >
+                  ✓ Guardar ({pendingMoves.length})
                 </button>
-                <button className="btn-publish" onClick={publicar}>
-                  Publicar semana
+                <button
+                  className="adm__btn adm__btn--publish"
+                  onClick={publicar}
+                >
+                  ▲ Publicar semana
                 </button>
               </div>
             )}
           </div>
 
           {loading ? (
-            <p>Cargando…</p>
+            <div className="adm__loading">
+              <span className="adm__loading-dot" />
+              <span className="adm__loading-dot" />
+              <span className="adm__loading-dot" />
+              Cargando calendario…
+            </div>
           ) : (
             <AdminCalendar
               bloques={bloques}
@@ -201,7 +394,13 @@ export default function AdminDashboard() {
             />
           )}
         </div>
+
       </div>
+
+      <WebhookConfigModal
+        open={showWebhookModal}
+        onClose={() => setShowWebhookModal(false)}
+      />
     </>
   );
 }
