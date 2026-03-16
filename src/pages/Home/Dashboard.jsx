@@ -150,6 +150,8 @@ export default function Home() {
           </div>
         </section>
 
+
+
         {/* ── LOCATION ── */}
         <section className="home__location">
           <div className="location__inner">

@@ -1,0 +1,551 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=Outfit:wght@300;400;500;600&display=swap');
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   tokens (mirror de Home.css)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --pp-bg-deep:   #07090F;
+  --pp-bg-main:   #0A0E1A;
+  --pp-bg-card:   #0D1425;
+  --pp-teal:      #00C9A7;
+  --pp-gold:      #F5A623;
+  --pp-text:      #E8EDF5;
+  --pp-sub:       #7B8DAB;
+  --pp-border:    #1E2D4A;
+  --pp-glow:      0 0 28px rgba(0, 201, 167, 0.22);
+  --pp-font-head: 'Exo 2', sans-serif;
+  --pp-font-body: 'Outfit', sans-serif;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Layout raíz
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp {
+  min-height: 100vh;
+  background: var(--pp-bg-main);
+  font-family: var(--pp-font-body);
+  color: var(--pp-text);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HERO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__hero {
+  position: relative;
+  background: var(--pp-bg-deep);
+  border-bottom: 1px solid var(--pp-border);
+  padding: 140px 24px 96px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.pp__hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 201, 167, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 201, 167, 0.03) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+
+.pp__hero-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 60%,
+    rgba(0, 201, 167, 0.09) 0%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.pp__hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+  animation: ppFadeUp 0.6s ease both;
+}
+
+.pp__eyebrow {
+  font-family: var(--pp-font-head);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--pp-teal);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.pp__hero-title {
+  font-family: var(--pp-font-head);
+  font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--pp-text);
+  margin-bottom: 18px;
+  letter-spacing: -0.02em;
+}
+
+.pp__hero-accent {
+  color: var(--pp-teal);
+}
+
+.pp__hero-desc {
+  color: var(--pp-sub);
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MAIN section
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 52px 100px;
+}
+
+/* Section header */
+.pp__section-head {
+  text-align: center;
+  margin-bottom: 52px;
+}
+
+.pp__tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--pp-teal);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.pp__section-title {
+  font-family: var(--pp-font-head);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--pp-text);
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+
+.pp__section-sub {
+  color: var(--pp-sub);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DAY TABS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__daytabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.pp__daytab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 90px;
+  background: var(--pp-bg-card);
+  border: 1px solid var(--pp-border);
+  color: var(--pp-sub);
+  padding: 14px 12px 12px;
+  border-radius: 12px;
+  font-family: var(--pp-font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  outline: none;
+}
+
+.pp__daytab:hover {
+  border-color: rgba(0, 201, 167, 0.35);
+  color: var(--pp-text);
+}
+
+.pp__daytab--active {
+  background: rgba(0, 201, 167, 0.07);
+  border-color: var(--pp-teal);
+  color: var(--pp-text);
+  box-shadow: 0 0 18px rgba(0, 201, 167, 0.1);
+}
+
+.pp__daytab--hoy .pp__daytab-short {
+  color: var(--pp-teal);
+}
+
+.pp__daytab-short {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--pp-font-head);
+  color: inherit;
+}
+
+.pp__daytab-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+.pp__daytab-hoy-badge {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--pp-teal);
+  color: #07090F;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pp__daytab-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(30, 45, 74, 0.8);
+  color: var(--pp-sub);
+  border-radius: 999px;
+  padding: 1px 8px;
+  min-width: 22px;
+  text-align: center;
+  margin-top: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pp__daytab--active .pp__daytab-count {
+  background: rgba(0, 201, 167, 0.15);
+  color: var(--pp-teal);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PANEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__panel {
+  background: var(--pp-bg-card);
+  border: 1px solid var(--pp-border);
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 240px;
+}
+
+/* Panel header */
+.pp__panel-header {
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--pp-border);
+}
+
+.pp__panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.pp__panel-title {
+  font-family: var(--pp-font-head);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--pp-text);
+}
+
+.pp__panel-hoy {
+  color: var(--pp-teal);
+  font-weight: 600;
+}
+
+.pp__panel-sub {
+  font-size: 0.82rem;
+  color: var(--pp-sub);
+}
+
+/* Summary chips */
+.pp__summary-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pp__chip {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.pp__chip--programado {
+  background: rgba(0, 201, 167, 0.1);
+  color: var(--pp-teal);
+  border: 1px solid rgba(0, 201, 167, 0.25);
+}
+
+.pp__chip--envuelo {
+  background: rgba(245, 166, 35, 0.1);
+  color: var(--pp-gold);
+  border: 1px solid rgba(245, 166, 35, 0.25);
+}
+
+.pp__chip--completado {
+  background: rgba(123, 141, 171, 0.1);
+  color: #a8bcd4;
+  border: 1px solid rgba(123, 141, 171, 0.2);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LOADING / EMPTY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 56px 24px;
+  justify-content: center;
+  color: var(--pp-sub);
+  font-size: 0.88rem;
+}
+
+.pp__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pp-teal);
+  animation: ppDotPulse 1.2s infinite ease-in-out;
+}
+.pp__dot:nth-child(2) { animation-delay: 0.2s; }
+.pp__dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes ppDotPulse {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40%            { opacity: 1;   transform: scale(1); }
+}
+
+.pp__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 10px;
+  color: var(--pp-sub);
+  font-size: 0.92rem;
+}
+
+.pp__empty-icon {
+  font-size: 2.6rem;
+  opacity: 0.45;
+}
+
+.pp__empty-hint {
+  font-size: 0.78rem;
+  opacity: 0.6;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #1e2d4a transparent;
+}
+.pp__table-wrap::-webkit-scrollbar { height: 4px; }
+.pp__table-wrap::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 3px; }
+
+.pp__table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 720px;
+  font-family: var(--pp-font-body);
+}
+
+.pp__table thead th {
+  background: #0b1220;
+  color: var(--pp-sub);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--pp-border);
+  text-align: left;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.pp__table tbody tr {
+  border-bottom: 1px solid rgba(30, 45, 74, 0.5);
+  transition: background 0.15s;
+}
+.pp__table tbody tr:last-child { border-bottom: none; }
+.pp__table tbody tr:hover { background: rgba(0, 201, 167, 0.025); }
+
+.pp__table td {
+  padding: 15px 18px;
+  font-size: 0.87rem;
+  color: var(--pp-text);
+  vertical-align: middle;
+}
+
+/* Nro */
+.pp__td--idx {
+  color: var(--pp-sub);
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: 44px;
+  text-align: center;
+}
+
+/* Hora */
+.pp__td--hora {
+  white-space: nowrap;
+}
+.pp__hora-main {
+  font-family: var(--pp-font-head);
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--pp-teal);
+}
+.pp__hora-sep {
+  color: var(--pp-sub);
+  margin: 0 5px;
+  font-weight: 300;
+}
+.pp__hora-fin {
+  font-family: var(--pp-font-head);
+  font-size: 0.85rem;
+  color: var(--pp-sub);
+}
+
+/* Aeronave */
+.pp__td--aeronave {
+  min-width: 120px;
+}
+.pp__aeronave-codigo {
+  display: block;
+  font-family: var(--pp-font-head);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--pp-text);
+  letter-spacing: 0.04em;
+}
+.pp__aeronave-modelo {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--pp-sub);
+  margin-top: 2px;
+}
+
+/* Personas */
+.pp__td--persona {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+.pp__td--instructor {
+  opacity: 0.85;
+}
+.pp__persona-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+.pp__persona-nombre {
+  font-size: 0.87rem;
+  color: var(--pp-text);
+}
+.pp__persona-nombre--sub {
+  color: var(--pp-sub);
+  font-size: 0.84rem;
+}
+
+/* Estado badge */
+.pp__badge {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pp__badge--programado {
+  background: rgba(0, 201, 167, 0.1);
+  color: var(--pp-teal);
+  border: 1px solid rgba(0, 201, 167, 0.25);
+}
+
+.pp__badge--envuelo {
+  background: rgba(245, 166, 35, 0.12);
+  color: var(--pp-gold);
+  border: 1px solid rgba(245, 166, 35, 0.28);
+}
+
+.pp__badge--completado {
+  background: rgba(123, 141, 171, 0.1);
+  color: #a8bcd4;
+  border: 1px solid rgba(123, 141, 171, 0.2);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FOOT NOTE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pp__foot-note {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.76rem;
+  color: var(--pp-sub);
+  opacity: 0.65;
+  line-height: 1.6;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@keyframes ppFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 960px) {
+  .pp__main { padding: 64px 24px 80px; }
+  .pp__hero  { padding: 120px 24px 72px; }
+}
+
+@media (max-width: 640px) {
+  .pp__main { padding: 48px 16px 64px; }
+  .pp__daytabs { gap: 6px; }
+  .pp__daytab { min-width: 70px; padding: 12px 8px 10px; }
+  .pp__daytab-label { display: none; }
+  .pp__panel-header { padding: 16px 18px 14px; }
+  .pp__table td,
+  .pp__table th { padding: 12px 12px; }
+  .pp__panel-title-row { flex-direction: column; align-items: flex-start; }
+}

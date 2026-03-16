@@ -9,6 +9,7 @@ import ProtectedAdmin from "./components/routes/ProtectedAdmin";
 import ProtectedProgramacion from "./components/routes/ProtectedProgramacion";
 import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
 import DashboardProgramacion from "./pages/Programacion/Dashboard";
+import PaginaProgramacion from "./pages/Programacion/PaginaProgramacion";
 import DashboardAdmin from "./pages/Admin/Dashboard";
 import ForcePasswordChange from "./components/routes/ForcePasswordChange";
 import Perfil from "./pages/Perfil/Perfil";
@@ -71,6 +72,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/perfil" element={<Perfil />} />
+          <Route path="/programacion" element={<PaginaProgramacion />} />
 
           <Route
             path="/alumno/dashboard"
