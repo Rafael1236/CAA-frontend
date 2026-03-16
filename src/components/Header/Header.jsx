@@ -10,6 +10,15 @@ export default function Header() {
     navigate("/login");
   };
 
+  const getDashboardLink = () => {
+    if (!user) return "/";
+    const rol = user.rol.toUpperCase();
+    if (rol === "ADMIN") return "/admin/dashboard";
+    if (rol === "PROGRAMACION") return "/programacion/dashboard";
+    if (rol === "ALUMNO") return "/alumno/dashboard";
+    return "/";
+  };
+
   return (
     <header className="header">
       <div className="header__container">
@@ -24,7 +33,6 @@ export default function Header() {
             <>
               <Link to="/" className="header__link">Inicio</Link>
               <Link to="/#nosotros" className="header__link">Nosotros</Link>
-              <Link to="/#programacion" className="header__link">Programación</Link>
               <Link to="/login" className="header__btn-login">Iniciar sesión</Link>
             </>
           )}
@@ -34,15 +42,30 @@ export default function Header() {
               <span className="header__user">
                 Hola, <strong>{user.nombre}</strong>
               </span>
-              <button
-                onClick={() => navigate("/perfil")}
-                className="header__btn-profile"
-              >
-                Mi perfil
-              </button>
-              <button onClick={handleLogout} className="header__btn-logout">
-                Cerrar sesión
-              </button>
+
+              <div className="header__user-actions">
+                <Link to={getDashboardLink()} className="header__action-link">
+                  <span className="header__action-icon">📊</span>
+                  Dashboard
+                </Link>
+
+                {(user.rol === "ADMIN" || user.rol === "PROGRAMACION") && (
+                  <Link to="/programacion" className="header__action-link">
+                    <span className="header__action-icon">📅</span>
+                    Programación
+                  </Link>
+                )}
+
+                <Link to="/perfil" className="header__action-link">
+                  <span className="header__action-icon">👤</span>
+                  Perfil
+                </Link>
+
+                <button onClick={handleLogout} className="header__btn-logout-new">
+                  <span className="header__action-icon">🚪</span>
+                  Salir
+                </button>
+              </div>
             </div>
           )}
         </nav>
