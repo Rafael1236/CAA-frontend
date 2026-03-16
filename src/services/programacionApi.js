@@ -65,3 +65,8 @@ export const cancelarVueloProgramacion = async (id_vuelo) => {
   );
   return res.data;
 };
+
+export const getCalendarioPublico = async () => {
+  const res = await axios.get(`${API_URL}/programacion/calendario-publico`);
+  return res.data;
+};

@@ -24,7 +24,7 @@ export default function Header() {
             <>
               <Link to="/" className="header__link">Inicio</Link>
               <Link to="/#nosotros" className="header__link">Nosotros</Link>
-              <Link to="/programacion" className="header__link">Programación</Link>
+              <Link to="/#programacion" className="header__link">Programación</Link>
               <Link to="/login" className="header__btn-login">Iniciar sesión</Link>
             </>
           )}

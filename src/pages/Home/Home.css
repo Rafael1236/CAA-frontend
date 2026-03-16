@@ -388,6 +388,26 @@
   line-height: 1.7;
 }
 
+.home__schedule {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 96px 0;
+  position: relative;
+}
+.home__schedule::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 2px;
+  background: var(--teal);
+  opacity: 0.55;
+  border-radius: 0 0 4px 4px;
+}
+
 .home__location {
   background: var(--bg-card2);
   border-top: 1px solid var(--border);
