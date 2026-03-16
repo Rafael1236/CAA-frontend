@@ -90,54 +90,81 @@
 .header__user-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 24px;
 }
 
 .header__user {
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   color: #7B8DAB;
+  border-right: 1px solid #1E2D4A;
+  padding-right: 20px;
 }
 .header__user strong {
   color: #E8EDF5;
   font-weight: 600;
 }
 
-.header__btn-profile {
-  background: transparent;
-  border: 1px solid #1E2D4A;
-  color: #E8EDF5;
-  padding: 7px 16px;
-  border-radius: 7px;
-  font-size: 0.82rem;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+.header__user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.header__btn-profile:hover {
-  border-color: #00C9A7;
+
+.header__action-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7B8DAB;
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.header__action-link:hover {
+  background: rgba(0, 201, 167, 0.08);
   color: #00C9A7;
 }
 
-.header__btn-logout {
+.header__action-icon {
+  font-size: 1rem;
+}
+
+.header__btn-logout-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: transparent;
-  border: 1px solid rgba(255, 76, 76, 0.3);
+  border: 1px solid rgba(255, 76, 76, 0.2);
   color: #FF4C4C;
-  padding: 7px 16px;
-  border-radius: 7px;
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: 0.82rem;
   font-family: 'Outfit', sans-serif;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: all 0.2s ease;
 }
-.header__btn-logout:hover {
-  background: rgba(255, 76, 76, 0.08);
+
+.header__btn-logout-new:hover {
+  background: rgba(255, 76, 76, 0.1);
   border-color: #FF4C4C;
+  box-shadow: 0 0 15px rgba(255, 76, 76, 0.2);
 }
 
 /* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .header__user-box { gap: 16px; }
+  .header__user { padding-right: 12px; }
+  .header__action-link span:not(.header__action-icon) {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .header__container { padding: 0 20px; }
   .header__link { display: none; }

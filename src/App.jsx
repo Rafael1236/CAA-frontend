@@ -7,6 +7,7 @@ import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
 import ProtectedAdmin from "./components/routes/ProtectedAdmin";
 import ProtectedProgramacion from "./components/routes/ProtectedProgramacion";
+import ProtectedProgramacionPage from "./components/routes/ProtectedProgramacionPage";
 import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
 import DashboardProgramacion from "./pages/Programacion/Dashboard";
 import PaginaProgramacion from "./pages/Programacion/PaginaProgramacion";
@@ -72,7 +73,14 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/perfil" element={<Perfil />} />
-          <Route path="/programacion" element={<PaginaProgramacion />} />
+          <Route
+            path="/programacion"
+            element={
+              <ProtectedProgramacionPage>
+                <PaginaProgramacion />
+              </ProtectedProgramacionPage>
+            }
+          />
 
           <Route
             path="/alumno/dashboard"
