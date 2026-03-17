@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { getPerfil, cambiarPassword, cambiarCorreo } from "../../services/usuarioApi";
+import { getPerfil, cambiarPassword, cambiarCorreo, updatePerfilInfo } from "../../services/usuarioApi";
 import Header from "../../components/Header/Header";
 import { useNavigate } from "react-router-dom";
 import "./Perfil.css";
 
 export default function Perfil() {
   const [perfil, setPerfil] = useState(null);
+
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
+  const [infoMsg, setInfoMsg] = useState("");
 
   const [correo, setCorreo] = useState("");
   const [correoMsg, setCorreoMsg] = useState("");
@@ -23,16 +27,20 @@ export default function Perfil() {
   };
 
   const refreshPerfil = async () => {
-    const p = await getPerfil();
-    setPerfil(p);
-    setCorreo(p.correo || "");
-    return p;
+    try {
+      const p = await getPerfil();
+      setPerfil(p);
+      setNombre(p.nombre || "");
+      setApellido(p.apellido || "");
+      setCorreo(p.correo || "");
+      return p;
+    } catch (e) {
+      console.error("Error al cargar perfil:", e);
+    }
   };
 
   useEffect(() => {
-    (async () => {
-      await refreshPerfil();
-    })();
+    refreshPerfil();
   }, []);
 
   const validarPassword = (value) => {
@@ -43,26 +51,42 @@ export default function Perfil() {
     setErrors(errs);
   };
 
+  const handleGuardarInfo = async () => {
+    try {
+      setInfoMsg("");
+      const r = await updatePerfilInfo(nombre, apellido);
+      setInfoMsg(r.message);
+      
+      const p = await refreshPerfil();
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        user.nombre = p.nombre;
+        user.apellido = p.apellido;
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+    } catch (e) {
+      setInfoMsg(e.response?.data?.message || "Error al actualizar información");
+    }
+  };
+
   const handleGuardarCorreo = async () => {
     try {
       setCorreoMsg("");
       const r = await cambiarCorreo(correo);
-      setCorreoMsg(r.message || "Correo actualizado");
+      setCorreoMsg(r.message);
 
       const p = await refreshPerfil();
 
-      // ✅ actualizar localStorage: correo + flag must_set_email
       const user = JSON.parse(localStorage.getItem("user"));
       if (user) {
         user.correo = p.correo;
-        user.must_set_email = p.must_set_email; // debería quedar false
+        user.must_set_email = p.must_set_email;
         localStorage.setItem("user", JSON.stringify(user));
       }
 
-      // ✅ si ya no falta nada, mandar al dashboard
       const stillPending = p.must_change_password || p.must_set_email;
       if (!stillPending) {
-        goDashboard(p.rol);
+        setTimeout(() => goDashboard(p.rol), 1500);
       }
     } catch (e) {
       setCorreoMsg(e.response?.data?.message || "Error al actualizar correo");
@@ -72,28 +96,23 @@ export default function Perfil() {
   const handleGuardarPassword = async () => {
     try {
       setPassMsg("");
-      await cambiarPassword(password);
+      const r = await cambiarPassword(password);
+      setPassMsg(r.message);
 
-      // ✅ refrescar perfil real (para saber si aún falta correo)
       const p = await refreshPerfil();
 
-      // ✅ actualizar localStorage: flag must_change_password
       const user = JSON.parse(localStorage.getItem("user"));
       if (user) {
-        user.must_change_password = p.must_change_password; // debería quedar false
-        user.must_set_email = p.must_set_email;
-        user.correo = p.correo;
+        user.must_change_password = p.must_change_password;
         localStorage.setItem("user", JSON.stringify(user));
       }
 
       setPassword("");
       setErrors([]);
-      setPassMsg("Contraseña actualizada ✅");
 
-      // ✅ si ya no falta nada, mandar al dashboard
       const stillPending = p.must_change_password || p.must_set_email;
       if (!stillPending) {
-        goDashboard(p.rol);
+        setTimeout(() => goDashboard(p.rol), 1500);
       }
     } catch (e) {
       setPassMsg(e.response?.data?.message || "Error al cambiar contraseña");
@@ -104,7 +123,6 @@ export default function Perfil() {
 
   const requiereCambioPass = perfil.must_change_password === true;
   const requiereCorreo = perfil.must_set_email === true || !perfil.correo;
-
   const requiereAlgo = requiereCambioPass || requiereCorreo;
 
   return (
@@ -115,40 +133,61 @@ export default function Perfil() {
         <div className="perfil-card wide">
           <div className="perfil-header">
             <div>
+              <p className="perfil-sub">Gestión de cuenta</p>
               <h2>Mi perfil</h2>
-              <p className="perfil-sub">Administra tus datos y tu seguridad.</p>
+              <p className="perfil-sub">Administra tus datos personales y seguridad.</p>
             </div>
 
             {requiereAlgo && (
               <span className="perfil-badge">
-                Requiere completar perfil
+                Perfil incompleto
               </span>
             )}
           </div>
 
           <div className="perfil-grid">
             <section className="perfil-section">
-              <h3>Información</h3>
+              <h3>Información Personal</h3>
               <div className="perfil-kv">
-                <div>
-                  <span className="k">Nombre</span>
-                  <span className="v">
-                    {perfil.nombre} {perfil.apellido}
-                  </span>
+                <div className="perfil-field-group">
+                  <label className="perfil-label">Nombre</label>
+                  <input
+                    className="perfil-input"
+                    type="text"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                  />
                 </div>
-                <div>
-                  <span className="k">Rol</span>
-                  <span className="v">{perfil.rol}</span>
+                <div className="perfil-field-group">
+                  <label className="perfil-label">Apellido</label>
+                  <input
+                    className="perfil-input"
+                    type="text"
+                    value={apellido}
+                    onChange={(e) => setApellido(e.target.value)}
+                  />
                 </div>
-                <div>
-                  <span className="k">Usuario</span>
-                  <span className="v">{perfil.username}</span>
+                <div className="perfil-field-group">
+                  <label className="perfil-label">Nombre de usuario</label>
+                  <input
+                    className="perfil-input"
+                    type="text"
+                    value={perfil.username}
+                    disabled
+                    style={{ background: "#f1f5f9", cursor: "not-allowed" }}
+                  />
                 </div>
+              </div>
+              <div className="perfil-actions" style={{ marginTop: "20px" }}>
+                <button className="btn-primary" onClick={handleGuardarInfo}>
+                  Actualizar información
+                </button>
+                {infoMsg && <span className="msg">{infoMsg}</span>}
               </div>
             </section>
 
             <section className="perfil-section">
-              <h3>Correo</h3>
+              <h3>Contacto</h3>
 
               {requiereCorreo && (
                 <p className="perfil-note">
@@ -156,16 +195,18 @@ export default function Perfil() {
                 </p>
               )}
 
-              <label className="perfil-label">Correo</label>
-              <input
-                className="perfil-input"
-                type="email"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                placeholder="ejemplo@correo.com"
-              />
+              <div className="perfil-field-group">
+                <label className="perfil-label">Correo electrónico</label>
+                <input
+                  className="perfil-input"
+                  type="email"
+                  value={correo}
+                  onChange={(e) => setCorreo(e.target.value)}
+                  placeholder="ejemplo@correo.com"
+                />
+              </div>
 
-              <div className="perfil-actions">
+              <div className="perfil-actions" style={{ marginTop: "20px" }}>
                 <button className="btn-secondary" onClick={handleGuardarCorreo}>
                   Guardar correo
                 </button>
@@ -178,21 +219,23 @@ export default function Perfil() {
 
               {requiereCambioPass && (
                 <p className="perfil-note">
-                  Por seguridad, debes cambiar la contraseña para continuar usando el sistema.
+                  Por seguridad, debes cambiar la contraseña inicial.
                 </p>
               )}
 
-              <label className="perfil-label">Nueva contraseña</label>
-              <input
-                className="perfil-input"
-                type="password"
-                placeholder="Ej: Aviacion2026"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  validarPassword(e.target.value);
-                }}
-              />
+              <div className="perfil-field-group">
+                <label className="perfil-label">Nueva contraseña</label>
+                <input
+                  className="perfil-input"
+                  type="password"
+                  placeholder="Mín. 8 caracteres, 1 mayús, 1 num."
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    validarPassword(e.target.value);
+                  }}
+                />
+              </div>
 
               <ul className="password-rules">
                 {errors.length === 0 && password ? (
@@ -208,7 +251,7 @@ export default function Perfil() {
                   onClick={handleGuardarPassword}
                   disabled={errors.length > 0 || !password}
                 >
-                  Guardar contraseña
+                  Cambiar contraseña
                 </button>
                 {passMsg && <span className="msg">{passMsg}</span>}
               </div>

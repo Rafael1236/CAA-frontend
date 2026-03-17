@@ -1,33 +1,32 @@
-/* ── WRAPPER ── */
 .admin-calendar-wrapper {
   overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: #243350 transparent;
+  scrollbar-color: #cbd5e1 transparent;
 }
 .admin-calendar-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
 .admin-calendar-wrapper::-webkit-scrollbar-track { background: transparent; }
-.admin-calendar-wrapper::-webkit-scrollbar-thumb { background: #243350; border-radius: 3px; }
+.admin-calendar-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
 /* ── WEEK INDICATOR BADGE ── */
 .week-indicator {
-  margin: 0 0 0 0;
-  padding: 8px 16px;
-  font-size: 0.72rem;
+  margin: 0;
+  padding: 12px 20px;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  border-bottom: 1px solid #1A2840;
+  border-bottom: 1px solid #e2e8f0;
   font-family: 'Outfit', sans-serif;
 }
 .week-indicator.current {
-  background: rgba(245, 166, 35, 0.07);
-  color: #F5A623;
-  border-left: 3px solid #F5A623;
+  background: #fffcf0;
+  color: #b45309;
+  border-left: 4px solid #f59e0b;
 }
 .week-indicator.next {
-  background: rgba(0, 201, 167, 0.07);
-  color: #00C9A7;
-  border-left: 3px solid #00C9A7;
+  background: #f0fdfa;
+  color: #0d9488;
+  border-left: 4px solid #10b981;
 }
 
 /* ── TABLE ── */
@@ -36,20 +35,20 @@
   border-collapse: collapse;
   min-width: 900px;
   font-family: 'Outfit', sans-serif;
-  background: #0A0E1A;
+  background: #ffffff;
 }
 
 /* ── HEAD ── */
 .admin-calendar th {
-  background: #0f1929;
-  color: #E8EDF5;
+  background: #f8fafc;
+  color: #1e293b;
   font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 12px 8px;
+  padding: 16px 12px;
   text-align: center;
-  border: 1px solid #1A2840;
+  border: 1px solid #f1f5f9;
   position: sticky;
   top: 0;
   z-index: 5;
@@ -58,50 +57,51 @@
 
 /* ── BASE CELLS ── */
 .admin-calendar td {
-  border: 1px solid #111a2b;
-  padding: 5px 6px;
+  border: 1px solid #f1f5f9;
+  padding: 8px;
   text-align: center;
   vertical-align: middle;
-  font-size: 0.8rem;
-  color: #E8EDF5;
+  font-size: 0.85rem;
+  color: #1e293b;
 }
 
 /* ── HORA column — high contrast ── */
 .hora-cell {
-  background: #060912;
-  font-family: 'Exo 2', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #00C9A7;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
   text-align: center;
   vertical-align: middle;
-  width: 80px;
+  width: 90px;
   white-space: nowrap;
-  border-right: 2px solid #00C9A7 !important;
-  letter-spacing: 0.04em;
+  border-right: 3px solid #0d9488 !important;
 }
 
 /* ── AERONAVE column ── */
 .aeronave-cell {
-  background: #0d1624;
-  font-family: 'Exo 2', sans-serif;
-  font-weight: 600;
-  font-size: 0.72rem;
-  color: #a8bcd4;
-  letter-spacing: 0.04em;
-  width: 90px;
-  border-right: 2px solid #1A2840 !important;
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  width: 120px;
+  border-right: 1px solid #f1f5f9 !important;
+  text-align: left !important;
+  padding-left: 20px !important;
 }
 
 /* ── SLOT cells ── */
 .slot-cell {
-  min-width: 110px;
-  height: 56px;
-  background: #080c15;
+  min-width: 120px;
+  height: 64px;
+  background: #ffffff;
   transition: background 0.15s;
 }
 .slot-cell:not(.disabled):hover {
-  background: #0c1220;
+  background: #f8fafc;
 }
 .slot-cell.disabled {
   background: #080c15;
@@ -113,11 +113,12 @@
 .slot-almuerzo {
   background: repeating-linear-gradient(
     45deg,
-    #080c15,
-    #080c15 5px,
-    #0d1220 5px,
-    #0d1220 10px
+    #f8fafc,
+    #f8fafc 10px,
+    #f1f5f9 10px,
+    #f1f5f9 20px
   );
+  color: #94a3b8;
 }
 
 /* Empty cell */
@@ -128,57 +129,59 @@
 
 /* ── FLIGHT CARD ── */
 .slot-card {
-  background: rgba(0, 201, 167, 0.08);
-  border: 1px solid rgba(0, 201, 167, 0.25);
-  border-radius: 7px;
-  padding: 6px 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 10px;
   cursor: grab;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-align: left;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 .slot-card:active { cursor: grabbing; }
 .slot-card:hover {
-  border-color: rgba(0, 201, 167, 0.5);
-  box-shadow: 0 0 10px rgba(0, 201, 167, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-color: #cbd5e1;
 }
 
 .slot-card .alumno {
-  font-weight: 700;
-  font-size: 0.75rem;
-  color: #E8EDF5;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .slot-card .instructor {
-  font-size: 0.7rem;
-  color: #7B8DAB;
+  font-size: 0.75rem;
+  color: #64748b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-/* Estado variants */
+/* Estado variants — Light theme high contrast */
 .estado-BORRADOR {
-  border-left: 3px solid #7B8DAB !important;
-  background: rgba(123, 141, 171, 0.08) !important;
+  border-left: 4px solid #94a3b8 !important;
+  background: #f8fafc !important;
 }
 .estado-EN_REVISION {
-  border-left: 3px solid #F5A623 !important;
-  background: rgba(245, 166, 35, 0.08) !important;
+  border-left: 4px solid #f59e0b !important;
+  background: #fffcf0 !important;
 }
 .estado-PUBLICADO {
-  border-left: 3px solid #00C9A7 !important;
-  background: rgba(0, 201, 167, 0.1) !important;
+  border-left: 4px solid #10b981 !important;
+  background: #f0fdfa !important;
 }
 .estado-CANCELADO {
-  border-left: 3px solid #FF4C4C !important;
-  background: rgba(255, 76, 76, 0.07) !important;
-  opacity: 0.6;
+  border-left: 4px solid #ef4444 !important;
+  background: #fef2f2 !important;
+  opacity: 0.8;
 }
 
 /* Pending move — dashed blue outline */

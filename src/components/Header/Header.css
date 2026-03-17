@@ -6,13 +6,14 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(7, 9, 15, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid #1E2D4A;
-  height: 68px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e2e8f0;
+  height: 64px;
   display: flex;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 .header__container {
@@ -29,20 +30,31 @@
 .header__logo {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   font-family: 'Exo 2', sans-serif;
   font-weight: 800;
-  font-size: 1.15rem;
-  color: #E8EDF5;
+  font-size: 1.25rem;
+  color: #1a202c;
   text-decoration: none;
-  letter-spacing: 0.07em;
+  letter-spacing: -0.01em;
   transition: opacity 0.2s;
 }
-.header__logo:hover { opacity: 0.85; }
+.header__logo:hover { opacity: 0.8; }
+
+.header__logo-box {
+  width: 32px;
+  height: 32px;
+  background: #0d9488;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .header__logo-icon {
-  color: #00C9A7;
-  font-size: 1.2rem;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -54,15 +66,15 @@
 }
 
 .header__link {
-  color: #7B8DAB;
+  color: #4a5568;
   text-decoration: none;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.88rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
   transition: color 0.2s;
 }
-.header__link:hover { color: #E8EDF5; }
+.header__link:hover { color: #2d3748; }
 
 /* ── LOGIN BUTTON ── */
 .header__btn-login {
@@ -96,13 +108,13 @@
 .header__user {
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
-  color: #7B8DAB;
-  border-right: 1px solid #1E2D4A;
+  color: #718096;
+  border-right: 1px solid #e2e8f0;
   padding-right: 20px;
 }
 .header__user strong {
-  color: #E8EDF5;
-  font-weight: 600;
+  color: #1a202c;
+  font-weight: 700;
 }
 
 .header__user-actions {
@@ -115,19 +127,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #7B8DAB;
+  color: #4a5568;
   text-decoration: none;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
   padding: 8px 12px;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .header__action-link:hover {
-  background: rgba(0, 201, 167, 0.08);
-  color: #00C9A7;
+  background: #f7fafc;
+  color: #38b2ac;
 }
 
 .header__action-icon {
