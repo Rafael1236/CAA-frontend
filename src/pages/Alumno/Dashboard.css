@@ -1,10 +1,11 @@
 .dash {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 100px 40px 60px;
-  font-family: 'Outfit', sans-serif;
-  color: #E8EDF5;
+  padding: 84px 40px 60px;
+  font-family: 'Inter', 'Outfit', sans-serif;
+  color: #1e293b;
   min-height: 100vh;
+  background: #f8fafc;
 }
 
 .dash__top {
@@ -16,19 +17,19 @@
   flex-wrap: wrap;
 }
 .dash__eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #00C9A7;
-  letter-spacing: 0.14em;
+  color: #10b981;
+  letter-spacing: 0.1rem;
   text-transform: uppercase;
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
 }
 .dash__title {
-  font-family: 'Exo 2', sans-serif;
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 800;
-  margin: 0 0 6px 0;
-  color: #E8EDF5;
+  margin: 0 0 8px 0;
+  color: #1e293b;
 }
 .dash__title-name { color: #00C9A7; }
 .dash__subtitle {
@@ -66,68 +67,72 @@
   margin-bottom: 28px;
 }
 .dash__card {
-  background: #0D1425;
-  border: 1px solid #1E2D4A;
-  border-radius: 14px;
-  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
   display: flex;
   align-items: center;
-  gap: 14px;
-  transition: border-color 0.25s, transform 0.25s;
+  gap: 16px;
+  transition: all 0.25s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .dash__card:hover {
-  border-color: #243350;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .dash__card-icon {
   font-size: 1.5rem;
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  background: rgba(0, 201, 167, 0.08);
-  border: 1px solid rgba(0, 201, 167, 0.15);
+  width: 48px;
+  height: 48px;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #0d9488;
 }
 .dash__card-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #7B8DAB;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   margin-bottom: 4px;
 }
 .dash__card-value {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #E8EDF5;
+  color: #1e293b;
 }
 .dash__card-value--status { color: #00C9A7; }
 
 .dash__section {
-  background: #0D1425;
-  border: 1px solid #1E2D4A;
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
+
 .dash__section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 22px;
-  border-bottom: 1px solid #1E2D4A;
+  padding: 24px 28px;
+  border-bottom: 1px solid #e2e8f0;
   flex-wrap: wrap;
 }
 .dash__section-title {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #E8EDF5;
-  margin: 0 0 3px 0;
+  color: #1e293b;
+  margin: 0 0 4px 0;
 }
 .dash__section-hint {
   font-size: 0.78rem;

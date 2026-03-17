@@ -1,26 +1,24 @@
-/* ── TOKENS (local fallbacks if not on root) ── */
 :root {
-  --teal:      #00C9A7;
-  --gold:      #F5A623;
-  --text-main: #E8EDF5;
-  --text-sub:  #7B8DAB;
-  --border:    #1E2D4A;
-  --border2:   #243350;
-  --bg-card:   #0D1425;
-  --bg-deep:   #080c15;
+  --teal:      #10b981;
+  --gold:      #f59e0b;
+  --text-main: #1e293b;
+  --text-sub:  #64748b;
+  --border:    #e2e8f0;
+  --border2:   #cbd5e1;
+  --bg-card:   #ffffff;
+  --bg-deep:   #f8fafc;
 }
 
-/* ── PAGE ── */
 .prog {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 100px 40px 60px;
-  font-family: 'Outfit', sans-serif;
+  padding: 84px 40px 60px;
+  font-family: 'Inter', 'Outfit', sans-serif;
   color: var(--text-main);
   min-height: 100vh;
+  background: var(--bg-deep);
 }
 
-/* ── TOP ── */
 .prog__top {
   display: flex;
   align-items: flex-end;
@@ -53,7 +51,6 @@
   flex-shrink: 0;
 }
 
-/* ── STAT STRIP ── */
 .prog__stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -63,22 +60,23 @@
 .prog__stat {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px 20px;
-  transition: border-color 0.2s, transform 0.2s;
+  border-radius: 12px;
+  padding: 24px 28px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 .prog__stat:hover {
-  border-color: var(--border2);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .prog__stat-num {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 1.7rem;
-  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
   color: var(--teal);
   display: block;
   line-height: 1;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 .prog__stat-lbl {
   font-size: 0.74rem;
@@ -86,12 +84,12 @@
   letter-spacing: 0.03em;
 }
 
-/* ── CALENDAR SECTION ── */
 .prog__section {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
 
 .prog__section-header {
@@ -99,16 +97,16 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 22px;
+  padding: 24px 28px;
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
 }
 .prog__section-title {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-main);
-  margin: 0 0 3px 0;
+  margin: 0 0 4px 0;
 }
 .prog__section-hint {
   font-size: 0.78rem;
@@ -116,7 +114,6 @@
   margin: 0;
 }
 
-/* ── ACTION BUTTONS ── */
 .prog__actions {
   display: flex;
   gap: 8px;
@@ -125,30 +122,27 @@
 }
 
 .prog__btn {
-  background: transparent;
+  background: #fff;
   border: 1px solid var(--border);
   color: var(--text-sub);
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.82rem;
-  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
   cursor: pointer;
-  letter-spacing: 0.02em;
   transition: all 0.2s;
   white-space: nowrap;
 }
 .prog__btn:hover:not(:disabled) {
   border-color: var(--border2);
   color: var(--text-main);
-  background: rgba(255,255,255,0.03);
+  background: #f7fafc;
 }
 .prog__btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-/* Save button — teal filled */
 .prog__btn--save {
   background: var(--teal);
   color: #07090F;
@@ -166,7 +160,6 @@
   cursor: not-allowed;
 }
 
-/* ── LOADING ── */
 .prog__loading {
   display: flex;
   align-items: center;
@@ -190,7 +183,6 @@
   40%            { opacity: 1;   transform: scale(1);   }
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
   .prog__stats { grid-template-columns: repeat(2, 1fr); }
 }

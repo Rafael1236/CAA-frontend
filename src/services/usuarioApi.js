@@ -31,3 +31,12 @@ export const cambiarCorreo = async (nuevoCorreo) => {
   );
   return res.data;
 };
+
+export const updatePerfilInfo = async (username) => {
+  const res = await axios.put(
+    `${API_URL}/usuario/update-info`,
+    { username },
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};

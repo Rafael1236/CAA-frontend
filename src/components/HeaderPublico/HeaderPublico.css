@@ -1,0 +1,188 @@
+.hp {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  z-index: 1000;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.hp--scrolled {
+  height: 70px;
+  background: rgba(8, 11, 18, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hp__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hp__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.hp__logo:hover {
+  transform: scale(1.02);
+}
+
+.hp__logo-icon {
+  color: #00ffcc;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+.hp__logo-text {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.hp__nav {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.hp__menu {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+.hp__link {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 8px 0;
+}
+
+.hp__link:hover {
+  color: #fff;
+}
+
+.hp__link--active {
+  color: #00ffcc;
+}
+
+.hp__link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #00ffcc;
+  transition: width 0.3s ease;
+}
+
+.hp__link:hover::after,
+.hp__link--active::after {
+  width: 100%;
+}
+
+.hp__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hp__btn-login {
+  text-decoration: none;
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.hp__btn-login:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.hp__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hp__btn-dashboard {
+  text-decoration: none;
+  background: #00ffcc;
+  color: #080b12;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+}
+
+.hp__btn-dashboard:hover {
+  background: #00e8c0;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+}
+
+.hp__btn-logout {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hp__btn-logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 768px) {
+  .hp {
+    padding: 0 20px;
+  }
+
+  .hp__menu {
+    display: none;
+  }
+}

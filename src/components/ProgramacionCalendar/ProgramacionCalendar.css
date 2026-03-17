@@ -1,80 +1,74 @@
-/* ── WRAPPER ── */
 .calendar-wrapper {
   overflow: auto;
   max-height: 640px;
-  background: #0A0E1A;
+  background: #ffffff;
   scrollbar-width: thin;
-  scrollbar-color: #243350 transparent;
+  scrollbar-color: #cbd5e1 transparent;
 }
 .calendar-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
 .calendar-wrapper::-webkit-scrollbar-track { background: transparent; }
-.calendar-wrapper::-webkit-scrollbar-thumb { background: #243350; border-radius: 3px; }
+.calendar-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* ── TABLE ── */
 .calendar {
   border-collapse: collapse;
   min-width: 1100px;
   width: 100%;
   table-layout: fixed;
-  background: #0A0E1A;
-  font-family: 'Outfit', sans-serif;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
 }
 
-/* ── HEAD ── */
 .calendar thead th {
-  background: #0f1929;
-  color: #E8EDF5;
-  font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 12px 8px;
-  border: 1px solid #1A2840;
+  padding: 16px 12px;
+  border: 1px solid #f1f5f9;
   position: sticky;
   top: 0;
   z-index: 5;
   white-space: nowrap;
 }
 
-/* ── BASE CELLS ── */
 .calendar td {
-  border: 1px solid #111a2b;
-  padding: 5px 6px;
+  border: 1px solid #f1f5f9;
+  padding: 8px;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   height: 52px;
   vertical-align: middle;
-  color: #E8EDF5;
+  color: #1e293b;
 }
 
-/* ── HORA column — máximo contraste ── */
 .hora-cell {
-  background: #060912;
-  font-family: 'Exo 2', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #00C9A7;
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
   text-align: center;
   vertical-align: middle;
-  width: 90px;
-  white-space: nowrap;
-  border-right: 2px solid #00C9A7 !important;
-  letter-spacing: 0.04em;
-}
-
-/* ── AERONAVE column ── */
-.aeronave-cell {
-  background: #0d1624;
-  font-family: 'Exo 2', sans-serif;
-  font-weight: 600;
-  font-size: 0.74rem;
-  color: #a8bcd4;
-  letter-spacing: 0.04em;
   width: 100px;
-  border-right: 2px solid #1A2840 !important;
+  border-right: 3px solid #0d9488 !important;
+  letter-spacing: -0.01em;
 }
 
-/* ── SLOT cells ── */
+.aeronave-cell {
+  background: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  width: 110px;
+  border-right: 1px solid #f1f5f9 !important;
+  text-align: left !important;
+  padding-left: 15px !important;
+}
+
 .slot-cell {
   min-width: 120px;
   background: #080c15;
@@ -82,7 +76,6 @@
 }
 .slot-cell:not(.disabled):hover { background: #0c1220; }
 
-/* Disabled slot */
 .slot-cell.disabled {
   background: #080c15;
   cursor: not-allowed;
@@ -92,15 +85,15 @@
   cursor: not-allowed;
 }
 
-/* Blocked / lunch slot */
 .slot-almuerzo {
   background: repeating-linear-gradient(
     45deg,
-    #080c15,
-    #080c15 5px,
-    #0d1220 5px,
-    #0d1220 10px
+    #f8fafc,
+    #f8fafc 10px,
+    #f1f5f9 10px,
+    #f1f5f9 20px
   );
+  color: #94a3b8;
   cursor: not-allowed;
 }
 
@@ -110,7 +103,6 @@
   font-size: 0.8rem;
 }
 
-/* ── FLIGHT CARD ── */
 .slot-card {
   background: rgba(0, 201, 167, 0.08);
   border: 1px solid rgba(0, 201, 167, 0.22);
@@ -127,50 +119,47 @@
 }
 
 .slot-card .alumno {
-  font-weight: 700;
-  font-size: 0.74rem;
-  color: #E8EDF5;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #1e293b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .slot-card .instructor {
-  font-size: 0.68rem;
-  color: #7B8DAB;
+  font-size: 0.75rem;
+  color: #64748b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
-/* ── ESTADO VARIANTS ── */
 .estado-BORRADOR {
-  border-left: 3px solid #7B8DAB !important;
-  background: rgba(123, 141, 171, 0.07) !important;
+  border-left: 4px solid #94a3b8 !important;
+  background: #f8fafc !important;
 }
 .estado-EN_REVISION {
-  border-left: 3px solid #F5A623 !important;
-  background: rgba(245, 166, 35, 0.08) !important;
+  border-left: 4px solid #f59e0b !important;
+  background: #fffcf0 !important;
 }
 .estado-PUBLICADO {
-  border-left: 3px solid #00C9A7 !important;
-  background: rgba(0, 201, 167, 0.1) !important;
+  border-left: 4px solid #10b981 !important;
+  background: #f0fdfa !important;
 }
 .estado-CANCELADO {
-  border-left: 3px solid #FF4C4C !important;
-  background: rgba(255, 76, 76, 0.07) !important;
-  opacity: 0.6;
+  border-left: 4px solid #ef4444 !important;
+  background: #fef2f2 !important;
+  opacity: 0.8;
 }
 
-/* Pending move highlight */
 .dirty {
   outline: 2px dashed #3B82F6;
   outline-offset: 1px;
 }
 
-/* Cancel button */
 .btn-cancelar-vuelo {
   margin-top: 5px;
   width: 100%;

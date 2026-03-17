@@ -41,13 +41,11 @@ function App() {
       const user = readUser();
       if (!user) return;
 
-      // ✅ si ya expiró, cerrá sesión (no la revivás)
       if (user.expiresAt && Date.now() > user.expiresAt) {
         logout();
         return;
       }
 
-      // ✅ renovar por actividad
       user.expiresAt = Date.now() + IDLE_MS;
       localStorage.setItem("user", JSON.stringify(user));
 

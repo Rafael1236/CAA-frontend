@@ -24,7 +24,9 @@ export default function Header() {
       <div className="header__container">
 
         <Link to="/" className="header__logo">
-          <span className="header__logo-icon">✈</span>
+          <div className="header__logo-box">
+            <span className="header__logo-icon">A</span>
+          </div>
           CAAA
         </Link>
 
