@@ -25,7 +25,6 @@ export default function Home() {
 
       <main className="home">
 
-        {/* ── HERO ── */}
         <section className="home__hero">
           <div className="hero__image-bg" />
           <div className="hero__overlay" />
@@ -58,7 +57,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── LEGADO (NOSOTROS) ── */}
         <section className="home__about" id="nosotros">
           <div className="about__inner">
             <div className="about__visual">
@@ -111,7 +109,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PILLARS (POR QUÉ CAAA) ── */}
         <section className="home__pillars theme-light">
           <div className="pillars__inner">
             <div className="pillars__header">
@@ -154,7 +151,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TOOLS (HERRAMIENTAS DE PRECISIÓN) ── */}
         <section className="home__tools">
           <div className="tools__header">
             <p className="section__tag">Nuestra Flota</p>
@@ -187,7 +183,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── OPERATIONS (LOCATION) ── */}
         <section className="home__location">
           <div className="location__inner">
             <div className="location__text">
@@ -231,7 +226,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA ── */}
         <section className="home__cta-section">
           <div className="cta__overlay"></div>
           <div className="cta__content">

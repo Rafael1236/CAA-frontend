@@ -1,4 +1,3 @@
-/* ── LOCAL TOKENS ── */
 :root {
   --pf-teal:     #10b981;
   --pf-gold:     #f59e0b;
@@ -12,7 +11,6 @@
   --pf-deep:     #f8fafc;
 }
 
-/* ── CONTAINER ── */
 .perfil-container {
   min-height: 100vh;
   background: var(--pf-deep);
@@ -24,7 +22,6 @@
   color: var(--pf-text);
 }
 
-/* Loading state */
 .perfil-loading {
   text-align: center;
   margin-top: 60px;
@@ -33,7 +30,6 @@
   font-size: 0.9rem;
 }
 
-/* ── CARD ── */
 .perfil-card {
   background: var(--pf-card);
   border: 1px solid var(--pf-border);
@@ -45,7 +41,6 @@
 }
 .perfil-card.wide { max-width: 940px; }
 
-/* ── HEADER ── */
 .perfil-header {
   display: flex;
   align-items: flex-end;
@@ -69,7 +64,6 @@
   font-size: 0.88rem;
 }
 
-/* Pending badge */
 .perfil-badge {
   display: inline-flex;
   align-items: center;
@@ -89,14 +83,12 @@
   font-size: 0.8rem;
 }
 
-/* ── GRID ── */
 .perfil-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
-/* ── SECTIONS ── */
 .perfil-section {
   background: var(--pf-card);
   border: 1px solid var(--pf-border);
@@ -121,7 +113,6 @@
   margin: 0 0 20px 0;
 }
 
-/* ── KEY-VALUE INFO (Now using inputs) ── */
 .perfil-kv { display: grid; gap: 16px; }
 
 .perfil-field-group {
@@ -130,7 +121,6 @@
     gap: 6px;
 }
 
-/* ── NOTE (warning inline) ── */
 .perfil-note {
   display: flex;
   align-items: center;
@@ -145,7 +135,6 @@
   line-height: 1.5;
 }
 
-/* ── FORM ELEMENTS ── */
 .perfil-label {
   display: block;
   font-size: 0.75rem;
@@ -174,7 +163,6 @@
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* ── PASSWORD RULES ── */
 .password-rules {
   list-style: none;
   padding: 0;
@@ -197,7 +185,6 @@
 }
 .password-rules li.ok::before { content: '✓'; }
 
-/* ── ACTIONS ROW ── */
 .perfil-actions {
   display: flex;
   align-items: center;
@@ -206,7 +193,6 @@
   margin-top: 8px;
 }
 
-/* ── BUTTONS ── */
 .perfil-container .btn-primary {
   background: var(--pf-teal);
   color: #fff;
@@ -249,7 +235,6 @@
   color: var(--pf-text);
 }
 
-/* Feedback message */
 .msg {
   font-size: 0.82rem;
   color: var(--pf-teal);
@@ -265,7 +250,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 860px) {
   .perfil-grid { grid-template-columns: 1fr; }
   .perfil-section.full { grid-column: 1; }

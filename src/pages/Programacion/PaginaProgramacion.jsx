@@ -8,10 +8,9 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import "./PaginaProgramacion.css";
 
-/* ── helpers ── */
 function jsDayToDb(jsDay) {
-  if (jsDay === 0) return null; // domingo, no opera
-  return jsDay; // 1(Lun)…6(Sáb)
+  if (jsDay === 0) return null; 
+  return jsDay; 
 }
 
 const DIAS = [
@@ -58,7 +57,6 @@ export default function PaginaProgramacion() {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(false);
 
-  // Filtros
   const [filtroInstructor, setFiltroInstructor] = useState("all");
   const [filtrosAeronave, setFiltrosAeronave] = useState([]);
   const [filtrosEstado, setFiltrosEstado] = useState([]);
@@ -88,7 +86,6 @@ export default function PaginaProgramacion() {
     return Array.from(set).filter(Boolean).sort();
   }, [vuelos]);
 
-  // Usamos aeronaves de la DB para los filtros
   const aeronavesFiltro = useMemo(() => {
     return aeronavesDb.map(a => a.modelo).sort();
   }, [aeronavesDb]);
@@ -121,7 +118,6 @@ export default function PaginaProgramacion() {
   }, [vuelos, tabActivo, filtroInstructor, filtrosAeronave, filtrosEstado, diaHoy]);
 
   const exportToExcel = () => {
-    // Formato Matriz Semanal
     const headers = ["HORARIO", "AERONAVE"];
     DIAS.forEach(d => {
       headers.push(`${d.label} - Alumno`, `${d.label} - Instructor`, `${d.label} - Status`);
@@ -129,7 +125,6 @@ export default function PaginaProgramacion() {
 
     const rows = [];
     
-    // Iterar por cada bloque y aeronave para construir la matriz
     bloquesDb.forEach(bloque => {
       aeronavesDb.forEach(aero => {
         const row = [`${formatHora(bloque.hora_inicio)} - ${formatHora(bloque.hora_fin)}`, aero.codigo];
@@ -149,9 +144,6 @@ export default function PaginaProgramacion() {
           }
         });
         
-        // Solo agregar fila si tiene al menos un vuelo en la semana? 
-        // El usuario dijo "que aparezcan todos", pero para el excel tal vez mejor solo si hay algo.
-        // La imagen muestra una matriz completa. Vamos a ponerla completa.
         rows.push(row);
       });
     });

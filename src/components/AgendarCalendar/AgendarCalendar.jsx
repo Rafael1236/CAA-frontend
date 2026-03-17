@@ -99,7 +99,6 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
                 <td className="aeronave-cell">{a.codigo}</td>
 
                 {DIAS.map((d) => {
-                  // ✅ BLOQUEO por día
                   if (isBloqueado(b.id_bloque, d.id)) {
                     return <td key={d.id} className="slot-almuerzo"></td>;
                   }

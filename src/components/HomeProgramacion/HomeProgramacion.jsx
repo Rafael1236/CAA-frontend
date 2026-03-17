@@ -2,11 +2,8 @@ import { useEffect, useState } from "react";
 import { getCalendarioPublico } from "../../services/programacionApi";
 import "./HomeProgramacion.css";
 
-/* JS getDay(): 0=Dom,1=Lun,2=Mar,3=Mié,4=Jue,5=Vie,6=Sáb
-   dia_semana BD: 1=Lun…6=Sáb (domingo no opera) */
 function jsDayToDb(jsDay) {
-  // 1→1, 2→2, …, 6→6, 0(dom)→null
-  if (jsDay === 0) return null; // domingo, no opera
+  if (jsDay === 0) return null; 
   return jsDay;
 }
 
@@ -33,9 +30,8 @@ export default function HomeProgramacion() {
   const [error, setError] = useState(false);
   const [tab, setTab] = useState("today");
 
-  /* Calcular dia_semana de hoy y mañana */
   const now = new Date();
-  const jsDayHoy = now.getDay(); // 0–6
+  const jsDayHoy = now.getDay(); 
   const jsDayManana = (jsDayHoy + 1) % 7;
 
   const diaHoy = jsDayToDb(jsDayHoy);
@@ -60,7 +56,6 @@ export default function HomeProgramacion() {
 
   return (
     <div className="hprog">
-      {/* Header de la sección */}
       <div className="hprog__header">
         <p className="section__tag">Vuelos de esta semana</p>
         <h2 className="section__title">Programación de vuelos</h2>
@@ -69,7 +64,6 @@ export default function HomeProgramacion() {
         </p>
       </div>
 
-      {/* Tabs Hoy / Mañana */}
       <div className="hprog__tabs">
         <button
           className={`hprog__tab ${tab === "today" ? "hprog__tab--active" : ""}`}
@@ -87,7 +81,6 @@ export default function HomeProgramacion() {
         </button>
       </div>
 
-      {/* Contenido */}
       <div className="hprog__body">
         {loading && (
           <div className="hprog__loading">
@@ -158,7 +151,6 @@ export default function HomeProgramacion() {
         )}
       </div>
 
-      {/* Pie */}
       <p className="hprog__footer-note">
         <span>ℹ</span> Solo se muestran vuelos de la semana en curso · Aeropuerto de Ilopango
       </p>

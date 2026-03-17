@@ -26,7 +26,6 @@
   justify-content: space-between;
 }
 
-/* ── LOGO ── */
 .header__logo {
   display: flex;
   align-items: center;
@@ -39,7 +38,10 @@
   letter-spacing: -0.01em;
   transition: opacity 0.2s;
 }
-.header__logo:hover { opacity: 0.8; }
+
+.header__logo:hover {
+  opacity: 0.8;
+}
 
 .header__logo-box {
   width: 32px;
@@ -58,7 +60,6 @@
   line-height: 1;
 }
 
-/* ── NAV ── */
 .header__nav {
   display: flex;
   align-items: center;
@@ -74,9 +75,11 @@
   letter-spacing: 0.01em;
   transition: color 0.2s;
 }
-.header__link:hover { color: #2d3748; }
 
-/* ── LOGIN BUTTON ── */
+.header__link:hover {
+  color: #2d3748;
+}
+
 .header__btn-login {
   background: #00C9A7;
   color: #07090F;
@@ -93,12 +96,12 @@
   align-items: center;
   transition: background 0.2s, box-shadow 0.2s;
 }
+
 .header__btn-login:hover {
   background: #00e8c0;
   box-shadow: 0 0 20px rgba(0, 201, 167, 0.3);
 }
 
-/* ── LOGGED IN USER BOX ── */
 .header__user-box {
   display: flex;
   align-items: center;
@@ -112,6 +115,7 @@
   border-right: 1px solid #e2e8f0;
   padding-right: 20px;
 }
+
 .header__user strong {
   color: #1a202c;
   font-weight: 700;
@@ -168,18 +172,34 @@
   box-shadow: 0 0 15px rgba(255, 76, 76, 0.2);
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
-  .header__user-box { gap: 16px; }
-  .header__user { padding-right: 12px; }
+  .header__user-box {
+    gap: 16px;
+  }
+
+  .header__user {
+    padding-right: 12px;
+  }
+
   .header__action-link span:not(.header__action-icon) {
     display: none;
   }
 }
 
 @media (max-width: 768px) {
-  .header__container { padding: 0 20px; }
-  .header__link { display: none; }
-  .header__nav { gap: 12px; }
-  .header__user { display: none; }
+  .header__container {
+    padding: 0 20px;
+  }
+
+  .header__link {
+    display: none;
+  }
+
+  .header__nav {
+    gap: 12px;
+  }
+
+  .header__user {
+    display: none;
+  }
 }

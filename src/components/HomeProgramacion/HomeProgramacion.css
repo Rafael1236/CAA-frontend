@@ -1,18 +1,15 @@
-/* ── HomeProgramacion ── */
 .hprog {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 52px;
 }
 
-/* Header */
 .hprog__header {
   text-align: center;
   max-width: 580px;
   margin: 0 auto 36px;
 }
 
-/* Tabs */
 .hprog__tabs {
   display: flex;
   gap: 10px;
@@ -57,7 +54,6 @@
   flex-shrink: 0;
 }
 
-/* Body container */
 .hprog__body {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -66,7 +62,6 @@
   min-height: 200px;
 }
 
-/* Loading */
 .hprog__loading {
   display: flex;
   align-items: center;
@@ -92,7 +87,6 @@
   40%            { opacity: 1;   transform: scale(1); }
 }
 
-/* Empty state */
 .hprog__empty {
   display: flex;
   flex-direction: column;
@@ -108,7 +102,6 @@
   opacity: 0.5;
 }
 
-/* Table */
 .hprog__table-wrap {
   overflow-x: auto;
   scrollbar-width: thin;
@@ -154,7 +147,6 @@
   vertical-align: middle;
 }
 
-/* Hora cell */
 .hprog__td--hora {
   font-family: 'Exo 2', sans-serif;
   font-weight: 700;
@@ -168,7 +160,6 @@
   font-weight: 400;
 }
 
-/* Aeronave cell */
 .hprog__aeronave {
   display: block;
   font-family: 'Exo 2', sans-serif;
@@ -183,7 +174,6 @@
   margin-top: 2px;
 }
 
-/* Nombre */
 .hprog__nombre {
   font-size: 0.85rem;
   color: var(--text-main);
@@ -193,7 +183,6 @@
   font-size: 0.82rem;
 }
 
-/* Estado badge */
 .hprog__badge {
   display: inline-block;
   padding: 3px 10px;
@@ -221,7 +210,6 @@
   border: 1px solid rgba(245, 166, 35, 0.25);
 }
 
-/* Footer note */
 .hprog__footer-note {
   display: flex;
   align-items: center;
@@ -233,7 +221,6 @@
   opacity: 0.7;
 }
 
-/* Responsive */
 @media (max-width: 960px) {
   .hprog {
     padding: 0 24px;

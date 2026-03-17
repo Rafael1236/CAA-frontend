@@ -20,7 +20,6 @@
   color: var(--pp-text-main);
 }
 
-/* Hero Section */
 .pp__hero {
   position: relative;
   padding: 6rem 2rem;
@@ -87,7 +86,6 @@
   line-height: 1.6;
 }
 
-/* Container & Layout */
 .pp__container {
   max-width: 1400px;
   margin: -2rem auto 0;
@@ -128,7 +126,6 @@
   gap: 2rem;
 }
 
-/* Filters Sidebar */
 .pp__filters {
   background: white;
   border-radius: 1rem;
@@ -294,7 +291,6 @@
   box-shadow: 0 0 0 1px var(--pp-danger);
 }
 
-/* Day Tabs */
 .pp__day-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -359,7 +355,6 @@
   background: var(--pp-primary);
 }
 
-/* Flights Panel */
 .pp__flights-panel {
   background: white;
   border-radius: 1rem;
@@ -390,7 +385,6 @@
   font-weight: 700;
 }
 
-/* Flight Card */
 .pp__flight-card {
   display: grid;
   grid-template-columns: 120px 1fr 200px;

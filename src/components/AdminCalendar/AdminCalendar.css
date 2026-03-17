@@ -3,11 +3,21 @@
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
-.admin-calendar-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
-.admin-calendar-wrapper::-webkit-scrollbar-track { background: transparent; }
-.admin-calendar-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* ── WEEK INDICATOR BADGE ── */
+.admin-calendar-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.admin-calendar-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-calendar-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
 .week-indicator {
   margin: 0;
   padding: 12px 20px;
@@ -18,18 +28,19 @@
   border-bottom: 1px solid #e2e8f0;
   font-family: 'Outfit', sans-serif;
 }
+
 .week-indicator.current {
   background: #fffcf0;
   color: #b45309;
   border-left: 4px solid #f59e0b;
 }
+
 .week-indicator.next {
   background: #f0fdfa;
   color: #0d9488;
   border-left: 4px solid #10b981;
 }
 
-/* ── TABLE ── */
 .admin-calendar {
   width: 100%;
   border-collapse: collapse;
@@ -38,7 +49,6 @@
   background: #ffffff;
 }
 
-/* ── HEAD ── */
 .admin-calendar th {
   background: #f8fafc;
   color: #1e293b;
@@ -55,7 +65,6 @@
   white-space: nowrap;
 }
 
-/* ── BASE CELLS ── */
 .admin-calendar td {
   border: 1px solid #f1f5f9;
   padding: 8px;
@@ -65,7 +74,6 @@
   color: #1e293b;
 }
 
-/* ── HORA column — high contrast ── */
 .hora-cell {
   background: #ffffff;
   font-family: 'Inter', sans-serif;
@@ -79,7 +87,6 @@
   border-right: 3px solid #0d9488 !important;
 }
 
-/* ── AERONAVE column ── */
 .aeronave-cell {
   background: #f8fafc;
   font-family: 'Inter', sans-serif;
@@ -93,41 +100,37 @@
   padding-left: 20px !important;
 }
 
-/* ── SLOT cells ── */
 .slot-cell {
   min-width: 120px;
   height: 64px;
   background: #ffffff;
   transition: background 0.15s;
 }
+
 .slot-cell:not(.disabled):hover {
   background: #f8fafc;
 }
+
 .slot-cell.disabled {
   background: #080c15;
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-/* Blocked / lunch slot */
 .slot-almuerzo {
-  background: repeating-linear-gradient(
-    45deg,
-    #f8fafc,
-    #f8fafc 10px,
-    #f1f5f9 10px,
-    #f1f5f9 20px
-  );
+  background: repeating-linear-gradient(45deg,
+      #f8fafc,
+      #f8fafc 10px,
+      #f1f5f9 10px,
+      #f1f5f9 20px);
   color: #94a3b8;
 }
 
-/* Empty cell */
 .slot-empty {
   color: #1c2e47;
   font-size: 0.75rem;
 }
 
-/* ── FLIGHT CARD ── */
 .slot-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -137,12 +140,16 @@
   font-size: 0.8rem;
   text-align: left;
   transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.slot-card:active { cursor: grabbing; }
+
+.slot-card:active {
+  cursor: grabbing;
+}
+
 .slot-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   border-color: #cbd5e1;
 }
 
@@ -155,6 +162,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .slot-card .instructor {
   font-size: 0.75rem;
   color: #64748b;
@@ -165,32 +173,32 @@
   margin-top: 4px;
 }
 
-/* Estado variants — Light theme high contrast */
 .estado-BORRADOR {
   border-left: 4px solid #94a3b8 !important;
   background: #f8fafc !important;
 }
+
 .estado-EN_REVISION {
   border-left: 4px solid #f59e0b !important;
   background: #fffcf0 !important;
 }
+
 .estado-PUBLICADO {
   border-left: 4px solid #10b981 !important;
   background: #f0fdfa !important;
 }
+
 .estado-CANCELADO {
   border-left: 4px solid #ef4444 !important;
   background: #fef2f2 !important;
   opacity: 0.8;
 }
 
-/* Pending move — dashed blue outline */
 .dirty {
   outline: 2px dashed #3B82F6;
   outline-offset: 1px;
 }
 
-/* Cancel button */
 .btn-cancelar-vuelo {
   margin-top: 6px;
   width: 100%;
@@ -207,6 +215,7 @@
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
 }
+
 .btn-cancelar-vuelo:hover {
   background: rgba(255, 76, 76, 0.22);
   border-color: #FF4C4C;

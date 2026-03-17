@@ -39,7 +39,7 @@ export default function AgendarVuelo() {
 
   useEffect(() => {
     async function load() {
-      const lic  = await getMiLicencia();
+      const lic = await getMiLicencia();
       const aero = await getAeronavesPermitidas();
       const solicitud = await getMisSolicitudes("next");
 
@@ -62,7 +62,6 @@ export default function AgendarVuelo() {
 
       <div className="ag">
 
-        {/* ── TOP ── */}
         <div className="ag__top">
           <div>
             <p className="ag__eyebrow">Próxima semana</p>
@@ -89,7 +88,6 @@ export default function AgendarVuelo() {
           </div>
         </div>
 
-        {/* ── INFO STRIP ── */}
         <div className="ag__info-strip">
           {licencia && (
             <div className="ag__info-card">
@@ -111,7 +109,6 @@ export default function AgendarVuelo() {
           </div>
         </div>
 
-        {/* ── ALERT si bloqueado ── */}
         {bloqueado && (
           <div className="ag__alert">
             <span className="ag__alert-icon">⚠</span>
@@ -120,7 +117,6 @@ export default function AgendarVuelo() {
           </div>
         )}
 
-        {/* ── AERONAVES ── */}
         <div className="ag__section">
           <div className="ag__section-header">
             <h3 className="ag__section-title">Aeronaves permitidas</h3>
@@ -141,7 +137,6 @@ export default function AgendarVuelo() {
           </div>
         </div>
 
-        {/* ── CALENDAR ── */}
         <div className="ag__section">
           <div className="ag__section-header">
             <h3 className="ag__section-title">Seleccioná tus vuelos</h3>

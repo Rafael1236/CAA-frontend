@@ -1,13 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;800&family=Outfit:wght@300;400;500;600&family=Prata&display=swap');
 
 :root {
-  /* Brand palette */
   --brand-teal: #00ffcc;
   --brand-teal-dim: rgba(0, 255, 204, 0.1);
   --brand-teal-mid: #00b38f;
   --brand-gold: #cc9966;
 
-  /* Functional variables (Dark default) */
   --bg-section: #080b12;
   --bg-section-deep: #05070a;
   --bg-card: #0d111a;
@@ -16,8 +14,6 @@
   --text-dim: #a0aec0;
   --border-color: rgba(255, 255, 255, 0.1);
   --accent: var(--brand-teal);
-  
-  /* Legacy/Compatibility mapping */
   --bg-deep: var(--bg-section-deep);
   --bg-main: var(--bg-section);
   --bg-card2: #121620;
@@ -29,14 +25,11 @@
   --text-sub: var(--text-dim);
   --border: var(--border-color);
   --glow: 0 0 30px rgba(0, 255, 204, 0.15);
-
-  /* Fonts */
   --font-head: 'Exo 2', sans-serif;
   --font-body: 'Outfit', sans-serif;
   --font-serif: 'Prata', serif;
 }
 
-/* ── LIGHT THEME ── */
 .theme-light {
   --bg-section: #ffffff;
   --bg-section-deep: #f8fafc;
@@ -45,11 +38,10 @@
   --text-body: #334155;
   --text-dim: #64748b;
   --border-color: rgba(0, 0, 0, 0.08);
-  --accent: #00a884; /* Better contrast on light */
+  --accent: #00a884;
   --bg-card2: #f1f5f9;
 }
 
-/* Base Styles */
 .home {
   min-height: 100vh;
   background: var(--bg-section);
@@ -57,14 +49,12 @@
   color: var(--text-body);
 }
 
-/* Global Button Styles */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: var(--teal);
   color: #05070a;
-  /* Dark text on teal for high contrast */
   border: none;
   padding: 13px 30px;
   border-radius: 9px;
@@ -88,10 +78,8 @@
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.05);
-  /* Slightly visible bg */
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  /* Explicit white text */
   padding: 13px 28px;
   border-radius: 9px;
   font-weight: 500;
@@ -127,7 +115,6 @@
   border-color: #fff;
 }
 
-/* Section Basics */
 .section__tag {
   font-size: 0.72rem;
   font-weight: 700;
@@ -164,7 +151,6 @@
   color: #ffffff !important;
 }
 
-/* ── HERO ── */
 .home__hero {
   position: relative;
   min-height: 100vh;
@@ -257,7 +243,6 @@
   justify-content: center;
 }
 
-/* ── ABUT / LEGADO ── */
 .home__about {
   padding: 120px 0;
   background: var(--bg-section-deep);
@@ -322,7 +307,6 @@
   letter-spacing: 0.1em;
 }
 
-/* ── PILLARS ── */
 .home__pillars {
   background: var(--bg-section);
   padding: 120px 0;
@@ -382,7 +366,6 @@
   line-height: 1.6;
 }
 
-/* ── FLOTA ── */
 .home__tools {
   background: var(--bg-section-deep);
   padding: 120px 0;
@@ -435,11 +418,10 @@
 .tool__info h3 {
   font-family: var(--font-head);
   font-size: 1.5rem;
-  color: var(--color-white); /* Always white on image overlays */
+  color: var(--color-white);
   margin-bottom: 5px;
 }
 
-/* ── LOCATION ── */
 .home__location {
   padding: 120px 0;
   background: var(--bg-section);
@@ -492,7 +474,6 @@
   opacity: 0.6;
 }
 
-/* ── CTA ── */
 .home__cta-section {
   position: relative;
   padding: 160px 24px;
@@ -519,7 +500,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* ── MEDIA QUERIES ── */
 @media (max-width: 1024px) {
 
   .about__inner,

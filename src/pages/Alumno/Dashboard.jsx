@@ -29,7 +29,6 @@ export default function AlumnoDashboard() {
 
       <div className="dash">
 
-        {/* ── PAGE HEADER ── */}
         <div className="dash__top">
           <div className="dash__top-left">
             <p className="dash__eyebrow">Panel del alumno</p>
@@ -43,7 +42,6 @@ export default function AlumnoDashboard() {
           </button>
         </div>
 
-        {/* ── STAT CARDS ── */}
         <div className="dash__cards">
           <div className="dash__card">
             <span className="dash__card-icon">🪪</span>
@@ -80,7 +78,6 @@ export default function AlumnoDashboard() {
           </div>
         </div>
 
-        {/* ── CALENDAR SECTION ── */}
         <div className="dash__section">
           <div className="dash__section-header">
             <div className="dash__section-info">
