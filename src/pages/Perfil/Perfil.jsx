@@ -6,15 +6,16 @@ import "./Perfil.css";
 
 export default function Perfil() {
   const [perfil, setPerfil] = useState(null);
+  const [originalData, setOriginalData] = useState(null);
 
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
+  const [username, setUsername] = useState("");
   const [infoMsg, setInfoMsg] = useState("");
 
   const [correo, setCorreo] = useState("");
   const [correoMsg, setCorreoMsg] = useState("");
 
   const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState([]);
   const [passMsg, setPassMsg] = useState("");
 
@@ -30,8 +31,9 @@ export default function Perfil() {
     try {
       const p = await getPerfil();
       setPerfil(p);
-      setNombre(p.nombre || "");
-      setApellido(p.apellido || "");
+      setOriginalData(p);
+
+      setUsername(p.username || "");
       setCorreo(p.correo || "");
       return p;
     } catch (e) {
@@ -54,18 +56,17 @@ export default function Perfil() {
   const handleGuardarInfo = async () => {
     try {
       setInfoMsg("");
-      const r = await updatePerfilInfo(nombre, apellido);
+      const r = await updatePerfilInfo(username);
       setInfoMsg(r.message);
-      
+
       const p = await refreshPerfil();
       const user = JSON.parse(localStorage.getItem("user"));
       if (user) {
-        user.nombre = p.nombre;
-        user.apellido = p.apellido;
+        user.username = p.username;
         localStorage.setItem("user", JSON.stringify(user));
       }
     } catch (e) {
-      setInfoMsg(e.response?.data?.message || "Error al actualizar información");
+      setInfoMsg(e.response?.data?.message || "Error al actualizar");
     }
   };
 
@@ -125,6 +126,11 @@ export default function Perfil() {
   const requiereCorreo = perfil.must_set_email === true || !perfil.correo;
   const requiereAlgo = requiereCambioPass || requiereCorreo;
 
+  // Botones activos solo si hay cambios y son válidos
+  const infoChanged = username !== originalData?.username && username.trim().length > 0;
+  const correoChanged = correo !== originalData?.correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+  const passReady = password.length > 0 && errors.length === 0;
+
   return (
     <>
       <Header />
@@ -154,8 +160,8 @@ export default function Perfil() {
                   <input
                     className="perfil-input"
                     type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    value={perfil.nombre}
+                    readOnly
                   />
                 </div>
                 <div className="perfil-field-group">
@@ -163,8 +169,8 @@ export default function Perfil() {
                   <input
                     className="perfil-input"
                     type="text"
-                    value={apellido}
-                    onChange={(e) => setApellido(e.target.value)}
+                    value={perfil.apellido}
+                    readOnly
                   />
                 </div>
                 <div className="perfil-field-group">
@@ -172,17 +178,20 @@ export default function Perfil() {
                   <input
                     className="perfil-input"
                     type="text"
-                    value={perfil.username}
-                    disabled
-                    style={{ background: "#f1f5f9", cursor: "not-allowed" }}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
               </div>
               <div className="perfil-actions" style={{ marginTop: "20px" }}>
-                <button className="btn-primary" onClick={handleGuardarInfo}>
-                  Actualizar información
+                <button
+                  className="btn-primary"
+                  onClick={handleGuardarInfo}
+                  disabled={!infoChanged}
+                >
+                  Actualizar nombre de usuario
                 </button>
-                {infoMsg && <span className="msg">{infoMsg}</span>}
+                {infoMsg && <span className={infoMsg.includes("✅") ? "msg" : "msg error"}>{infoMsg}</span>}
               </div>
             </section>
 
@@ -207,10 +216,14 @@ export default function Perfil() {
               </div>
 
               <div className="perfil-actions" style={{ marginTop: "20px" }}>
-                <button className="btn-secondary" onClick={handleGuardarCorreo}>
+                <button
+                  className="btn-secondary"
+                  onClick={handleGuardarCorreo}
+                  disabled={!correoChanged}
+                >
                   Guardar correo
                 </button>
-                {correoMsg && <span className="msg">{correoMsg}</span>}
+                {correoMsg && <span className={correoMsg.includes("✅") ? "msg" : "msg error"}>{correoMsg}</span>}
               </div>
             </section>
 
@@ -225,23 +238,35 @@ export default function Perfil() {
 
               <div className="perfil-field-group">
                 <label className="perfil-label">Nueva contraseña</label>
-                <input
-                  className="perfil-input"
-                  type="password"
-                  placeholder="Mín. 8 caracteres, 1 mayús, 1 num."
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    validarPassword(e.target.value);
-                  }}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    className="perfil-input"
+                    type={showPass ? "text" : "password"}
+                    placeholder="Mín. 8 caracteres, 1 mayús, 1 num."
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      validarPassword(e.target.value);
+                    }}
+                  />
+                  <button
+                    className="password-toggle-btn"
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    title={showPass ? "Ocultar" : "Mostrar"}
+                  >
+                    {showPass ? "👁️‍🗨️" : "👁️"}
+                  </button>
+                </div>
               </div>
 
               <ul className="password-rules">
-                {errors.length === 0 && password ? (
-                  <li className="ok">Contraseña válida ✅</li>
-                ) : (
-                  errors.map((e, i) => <li key={i}>{e}</li>)
+                {password && (
+                  <>
+                    <li className={password.length >= 8 ? "ok" : ""}>Mínimo 8 caracteres</li>
+                    <li className={/[A-Z]/.test(password) ? "ok" : ""}>Al menos una letra mayúscula</li>
+                    <li className={/\d/.test(password) ? "ok" : ""}>Al menos un número</li>
+                  </>
                 )}
               </ul>
 
@@ -249,11 +274,11 @@ export default function Perfil() {
                 <button
                   className="btn-primary"
                   onClick={handleGuardarPassword}
-                  disabled={errors.length > 0 || !password}
+                  disabled={!passReady}
                 >
                   Cambiar contraseña
                 </button>
-                {passMsg && <span className="msg">{passMsg}</span>}
+                {passMsg && <span className={passMsg.includes("✅") ? "msg" : "msg error"}>{passMsg}</span>}
               </div>
             </section>
           </div>
