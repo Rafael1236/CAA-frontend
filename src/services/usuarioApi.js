@@ -40,3 +40,12 @@ export const updatePerfilInfo = async (username) => {
   );
   return res.data;
 };
+
+export const updatePerfilAlumno = async ({ telefono, numero_licencia, certificado_medico }) => {
+  const res = await axios.put(
+    `${API_URL}/usuario/update-perfil-alumno`,
+    { telefono, numero_licencia, certificado_medico },
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};

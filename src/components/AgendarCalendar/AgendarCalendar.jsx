@@ -16,7 +16,7 @@ const DIAS = [
   { id: 6, label: "Sábado" },
 ];
 
-export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado }) {
+export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado, limiteVuelos = 3 }) {
   const [bloques, setBloques] = useState([]);
   const [aeronaves, setAeronaves] = useState([]);
   const [ocupadas, setOcupadas] = useState([]);
@@ -65,8 +65,8 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
       return;
     }
 
-    if (selecciones.length >= 3) {
-      alert("Máximo 3 vuelos");
+    if (selecciones.length >= limiteVuelos) {
+      alert(`Máximo ${limiteVuelos} vuelos`);
       return;
     }
 

@@ -18,12 +18,15 @@ export default function AgendarVuelo() {
   const [aeronaves, setAeronaves] = useState([]);
   const [selecciones, setSelecciones] = useState([]);
   const [estadoSolicitud, setEstadoSolicitud] = useState("BORRADOR");
+  const [limiteVuelos, setLimiteVuelos] = useState(3);
+  const [yaGuardado, setYaGuardado] = useState(false);
 
   const handleGuardar = async () => {
     if (selecciones.length === 0) return;
 
     try {
       await guardarSolicitud(selecciones);
+      setYaGuardado(true);
       alert("Solicitud guardada correctamente");
       navigate("/alumno/dashboard");
     } catch (err) {
@@ -48,13 +51,27 @@ export default function AgendarVuelo() {
 
       if (solicitud) {
         setEstadoSolicitud(solicitud.estado);
-        setSelecciones(solicitud.vuelos || []);
+        const limite = solicitud.limite_vuelos ?? 3;
+        setLimiteVuelos(limite);
+        const vuelos = solicitud.vuelos || [];
+        setSelecciones(vuelos);
+        // Si ya hay vuelos guardados y ocupan el límite, marcar como ya guardado
+        if (vuelos.length > 0 && vuelos.length >= limite) {
+          setYaGuardado(true);
+        }
       }
     }
     load();
   }, []);
 
-  const bloqueado = estadoSolicitud !== "BORRADOR";
+  const bloqueadoPorEstado = estadoSolicitud !== "BORRADOR";
+  const limiteAlcanzado = selecciones.length >= limiteVuelos;
+  // Completamente bloqueado: ya guardó y llegó al límite (a menos que admin aumente el límite)
+  const guardadoCompleto = yaGuardado && limiteAlcanzado;
+  // El calendario solo se bloquea totalmente cuando está guardado al límite o el estado no es BORRADOR
+  const calendarBloqueado = bloqueadoPorEstado || guardadoCompleto;
+  // El botón guardar se bloquea si no hay selecciones, el estado no es BORRADOR, o ya está guardado al límite
+  const saveBloqueado = bloqueadoPorEstado || selecciones.length === 0 || guardadoCompleto;
 
   return (
     <>
@@ -80,10 +97,10 @@ export default function AgendarVuelo() {
             </button>
             <button
               className="ag__btn-save"
-              disabled={bloqueado || selecciones.length === 0}
+              disabled={saveBloqueado}
               onClick={handleGuardar}
             >
-              Guardar ({selecciones.length}/3)
+              Guardar ({selecciones.length}/{limiteVuelos})
             </button>
           </div>
         </div>
@@ -98,22 +115,36 @@ export default function AgendarVuelo() {
           <div className="ag__info-card">
             <span className="ag__info-label">Seleccionados</span>
             <span className="ag__info-value ag__info-value--teal">
-              {selecciones.length} / 3
+              {selecciones.length} / {limiteVuelos}
             </span>
           </div>
           <div className="ag__info-card">
             <span className="ag__info-label">Estado solicitud</span>
-            <span className={`ag__info-value ${bloqueado ? "ag__info-value--warn" : "ag__info-value--teal"}`}>
+            <span className={`ag__info-value ${bloqueadoPorEstado || guardadoCompleto ? "ag__info-value--warn" : "ag__info-value--teal"}`}>
               {estadoSolicitud}
             </span>
           </div>
         </div>
 
-        {bloqueado && (
+        {bloqueadoPorEstado && (
           <div className="ag__alert">
             <span className="ag__alert-icon">⚠</span>
             Tu solicitud está en <strong>{estadoSolicitud}</strong> y ya no puede
             modificarse.
+          </div>
+        )}
+
+        {guardadoCompleto && !bloqueadoPorEstado && (
+          <div className="ag__alert ag__alert--info">
+            <span className="ag__alert-icon">✓</span>
+            Tu solicitud ya fue guardada ({selecciones.length}/{limiteVuelos} vuelos). Esperá a que sea revisada.
+          </div>
+        )}
+
+        {limiteAlcanzado && !guardadoCompleto && !bloqueadoPorEstado && (
+          <div className="ag__alert ag__alert--ready">
+            <span className="ag__alert-icon">→</span>
+            Seleccionaste {selecciones.length}/{limiteVuelos} vuelos. Presioná <strong>Guardar</strong> para confirmar tu solicitud.
           </div>
         )}
 
@@ -140,12 +171,13 @@ export default function AgendarVuelo() {
         <div className="ag__section">
           <div className="ag__section-header">
             <h3 className="ag__section-title">Seleccioná tus vuelos</h3>
-            <p className="ag__section-hint">Máximo 3 bloques · lunes a sábado</p>
+            <p className="ag__section-hint">Máximo {limiteVuelos} bloques · lunes a sábado</p>
           </div>
           <AgendarCalendar
             selecciones={selecciones}
             setSelecciones={setSelecciones}
-            bloqueado={bloqueado}
+            bloqueado={calendarBloqueado}
+            limiteVuelos={limiteVuelos}
           />
         </div>
 

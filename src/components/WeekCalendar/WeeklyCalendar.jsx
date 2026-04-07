@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   getMiHorario,
-  cancelarVuelo,
   getBloquesBloqueadosAlumno,
 } from "../../services/alumnoApi";
+import CancelarVueloModal from "../CancelarVueloModal/CancelarVueloModal";
 
 import {
   getBloquesHorario,
@@ -38,6 +38,8 @@ export default function WeeklyCalendar({ weekMode }) {
   const [calendar, setCalendar] = useState({});
   const [loading, setLoading] = useState(false);
   const [horarioRaw, setHorarioRaw] = useState([]);
+  const [modalVuelo, setModalVuelo] = useState(null); // { id_vuelo, fecha_hora_vuelo, tipoCancel }
+  const [horasTotales, setHorasTotales] = useState(0);
 
   const isBloqueado = (id_bloque, dia_semana) => {
     if (!Array.isArray(bloqueos)) return false;
@@ -79,11 +81,17 @@ export default function WeeklyCalendar({ weekMode }) {
       grid[id_bloque][aeronave][dia].push({
         id_vuelo: item.id_vuelo,
         estado: item.estado,
+        fecha_hora_vuelo: item.fecha_hora_vuelo,
+        aeronave_tipo: item.aeronave_tipo,
+        soleado: item.soleado,
+        instructor_nombre: item.instructor_nombre,
+        licencia_nombre: item.licencia_nombre,
       });
     });
 
     setHorarioRaw(safeData);
     setCalendar(grid);
+    setHorasTotales(safeData.length > 0 ? Number(safeData[0].horas_totales ?? 0) : 0);
     setLoading(false);
   };
 
@@ -119,20 +127,42 @@ export default function WeeklyCalendar({ weekMode }) {
     return Array.from(porCodigo.values());
   }, [aeronavesPermitidas, horarioRaw]);
 
-  const onCancelar = async (id_vuelo) => {
-    if (!window.confirm("¿Cancelar este vuelo?")) return;
+  const abrirLoadsheet = (vuelo) => {
+    const user = localStorage.getItem('user');
+    const token = encodeURIComponent(user);
+    const alumnoData = JSON.parse(user);
+    const nombreAlumno = encodeURIComponent(
+      alumnoData.nombre + ' ' + alumnoData.apellido
+    );
 
-    try {
-      await cancelarVuelo(id_vuelo);
-      alert("Vuelo cancelado correctamente");
-      await loadHorario();
-    } catch (e) {
-      alert(e.response?.data?.message || "No se pudo cancelar el vuelo");
-    }
+    const url = `http://localhost:5174?id_vuelo=${vuelo.id_vuelo}&token=${token}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(vuelo.instructor_nombre)}&licencia=${encodeURIComponent(vuelo.licencia_nombre)}`;
+
+    window.open(url, '_blank');
+  };
+
+  const abrirModal = (vuelo) => {
+    const msRestantes = new Date(vuelo.fecha_hora_vuelo) - new Date();
+    const horasRestantes = msRestantes / (1000 * 60 * 60);
+    const tipoCancel = horasRestantes > 24 ? "NORMAL" : "EMERGENCIA";
+    setModalVuelo({ ...vuelo, tipoCancel });
+  };
+
+  const handleCancelado = async () => {
+    setModalVuelo(null);
+    await loadHorario();
   };
 
   return (
     <div className="calendar-wrapper">
+      {modalVuelo && (
+        <CancelarVueloModal
+          vuelo={modalVuelo}
+          tipoCancel={modalVuelo.tipoCancel}
+          onClose={() => setModalVuelo(null)}
+          onCancelado={handleCancelado}
+        />
+      )}
+
       {loading && <p>Cargando horario…</p>}
 
       <table className="calendar">
@@ -180,15 +210,33 @@ export default function WeeklyCalendar({ weekMode }) {
                           >
                             <span>{v.estado}</span>
 
-                            {v.estado !== "CANCELADO" &&
-                              weekMode === "current" && (
+                            {v.estado === "PUBLICADO" && v.id_vuelo && v.aeronave_tipo !== "SIMULADOR" && (
+                              horasTotales >= 0 ? (
                                 <button
-                                  className="btn-cancelar-vuelo"
-                                  onClick={() => onCancelar(v.id_vuelo)}
+                                  className="btn-plan-vuelo"
+                                  onClick={() => abrirLoadsheet(v)}
                                 >
-                                  Cancelar
+                                  Plan de vuelo
                                 </button>
-                              )}
+                              ) : (
+                                <span className="plan-vuelo-bloqueado">Plan de vuelo (0+ h)</span>
+                              )
+                            )}
+
+                            {v.estado === "PUBLICADO" &&
+                              weekMode === "current" &&
+                              new Date(v.fecha_hora_vuelo) > new Date() && (() => {
+                                const ms = new Date(v.fecha_hora_vuelo) - new Date();
+                                const esEmergencia = ms / (1000 * 60 * 60) <= 24;
+                                return (
+                                  <button
+                                    className={`btn-cancelar-vuelo${esEmergencia ? " btn-cancelar-emergencia" : ""}`}
+                                    onClick={() => abrirModal(v)}
+                                  >
+                                    {esEmergencia ? "Cancelación de emergencia" : "Solicitar cancelación"}
+                                  </button>
+                                );
+                              })()}
                           </div>
                         ))
                       ) : (

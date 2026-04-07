@@ -136,6 +136,20 @@
 .ag__alert-icon { font-size: 1rem; flex-shrink: 0; }
 .ag__alert strong { color: #fbbf24; }
 
+.ag__alert--info {
+  background: rgba(16, 185, 129, 0.07);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #065f46;
+}
+.ag__alert--info strong { color: #059669; }
+
+.ag__alert--ready {
+  background: rgba(0, 201, 167, 0.08);
+  border-color: rgba(0, 201, 167, 0.35);
+  color: #0f766e;
+}
+.ag__alert--ready strong { color: #00C9A7; }
+
 .ag__section {
   background: #ffffff;
   border: 1px solid #e2e8f0;

@@ -66,6 +66,29 @@ export const cancelarVueloProgramacion = async (id_vuelo) => {
   return res.data;
 };
 
+export const getVuelosActivos = async () => {
+  const res = await axios.get(`${API_URL}/turno/vuelos-hoy`, {
+    headers: getUserHeader(),
+  });
+  // Filtrar solo vuelos con estado activo
+  const ACTIVOS = ["EN_VUELO", "SALIDA_HANGAR", "REGRESO_HANGAR"];
+  return res.data.filter((v) => ACTIVOS.includes(v.estado));
+};
+
+export const getEstadoFlota = async () => {
+  const res = await axios.get(`${API_URL}/programacion/estado-flota`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const getMantenimientoResumen = async () => {
+  const res = await axios.get(`${API_URL}/programacion/mantenimiento-resumen`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
 export const getCalendarioPublico = async () => {
   const res = await axios.get(`${API_URL}/calendario/publico`);
   return res.data;

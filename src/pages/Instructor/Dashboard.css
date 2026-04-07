@@ -1,0 +1,292 @@
+.ins {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ── Cabecera ────────────────────────────────────────────────────────────── */
+.ins__top {
+  margin-bottom: 1.5rem;
+}
+
+.ins__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #6b7280;
+  margin: 0 0 2px;
+}
+
+.ins__title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin: 0 0 2px;
+}
+
+.ins__subtitle {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+.ins__tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.ins__tab {
+  padding: 8px 18px;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.ins__tab--active {
+  color: #1e3a5f;
+  border-bottom-color: #1e3a5f;
+}
+
+.ins__tab:hover:not(.ins__tab--active) { color: #374151; }
+
+/* ── Sección ─────────────────────────────────────────────────────────────── */
+.ins__section {
+  margin-bottom: 2.5rem;
+}
+
+.ins__section--alumnos {
+  border-top: 2px solid #e5e7eb;
+  padding-top: 2rem;
+}
+
+.ins__section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin: 0 0 0.5rem;
+}
+
+.ins__semana-label {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 1rem;
+}
+
+/* ── Bloques (tab Hoy) ───────────────────────────────────────────────────── */
+.ins__bloque {
+  margin-bottom: 1.5rem;
+}
+
+.ins__bloque-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.ins__bloque-hora {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e3a5f;
+}
+
+.ins__bloque-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.ins__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.ins__card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.ins__card-aeronave {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  font-family: monospace;
+}
+
+.ins__card-alumno {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ── Tags de estado ──────────────────────────────────────────────────────── */
+.ins__tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ins__tag--gris    { background: #f3f4f6; color: #374151; }
+.ins__tag--naranja { background: #fff7ed; color: #c2410c; }
+.ins__tag--azul    { background: #eff6ff; color: #1d4ed8; }
+.ins__tag--morado  { background: #f5f3ff; color: #6d28d9; }
+.ins__tag--verde   { background: #f0fdf4; color: #15803d; }
+.ins__tag--rojo    { background: #fef2f2; color: #b91c1c; }
+
+/* ── Tabla ───────────────────────────────────────────────────────────────── */
+.ins__table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.ins__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.855rem;
+}
+
+.ins__th {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.ins__th--center { text-align: center; }
+
+.ins__tr:last-child .ins__td { border-bottom: none; }
+
+.ins__td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.ins__td--dia  { font-weight: 600; white-space: nowrap; color: #1e3a5f; }
+.ins__td--hora { white-space: nowrap; color: #6b7280; font-size: 0.8rem; font-family: monospace; }
+.ins__td--center { text-align: center; }
+
+/* ── Alumnos ─────────────────────────────────────────────────────────────── */
+.ins__alumno-nombre {
+  font-weight: 600;
+  color: #111827;
+}
+
+.ins__alumno-lic {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-family: monospace;
+  margin-top: 1px;
+}
+
+.ins__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ins__badge--soleado { background: #fef9c3; color: #854d0e; }
+.ins__badge--dual    { background: #dbeafe; color: #1e40af; }
+
+.ins__limite {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e3a5f;
+}
+
+.ins__limite-wrap {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.ins__limite-input {
+  width: 64px;
+  padding: 5px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  color: #111;
+  background: #fff;
+}
+
+.ins__limite-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.ins__limite-btn {
+  padding: 5px 12px;
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.ins__limite-btn:hover:not(:disabled) { background: #163059; }
+
+.ins__limite-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ins__fila-error {
+  font-size: 0.72rem;
+  color: #b91c1c;
+  margin-top: 3px;
+}
+
+.ins__sin-semana {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* ── Estados vacíos / carga ──────────────────────────────────────────────── */
+.ins__loading,
+.ins__empty {
+  text-align: center;
+  padding: 2.5rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}

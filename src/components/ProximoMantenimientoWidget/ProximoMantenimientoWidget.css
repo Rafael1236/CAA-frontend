@@ -1,0 +1,118 @@
+/* ── ProximoMantenimientoWidget ────────────────────────────────────────────── */
+
+.pmw {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pmw__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.pmw__title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.pmw__level {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pmw__level--ok      { background: #d1fae5; color: #065f46; }
+.pmw__level--alerta  { background: #fef3c7; color: #92400e; }
+.pmw__level--critico { background: #fee2e2; color: #991b1b; }
+
+.pmw__body {
+  padding: 16px 18px;
+}
+
+.pmw__body--empty {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.pmw__aeronave {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+.pmw__progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pmw__progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pmw__progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.pmw__progress-fill--ok      { background: #10b981; }
+.pmw__progress-fill--alerta  { background: #f59e0b; }
+.pmw__progress-fill--critico { background: #ef4444; }
+
+.pmw__progress-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  min-width: 36px;
+  text-align: right;
+}
+
+.pmw__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pmw__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8rem;
+}
+
+.pmw__row-label {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.pmw__row-value {
+  font-weight: 600;
+  color: #334155;
+  text-align: right;
+}
+
+.pmw__row-value--warn {
+  color: #b45309;
+}

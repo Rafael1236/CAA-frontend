@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import AdminCalendar from "../../components/AdminCalendar/AdminCalendar";
 import WebhookConfigModal from "../../components/WebhookConfigModal/WebhookConfigModal";
+import HabilitarVueloModal from "../../components/HabilitarVueloModal/HabilitarVueloModal";
+import AlumnoPerfilModal from "../../components/AlumnoPerfilModal/AlumnoPerfilModal";
 import {
   getCalendarioAdmin,
   getAeronavesActivasAdmin,
@@ -10,6 +12,8 @@ import {
   publicarSemana,
   getBloquesBloqueadosAdmin as getBloquesBloqueados,
   cancelarVueloAdmin,
+  getInstructoresActivos,
+  cambiarInstructorVuelo,
 } from "../../services/adminApi";
 import "./Dashboard.css";
 
@@ -24,6 +28,9 @@ export default function AdminDashboard() {
   const [loading, setLoading]             = useState(true);
   const [bloqueos, setBloqueos]           = useState([]);
   const [showWebhookModal, setShowWebhookModal] = useState(false);
+  const [showVueloExtraModal, setShowVueloExtraModal] = useState(false);
+  const [showAlumnoPerfil, setShowAlumnoPerfil] = useState(false);
+  const [instructores, setInstructores] = useState([]);
 
   const load = async (w = week) => {
     setLoading(true);
@@ -46,6 +53,10 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => { load(); }, [week]);
+
+  useEffect(() => {
+    getInstructoresActivos().then(setInstructores).catch(() => {});
+  }, []);
 
 const handleDrop = (target) => {
   if (!dragging) return;
@@ -237,9 +248,25 @@ const guardarCambios = async () => {
 
   const publicar = async () => {
     if (!window.confirm("¿Publicar la próxima semana?")) return;
-    await publicarSemana();
-    alert("Semana publicada");
+    const resp = await publicarSemana();
+    let msg = "Semana publicada";
+    if (resp?.conflictos_mantenimiento?.length > 0) {
+      const lista = resp.conflictos_mantenimiento
+        .map((c) => `• ${c.aeronave_codigo} (${c.tipo}, programado ${c.fecha_programada?.slice(0, 10)})`)
+        .join("\n");
+      msg += `\n\n⚠ Aeronaves con mantenimiento pendiente que coinciden con vuelos publicados:\n${lista}\nReprogramá o cancelá manualmente.`;
+    }
+    alert(msg);
     load();
+  };
+
+  const onCambiarInstructor = async (id_vuelo, id_instructor_nuevo) => {
+    try {
+      await cambiarInstructorVuelo(id_vuelo, id_instructor_nuevo);
+      await load(week);
+    } catch (e) {
+      alert(e.response?.data?.message || "No se pudo cambiar el instructor");
+    }
   };
 
   const onCancelar = async (id_vuelo) => {
@@ -284,6 +311,30 @@ const guardarCambios = async () => {
               Programación y publicación semanal de vuelos
             </p>
           </div>
+          <button
+            className="adm__btn-webhook"
+            onClick={() => window.location.href = "/admin/mantenimiento"}
+          >
+            🔧 Mantenimiento
+          </button>
+          <button
+            className="adm__btn-webhook"
+            onClick={() => window.location.href = "/admin/auditoria"}
+          >
+            📋 Auditoría
+          </button>
+          <button
+            className="adm__btn-webhook"
+            onClick={() => setShowAlumnoPerfil(true)}
+          >
+            👤 Perfiles
+          </button>
+          <button
+            className="adm__btn-webhook"
+            onClick={() => setShowVueloExtraModal(true)}
+          >
+            ✈ Alumnos
+          </button>
           <button
             className="adm__btn-webhook"
             onClick={() => setShowWebhookModal(true)}
@@ -391,11 +442,21 @@ const guardarCambios = async () => {
               handleDrop={handleDrop}
               week={week}
               onCancelar={onCancelar}
+              instructores={instructores}
+              onCambiarInstructor={onCambiarInstructor}
             />
           )}
         </div>
 
       </div>
+
+      {showVueloExtraModal && (
+        <HabilitarVueloModal onClose={() => setShowVueloExtraModal(false)} />
+      )}
+
+      {showAlumnoPerfil && (
+        <AlumnoPerfilModal onClose={() => setShowAlumnoPerfil(false)} />
+      )}
 
       <WebhookConfigModal
         open={showWebhookModal}

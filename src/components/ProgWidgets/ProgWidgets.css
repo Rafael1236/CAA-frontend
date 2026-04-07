@@ -1,0 +1,163 @@
+/* ── ProgWidgets.css ──────────────────────────────────────────────────────── */
+
+.pw__widget {
+  background: var(--card-bg, #1e293b);
+  border: 1px solid var(--border, #334155);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/* Header */
+.pw__widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pw__widget-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pw__widget-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+}
+
+.pw__widget-badge--azul   { background: #1d4ed8; color: #fff; }
+.pw__widget-badge--naranja { background: #b45309; color: #fff; }
+.pw__widget-badge--gris   { background: #475569; color: #fff; }
+
+/* Cards container */
+.pw__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Individual card */
+.pw__card {
+  background: var(--card-inner-bg, #0f172a);
+  border: 1px solid var(--border, #334155);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pw__card--flota {
+  /* slightly wider feel */
+}
+
+.pw__card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.pw__card-aeronave {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main, #f1f5f9);
+}
+
+.pw__card-alumno {
+  font-size: 0.8rem;
+  color: var(--text-sub, #94a3b8);
+}
+
+.pw__card-sub {
+  font-size: 0.78rem;
+  color: var(--text-sub, #94a3b8);
+}
+
+/* Tags */
+.pw__tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.18em 0.55em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pw__tag--azul    { background: #1d4ed8; color: #fff; }
+.pw__tag--naranja { background: #b45309; color: #fff; }
+.pw__tag--morado  { background: #7c3aed; color: #fff; }
+.pw__tag--gris    { background: #475569; color: #fff; }
+.pw__tag--verde   { background: #15803d; color: #fff; }
+.pw__tag--rojo    { background: #b91c1c; color: #fff; }
+
+/* Progress bar */
+.pw__bar-wrap {
+  position: relative;
+  height: 6px;
+  background: var(--border, #334155);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pw__bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  background: #1d4ed8; /* default azul */
+}
+
+.pw__bar--verde   { background: #15803d; }
+.pw__bar--naranja { background: #b45309; }
+.pw__bar--rojo    { background: #b91c1c; }
+
+.pw__bar-pct {
+  position: absolute;
+  right: 0;
+  top: -14px;
+  font-size: 0.68rem;
+  color: var(--text-sub, #94a3b8);
+}
+
+/* Empty / loading */
+.pw__empty {
+  font-size: 0.82rem;
+  color: var(--text-sub, #94a3b8);
+  text-align: center;
+  padding: 0.5rem 0;
+  margin: 0;
+}
+
+/* Flota summary row */
+.pw__flota-resumen {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pw__flota-stat {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+}
+
+.pw__flota-stat--azul   { background: #1e3a5f; color: #93c5fd; }
+.pw__flota-stat--rojo   { background: #3b1414; color: #fca5a5; }
+.pw__flota-stat--gris   { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+
+/* Widget row layout (used in Dashboard) */
+.pw__widgets-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}

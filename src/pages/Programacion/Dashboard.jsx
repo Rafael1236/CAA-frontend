@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import WeekSelector from "../../components/WeekSelector/WeekSelector";
 import Header from "../../components/Header/Header";
-
 import {
   getAeronavesActivas,
   getBloquesHorario,

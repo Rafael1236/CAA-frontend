@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPerfil, cambiarPassword, cambiarCorreo, updatePerfilInfo } from "../../services/usuarioApi";
+import { getPerfil, cambiarPassword, cambiarCorreo, updatePerfilInfo, updatePerfilAlumno } from "../../services/usuarioApi";
 import Header from "../../components/Header/Header";
 import { useNavigate } from "react-router-dom";
 import "./Perfil.css";
@@ -13,6 +13,12 @@ export default function Perfil() {
 
   const [correo, setCorreo] = useState("");
   const [correoMsg, setCorreoMsg] = useState("");
+
+  // Datos específicos de alumno
+  const [telefono, setTelefono]           = useState("");
+  const [numeroLicencia, setNumeroLicencia] = useState("");
+  const [certMedico, setCertMedico]       = useState("");
+  const [alumnoMsg, setAlumnoMsg]         = useState("");
 
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -35,6 +41,11 @@ export default function Perfil() {
 
       setUsername(p.username || "");
       setCorreo(p.correo || "");
+      if (p.rol === "ALUMNO") {
+        setTelefono(p.telefono || "");
+        setNumeroLicencia(p.numero_licencia || "");
+        setCertMedico(p.certificado_medico ? p.certificado_medico.slice(0, 10) : "");
+      }
       return p;
     } catch (e) {
       console.error("Error al cargar perfil:", e);
@@ -44,6 +55,21 @@ export default function Perfil() {
   useEffect(() => {
     refreshPerfil();
   }, []);
+
+  const handleGuardarDatosAlumno = async () => {
+    try {
+      setAlumnoMsg("");
+      const r = await updatePerfilAlumno({
+        telefono,
+        numero_licencia: numeroLicencia,
+        certificado_medico: certMedico || null,
+      });
+      setAlumnoMsg(r.message);
+      await refreshPerfil();
+    } catch (e) {
+      setAlumnoMsg(e.response?.data?.message || "Error al actualizar");
+    }
+  };
 
   const validarPassword = (value) => {
     const errs = [];
@@ -125,6 +151,12 @@ export default function Perfil() {
   const requiereCambioPass = perfil.must_change_password === true;
   const requiereCorreo = perfil.must_set_email === true || !perfil.correo;
   const requiereAlgo = requiereCambioPass || requiereCorreo;
+
+  // Advertencia certificado médico (≤ 30 días)
+  const diasCert = certMedico
+    ? Math.ceil((new Date(certMedico) - new Date()) / (1000 * 60 * 60 * 24))
+    : null;
+  const certPorVencer = diasCert !== null && diasCert <= 30;
 
   // Botones activos solo si hay cambios y son válidos
   const infoChanged = username !== originalData?.username && username.trim().length > 0;
@@ -226,6 +258,69 @@ export default function Perfil() {
                 {correoMsg && <span className={correoMsg.includes("✅") ? "msg" : "msg error"}>{correoMsg}</span>}
               </div>
             </section>
+
+            {perfil.rol === "ALUMNO" && (
+              <section className="perfil-section full">
+                <h3>Datos de vuelo</h3>
+
+                {certPorVencer && (
+                  <div className={`perfil-cert-warning ${diasCert < 0 ? "perfil-cert-warning--vencido" : ""}`}>
+                    {diasCert < 0
+                      ? `Tu certificado médico venció hace ${Math.abs(diasCert)} días.`
+                      : `Tu certificado médico vence en ${diasCert} día${diasCert === 1 ? "" : "s"}.`}
+                  </div>
+                )}
+
+                <div className="perfil-kv">
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">Teléfono</label>
+                    <input
+                      className="perfil-input"
+                      type="tel"
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
+                      placeholder="Ej. 7777-8888"
+                    />
+                  </div>
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">N° de licencia</label>
+                    <input
+                      className="perfil-input"
+                      type="text"
+                      value={numeroLicencia}
+                      onChange={(e) => setNumeroLicencia(e.target.value)}
+                      placeholder="Ej. PPL-00123"
+                    />
+                  </div>
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">Venc. certificado médico</label>
+                    <input
+                      className={`perfil-input ${certPorVencer ? "perfil-input--alerta" : ""}`}
+                      type="date"
+                      value={certMedico}
+                      onChange={(e) => setCertMedico(e.target.value)}
+                    />
+                  </div>
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">Soleado</label>
+                    <div className={`perfil-soleado-badge ${perfil.soleado ? "perfil-soleado-badge--on" : "perfil-soleado-badge--off"}`}>
+                      {perfil.soleado ? "Solo" : "Dual"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="perfil-actions" style={{ marginTop: "20px" }}>
+                  <button className="btn-primary" onClick={handleGuardarDatosAlumno}>
+                    Guardar datos de vuelo
+                  </button>
+                  {alumnoMsg && (
+                    <span className={alumnoMsg.includes("✅") ? "msg" : "msg error"}>
+                      {alumnoMsg}
+                    </span>
+                  )}
+                </div>
+              </section>
+            )}
 
             <section className="perfil-section full">
               <h3>Seguridad</h3>

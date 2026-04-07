@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./AdminCalendar.css";
 
 const DIAS = [
@@ -21,8 +22,28 @@ export default function AdminCalendar({
   handleDrop,
   week = "next",
   onCancelar,
+  instructores = [],
+  onCambiarInstructor,
 }) {
   const isEditable = week === "next";
+
+  // id_vuelo → id_instructor seleccionado (pendiente de guardar)
+  const [instrPendiente, setInstrPendiente] = useState({});
+
+  const handleInstrChange = (id_vuelo, id_instructor_nuevo) => {
+    setInstrPendiente((prev) => ({ ...prev, [id_vuelo]: id_instructor_nuevo }));
+  };
+
+  const handleInstrGuardar = async (id_vuelo, id_instructor_original) => {
+    const nuevo = instrPendiente[id_vuelo];
+    if (!nuevo || Number(nuevo) === Number(id_instructor_original)) return;
+    await onCambiarInstructor(id_vuelo, Number(nuevo));
+    setInstrPendiente((prev) => {
+      const next = { ...prev };
+      delete next[id_vuelo];
+      return next;
+    });
+  };
 
   const safeItems = Array.isArray(items) ? items : [];
   const safeBloqueos = Array.isArray(bloqueos) ? bloqueos : [];
@@ -121,6 +142,41 @@ export default function AdminCalendar({
                         >
                           <span className="alumno">{item.alumno_nombre}</span>
                           <span className="instructor">{item.instructor_nombre}</span>
+
+                          {/* Cambio de instructor — cualquier vuelo no cancelado */}
+                          {item.id_vuelo &&
+                            estadoMostrar !== "CANCELADO" &&
+                            instructores.length > 0 && (
+                              <div
+                                className="instr-change"
+                                onClick={(e) => e.stopPropagation()}
+                                onDragStart={(e) => e.stopPropagation()}
+                                draggable={false}
+                              >
+                                <select
+                                  className="instr-select"
+                                  value={instrPendiente[item.id_vuelo] ?? item.id_instructor}
+                                  onChange={(e) => handleInstrChange(item.id_vuelo, e.target.value)}
+                                >
+                                  {instructores.map((ins) => (
+                                    <option key={ins.id_instructor} value={ins.id_instructor}>
+                                      {ins.nombre_completo}
+                                    </option>
+                                  ))}
+                                </select>
+                                {instrPendiente[item.id_vuelo] &&
+                                  Number(instrPendiente[item.id_vuelo]) !== Number(item.id_instructor) && (
+                                    <button
+                                      className="instr-save-btn"
+                                      type="button"
+                                      onClick={() => handleInstrGuardar(item.id_vuelo, item.id_instructor)}
+                                    >
+                                      ✓
+                                    </button>
+                                  )}
+                              </div>
+                            )}
+
                           {week === "current" &&
                             item.id_vuelo &&
                             estadoMostrar !== "CANCELADO" && (
