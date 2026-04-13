@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { io as socketIO } from "socket.io-client";
 import Header from "../../components/Header/Header";
 import MetarWidget from "../../components/MetarWidget/MetarWidget";
+import ToastMantenimiento from "../../components/ToastMantenimiento/ToastMantenimiento";
 import {
   getVuelosHoy,
-  avanzarEstadoVuelo,
   getEstadoOperaciones,
   setEstadoOperaciones,
 } from "../../services/turnoApi";
@@ -18,15 +18,8 @@ const ESTADO_LABEL = {
   SALIDA_HANGAR:  "Salida hangar",
   EN_VUELO:       "En vuelo",
   REGRESO_HANGAR: "Regreso hangar",
+  FINALIZANDO:    "Finalizando",
   COMPLETADO:     "Completado",
-};
-
-const BTN_LABEL = {
-  PUBLICADO:      "Confirmar salida del hangar",
-  PROGRAMADO:     "Confirmar salida del hangar",
-  SALIDA_HANGAR:  "Confirmar despegue",
-  EN_VUELO:       "Confirmar aterrizaje",
-  REGRESO_HANGAR: "Completar vuelo",
 };
 
 const ESTADO_COLOR = {
@@ -35,91 +28,26 @@ const ESTADO_COLOR = {
   SALIDA_HANGAR:  "trn__tag--naranja",
   EN_VUELO:       "trn__tag--azul",
   REGRESO_HANGAR: "trn__tag--morado",
+  FINALIZANDO:    "trn__tag--amarillo",
   COMPLETADO:     "trn__tag--verde",
 };
 
 const MOTIVOS = ["CLIMA", "VIENTO", "VISIBILIDAD", "REVISION_PISTA"];
 
-function hhmmToMin(hhmm) {
-  const [h, m] = hhmm.split(":").map(Number);
-  return h * 60 + (m || 0);
-}
-
-function calcProgreso(vuelo) {
-  const { estado, estado_desde, duracion_estimada_min } = vuelo;
-
-  if (estado === "PROGRAMADO" || estado === "PUBLICADO") return 0;
-
-  const activos = ["SALIDA_HANGAR", "EN_VUELO", "REGRESO_HANGAR"];
-  if (!activos.includes(estado) || !estado_desde || !duracion_estimada_min) return null;
-
-  const total = 9 + duracion_estimada_min + 9;
-
-  // Minutos acumulados de fases completadas antes de la actual
-  const offsetMin = {
-    SALIDA_HANGAR:  0,
-    EN_VUELO:       9,
-    REGRESO_HANGAR: 9 + duracion_estimada_min,
-  };
-
-  const elapsed = (Date.now() - new Date(estado_desde).getTime()) / 60000;
-  const totalElapsed = offsetMin[estado] + elapsed;
-
-  return Math.min(100, Math.max(0, Math.round((totalElapsed / total) * 100)));
-}
-
 function formatHora(h) {
   return h?.slice(0, 5) ?? "";
 }
 
-// ── Componente tarjeta de vuelo ────────────────────────────────────────────
-function VueloCard({ vuelo, onAvanzar, advancing }) {
-  const [progreso, setProgreso] = useState(() => calcProgreso(vuelo));
-  const [durInput, setDurInput] = useState("");
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    setProgreso(calcProgreso(vuelo));
-
-    const activo = ["SALIDA_HANGAR", "EN_VUELO", "REGRESO_HANGAR"].includes(vuelo.estado);
-    if (!activo) return;
-
-    timerRef.current = setInterval(() => {
-      setProgreso(calcProgreso(vuelo));
-    }, 15000);
-
-    return () => clearInterval(timerRef.current);
-  }, [vuelo.estado, vuelo.estado_desde, vuelo.duracion_estimada_min]);
-
-  const btnLabel = BTN_LABEL[vuelo.estado];
+// ── Componente tarjeta de vuelo (solo lectura) ─────────────────────────────
+function VueloCard({ vuelo }) {
   const tagClass = ESTADO_COLOR[vuelo.estado] ?? "trn__tag--gris";
-  const showBar = progreso !== null;
-
-  // Mostrar input solo cuando no hay plan_vuelo y el próximo estado es SALIDA_HANGAR
-  const needsDurInput =
-    (vuelo.estado === "PROGRAMADO" || vuelo.estado === "PUBLICADO") &&
-    !vuelo.tiene_plan_vuelo;
-
-  const handleConfirmar = () => {
-    if (needsDurInput) {
-      const min = hhmmToMin(durInput || "0:0");
-      if (!durInput || min <= 0) return;
-      onAvanzar(vuelo.id_vuelo, min);
-    } else {
-      onAvanzar(vuelo.id_vuelo, null);
-    }
-  };
-
-  const btnDisabled =
-    advancing === vuelo.id_vuelo ||
-    (needsDurInput && (!durInput || hhmmToMin(durInput) <= 0));
 
   return (
     <div className="trn__card">
       <div className="trn__card-top">
         <div className="trn__card-info">
           <span className="trn__aeronave">{vuelo.aeronave_codigo}</span>
-          <span className={`trn__tag ${tagClass}`}>{ESTADO_LABEL[vuelo.estado]}</span>
+          <span className={`trn__tag ${tagClass}`}>{ESTADO_LABEL[vuelo.estado] ?? vuelo.estado}</span>
         </div>
         <div className="trn__card-nombres">
           <span className="trn__alumno">
@@ -130,36 +58,6 @@ function VueloCard({ vuelo, onAvanzar, advancing }) {
           </span>
         </div>
       </div>
-
-      {showBar && (
-        <div className="trn__bar-wrap">
-          <div className="trn__bar" style={{ width: `${progreso}%` }} />
-          <span className="trn__bar-pct">{progreso}%</span>
-        </div>
-      )}
-
-      {needsDurInput && (
-        <div className="trn__dur-wrap">
-          <label className="trn__dur-label">Tiempo estimado de vuelo (HH:MM)</label>
-          <input
-            className="trn__dur-input"
-            type="text"
-            placeholder="01:30"
-            value={durInput}
-            onChange={(e) => setDurInput(e.target.value)}
-          />
-        </div>
-      )}
-
-      {btnLabel && (
-        <button
-          className="trn__btn-avanzar"
-          disabled={btnDisabled}
-          onClick={handleConfirmar}
-        >
-          {advancing === vuelo.id_vuelo ? "Procesando…" : btnLabel}
-        </button>
-      )}
     </div>
   );
 }
@@ -215,10 +113,9 @@ function OpsWidget({ ops, onSet }) {
 
 // ── Dashboard principal ─────────────────────────────────────────────────────
 export default function TurnoDashboard() {
-  const [vuelos, setVuelos]     = useState([]);
-  const [ops, setOps]           = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [advancing, setAdvancing] = useState(null);
+  const [vuelos, setVuelos] = useState([]);
+  const [ops, setOps]       = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const cargarVuelos = useCallback(async () => {
     try {
@@ -255,14 +152,12 @@ export default function TurnoDashboard() {
 
     socket.on("vuelo_estado_changed", ({ id_vuelo, estado, registrado_en, duracion_estimada_min }) => {
       setVuelos((prev) =>
-        prev
-          .map((v) => {
-            if (v.id_vuelo !== id_vuelo) return v;
-            const updated = { ...v, estado, estado_desde: registrado_en };
-            if (duracion_estimada_min != null) updated.duracion_estimada_min = duracion_estimada_min;
-            return updated;
-          })
-          .filter((v) => v.estado !== "COMPLETADO")
+        prev.map((v) => {
+          if (v.id_vuelo !== id_vuelo) return v;
+          const updated = { ...v, estado, estado_desde: registrado_en };
+          if (duracion_estimada_min != null) updated.duracion_estimada_min = duracion_estimada_min;
+          return updated;
+        })
       );
     });
 
@@ -276,18 +171,6 @@ export default function TurnoDashboard() {
 
     return () => socket.disconnect();
   }, [cargarOps]);
-
-  const handleAvanzar = async (id_vuelo, duracion_estimada_min) => {
-    setAdvancing(id_vuelo);
-    try {
-      await avanzarEstadoVuelo(id_vuelo, duracion_estimada_min);
-    } catch (e) {
-      alert(e.response?.data?.message || "No se pudo avanzar el estado");
-      await cargarVuelos();
-    } finally {
-      setAdvancing(null);
-    }
-  };
 
   const handleSetOps = async (estado_general, motivo_inactivo) => {
     try {
@@ -314,6 +197,7 @@ export default function TurnoDashboard() {
   return (
     <>
       <Header />
+      <ToastMantenimiento />
 
       <div className="trn">
         {/* ── Cabecera ──────────────────────────────────────────────── */}
@@ -358,12 +242,7 @@ export default function TurnoDashboard() {
               </div>
               <div className="trn__cards">
                 {porBloque[b.id_bloque].map((v) => (
-                  <VueloCard
-                    key={v.id_vuelo}
-                    vuelo={v}
-                    onAvanzar={handleAvanzar}
-                    advancing={advancing}
-                  />
+                  <VueloCard key={v.id_vuelo} vuelo={v} />
                 ))}
               </div>
             </div>

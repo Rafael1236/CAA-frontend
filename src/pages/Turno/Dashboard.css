@@ -208,11 +208,12 @@
   letter-spacing: 0.04em;
 }
 
-.trn__tag--gris    { background: #f3f4f6; color: #374151; }
-.trn__tag--naranja { background: #fff7ed; color: #c2410c; }
-.trn__tag--azul    { background: #eff6ff; color: #1d4ed8; }
-.trn__tag--morado  { background: #f5f3ff; color: #6d28d9; }
-.trn__tag--verde   { background: #f0fdf4; color: #15803d; }
+.trn__tag--gris     { background: #f3f4f6; color: #374151; }
+.trn__tag--naranja  { background: #fff7ed; color: #c2410c; }
+.trn__tag--azul     { background: #eff6ff; color: #1d4ed8; }
+.trn__tag--morado   { background: #f5f3ff; color: #6d28d9; }
+.trn__tag--amarillo { background: #fefce8; color: #854d0e; }
+.trn__tag--verde    { background: #f0fdf4; color: #15803d; }
 
 .trn__card-nombres {
   display: flex;

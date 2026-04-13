@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
+import ToastMantenimiento from "../../components/ToastMantenimiento/ToastMantenimiento";
 import AdminCalendar from "../../components/AdminCalendar/AdminCalendar";
 import WebhookConfigModal from "../../components/WebhookConfigModal/WebhookConfigModal";
 import HabilitarVueloModal from "../../components/HabilitarVueloModal/HabilitarVueloModal";
@@ -300,6 +301,7 @@ const guardarCambios = async () => {
   return (
     <>
       <Header />
+      <ToastMantenimiento />
 
       <div className="adm">
 

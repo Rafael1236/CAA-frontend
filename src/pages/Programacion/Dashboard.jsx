@@ -8,10 +8,121 @@ import {
   guardarCambiosProgramacion,
   getBloquesBloqueados,
   cancelarVueloProgramacion,
+  reasignarAeronave,
+  getAeronavesDisponibles,
 } from "../../services/programacionApi";
 
 import ProgramacionCalendar from "../../components/ProgramacionCalendar/ProgramacionCalendar";
 import "./Dashboard.css";
+
+// ── Modal reasignar aeronave ──────────────────────────────────────────────
+function ReasignarAeronaveModal({ vuelo, onClose, onReasignado }) {
+  const [disponibles, setDisponibles] = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [selected, setSelected]       = useState(null);
+  const [saving, setSaving]           = useState(false);
+  const [error, setError]             = useState("");
+
+  useEffect(() => {
+    getAeronavesDisponibles(vuelo.id_semana, vuelo.id_bloque, vuelo.dia_semana)
+      .then((d) => { setDisponibles(d); if (d.length > 0) setSelected(d[0].id_aeronave); })
+      .catch(() => setError("Error al cargar aeronaves disponibles"))
+      .finally(() => setLoading(false));
+  }, [vuelo.id_semana, vuelo.id_bloque, vuelo.dia_semana]);
+
+  const handleGuardar = async () => {
+    if (!selected) return;
+    setSaving(true);
+    setError("");
+    try {
+      await reasignarAeronave(vuelo.id_vuelo, selected);
+      onReasignado();
+      onClose();
+    } catch (e) {
+      setError(e.response?.data?.message || "Error al reasignar");
+      setSaving(false);
+    }
+  };
+
+  const DIAS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        zIndex: 1000, padding: "1rem",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div style={{
+        background: "#1a1f2e", borderRadius: 12, padding: "1.5rem",
+        minWidth: 360, maxWidth: 480, width: "100%",
+        border: "1px solid #2a3150",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+          <h3 style={{ margin: 0, fontSize: "1rem", color: "#e2e8f0" }}>
+            Reasignar aeronave — {vuelo.alumno_nombre}
+          </h3>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "1.2rem" }}>×</button>
+        </div>
+
+        <p style={{ color: "#64748b", fontSize: "0.85rem", marginBottom: "1rem" }}>
+          {DIAS[vuelo.dia_semana]} · bloque {vuelo.id_bloque}
+        </p>
+
+        {loading ? (
+          <p style={{ color: "#94a3b8" }}>Cargando aeronaves…</p>
+        ) : disponibles.length === 0 ? (
+          <p style={{ color: "#f87171" }}>No hay aeronaves disponibles para este bloque.</p>
+        ) : (
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ display: "block", color: "#94a3b8", fontSize: "0.85rem", marginBottom: 6 }}>
+              Aeronave disponible
+            </label>
+            <select
+              style={{
+                width: "100%", padding: "8px 10px", borderRadius: 7,
+                border: "1px solid #2a3150", background: "#0f1420", color: "#e2e8f0",
+                fontSize: "0.9rem",
+              }}
+              value={selected ?? ""}
+              onChange={(e) => setSelected(Number(e.target.value))}
+            >
+              {disponibles.map((a) => (
+                <option key={a.id_aeronave} value={a.id_aeronave}>
+                  {a.codigo} — {a.modelo}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {error && <p style={{ color: "#f87171", fontSize: "0.85rem", marginBottom: "0.75rem" }}>{error}</p>}
+
+        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+          <button
+            onClick={onClose}
+            style={{ padding: "7px 16px", borderRadius: 7, border: "1px solid #2a3150", background: "transparent", color: "#94a3b8", cursor: "pointer" }}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleGuardar}
+            disabled={saving || !selected || disponibles.length === 0}
+            style={{
+              padding: "7px 16px", borderRadius: 7, border: "none",
+              background: "#1e3a5f", color: "#fff", cursor: "pointer",
+              opacity: (saving || !selected) ? 0.5 : 1,
+            }}
+          >
+            {saving ? "Guardando…" : "Reasignar"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProgramacionDashboard() {
   const [week, setWeek] = useState("next");
@@ -24,6 +135,7 @@ export default function ProgramacionDashboard() {
   const [pendingMoves, setPendingMoves] = useState([]);
   const [dragging, setDragging]         = useState(null);
   const [loading, setLoading]           = useState(true);
+  const [modalReasignar, setModalReasignar] = useState(null);
 
   const reload = async () => {
     setLoading(true);
@@ -195,6 +307,10 @@ const guardarCambios = async () => {
     setPendingMoves([]);
   };
 
+  const onReasignar = (vueloData) => {
+    setModalReasignar(vueloData);
+  };
+
   const onCancelar = async (id_vuelo) => {
     if (week !== "current") return;
     if (!window.confirm("¿Cancelar esta clase?")) return;
@@ -312,11 +428,19 @@ const guardarCambios = async () => {
               setDragging={setDragging}
               handleDrop={handleDrop}
               onCancelar={onCancelar}
+              onReasignar={onReasignar}
             />
           )}
         </div>
 
       </div>
+      {modalReasignar && (
+        <ReasignarAeronaveModal
+          vuelo={modalReasignar}
+          onClose={() => setModalReasignar(null)}
+          onReasignado={reload}
+        />
+      )}
     </>
   );
 }

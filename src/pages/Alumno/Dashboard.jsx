@@ -4,11 +4,9 @@ import Header from "../../components/Header/Header";
 import MiHorarioList from "../../components/MiHorarioList/MiHorarioList";
 import MetarWidget from "../../components/MetarWidget/MetarWidget";
 import EstadoOperacionesWidget from "../../components/EstadoOperacionesWidget/EstadoOperacionesWidget";
-import ProximoMantenimientoWidget from "../../components/ProximoMantenimientoWidget/ProximoMantenimientoWidget";
 import {
   getMiHorario,
   getMiInfo,
-  getMiProximoMantenimiento,
 } from "../../services/alumnoApi";
 import "./Dashboard.css";
 
@@ -49,11 +47,8 @@ export default function AlumnoDashboard() {
   const [vuelos, setVuelos] = useState([]);
   const [loadingVuelos, setLoadingVuelos] = useState(false);
   const [info, setInfo] = useState(null);
-  const [mantenimiento, setMantenimiento] = useState(null);
-
   useEffect(() => {
     getMiInfo().then(setInfo).catch(() => { });
-    getMiProximoMantenimiento().then(setMantenimiento).catch(() => { });
   }, []);
 
   const fetchVuelos = useCallback(async () => {
@@ -165,7 +160,6 @@ export default function AlumnoDashboard() {
           <aside className="dash__sidebar">
             <MetarWidget />
             <EstadoOperacionesWidget />
-            <ProximoMantenimientoWidget data={mantenimiento} />
           </aside>
         </div>
       </div>

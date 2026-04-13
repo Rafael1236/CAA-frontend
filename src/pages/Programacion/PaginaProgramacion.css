@@ -309,6 +309,21 @@
   color: var(--pp-warning);
 }
 
+.pp__tbl-badge--hangar {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.pp__tbl-badge--regreso {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.pp__tbl-badge--finaliz {
+  background: #fefce8;
+  color: #ca8a04;
+}
+
 .pp__tbl-tiempo {
   font-size: 0.78rem;
   color: var(--pp-text-sub);

@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { io as socketIO } from "socket.io-client";
 import Header from "../../components/Header/Header";
+import ToastMantenimiento from "../../components/ToastMantenimiento/ToastMantenimiento";
 import {
   getVuelosHoy,
   getVuelosSemana,
   getMisAlumnos,
   habilitarVueloExtra,
+  avanzarEstadoVuelo,
 } from "../../services/instructorApi";
 import "./Dashboard.css";
+
+const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const DIAS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -16,31 +21,165 @@ const ESTADO_TAG = {
   SALIDA_HANGAR:  { label: "Salida hangar",  cls: "ins__tag--naranja" },
   EN_VUELO:       { label: "En vuelo",       cls: "ins__tag--azul" },
   REGRESO_HANGAR: { label: "Regreso hangar", cls: "ins__tag--morado" },
+  FINALIZANDO:    { label: "Finalizando",    cls: "ins__tag--amarillo" },
   COMPLETADO:     { label: "Completado",     cls: "ins__tag--verde" },
   CANCELADO:      { label: "Cancelado",      cls: "ins__tag--rojo" },
 };
 
+const BTN_LABEL = {
+  PUBLICADO:      "Salida del Hangar",
+  PROGRAMADO:     "Salida del Hangar",
+  SALIDA_HANGAR:  "En Vuelo",
+  EN_VUELO:       "Regreso al Hangar",
+  REGRESO_HANGAR: "Finalizando",
+};
+
 function formatHora(h) { return h?.slice(0, 5) ?? ""; }
+
+function hhmmToMin(hhmm) {
+  const [h, m] = (hhmm || "0:0").split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
+}
+
+function calcProgreso(vuelo) {
+  const { estado, estado_desde, duracion_estimada_min } = vuelo;
+
+  if (estado === "PUBLICADO" || estado === "PROGRAMADO") return null;
+  if (estado === "REGRESO_HANGAR" || estado === "FINALIZANDO") return 100;
+  if (estado === "COMPLETADO") return null;
+
+  if (!estado_desde || !duracion_estimada_min) return null;
+  if (estado !== "SALIDA_HANGAR" && estado !== "EN_VUELO") return null;
+
+  const total = 9 + duracion_estimada_min + 9;
+  const offsetMin = { SALIDA_HANGAR: 0, EN_VUELO: 9 };
+  const elapsed = (Date.now() - new Date(estado_desde).getTime()) / 60000;
+  const totalElapsed = offsetMin[estado] + elapsed;
+
+  return Math.min(99, Math.max(0, Math.round((totalElapsed / total) * 100)));
+}
 
 function EstadoTag({ estado }) {
   const { label, cls } = ESTADO_TAG[estado] ?? { label: estado, cls: "ins__tag--gris" };
   return <span className={`ins__tag ${cls}`}>{label}</span>;
 }
 
-// ── Tarjeta de vuelo (hoy) ─────────────────────────────────────────────────
-function VueloCardHoy({ vuelo }) {
+// ── Tarjeta de vuelo interactiva (tab Hoy) ─────────────────────────────────
+function VueloCard({ vuelo, onAvanzar, advancing }) {
+  const [progreso, setProgreso] = useState(() => calcProgreso(vuelo));
+  const [tiempoMin, setTiempoMin] = useState("");
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    setProgreso(calcProgreso(vuelo));
+
+    clearInterval(timerRef.current);
+    const activo = ["SALIDA_HANGAR", "EN_VUELO"].includes(vuelo.estado);
+    if (!activo) return;
+
+    timerRef.current = setInterval(() => {
+      setProgreso(calcProgreso(vuelo));
+    }, 15000);
+
+    return () => clearInterval(timerRef.current);
+  }, [vuelo.estado, vuelo.estado_desde, vuelo.duracion_estimada_min]);
+
+  const tagInfo = ESTADO_TAG[vuelo.estado] ?? { label: vuelo.estado, cls: "ins__tag--gris" };
+  const showBar = progreso !== null;
+
+  const isFinalizando = vuelo.estado === "FINALIZANDO";
+  const isCompletado  = vuelo.estado === "COMPLETADO";
+  const btnLabel      = BTN_LABEL[vuelo.estado];
+  const isAdvancing   = advancing === vuelo.id_vuelo;
+
+  // Bloquear "Salida del Hangar" hasta que comience el bloque
+  const esSalidaHangar = vuelo.estado === "PUBLICADO" || vuelo.estado === "PROGRAMADO";
+  const ahoraMin = new Date().getHours() * 60 + new Date().getMinutes();
+  const bloqueHabilitado = !esSalidaHangar || ahoraMin >= hhmmToMin(vuelo.hora_inicio);
+
+  const handleConfirmar = () => {
+    if (isFinalizando) {
+      const min = parseInt(tiempoMin, 10);
+      if (!min || min <= 0) return;
+      onAvanzar(vuelo.id_vuelo, { tiempo_vuelo_min: min });
+    } else {
+      onAvanzar(vuelo.id_vuelo, {});
+    }
+  };
+
+  const btnDisabled =
+    isAdvancing ||
+    !bloqueHabilitado ||
+    (isFinalizando && (!tiempoMin || parseInt(tiempoMin, 10) <= 0));
+
   return (
-    <div className="ins__card">
-      <div className="ins__card-aeronave">{vuelo.aeronave_codigo}</div>
+    <div className="ins__card ins__card--vuelo">
+      <div className="ins__card-header">
+        <span className="ins__card-aeronave">{vuelo.aeronave_codigo}</span>
+        <span className={`ins__tag ${tagInfo.cls}`}>{tagInfo.label}</span>
+      </div>
       <div className="ins__card-alumno">
         {vuelo.alumno_nombre} {vuelo.alumno_apellido}
       </div>
-      <EstadoTag estado={vuelo.estado} />
+
+      {showBar && (
+        <div className="ins__bar-wrap">
+          <div className="ins__bar-track">
+            <div
+              className={`ins__bar${vuelo.estado === "REGRESO_HANGAR" || vuelo.estado === "FINALIZANDO" ? " ins__bar--full" : ""}`}
+              style={{ width: `${progreso}%` }}
+            />
+          </div>
+          <span className="ins__bar-pct">{progreso}%</span>
+        </div>
+      )}
+
+      {isFinalizando && (
+        <div className="ins__dur-wrap">
+          <label className="ins__dur-label ins__dur-label--required">
+            Tiempo de vuelo (minutos)
+          </label>
+          <input
+            className="ins__dur-input"
+            type="number"
+            min="1"
+            placeholder="Ej: 75"
+            value={tiempoMin}
+            onChange={(e) => setTiempoMin(e.target.value)}
+          />
+        </div>
+      )}
+
+      {isCompletado && vuelo.tiempo_vuelo_min != null && (
+        <div className="ins__completado-resumen">
+          Tiempo registrado: <strong>{vuelo.tiempo_vuelo_min} min</strong>
+        </div>
+      )}
+
+      {btnLabel && (
+        <button
+          className="ins__btn-avanzar"
+          disabled={btnDisabled}
+          onClick={handleConfirmar}
+        >
+          {isAdvancing ? "Procesando…" : btnLabel}
+        </button>
+      )}
+
+      {isFinalizando && (
+        <button
+          className="ins__btn-avanzar ins__btn-avanzar--completar"
+          disabled={btnDisabled}
+          onClick={handleConfirmar}
+        >
+          {isAdvancing ? "Procesando…" : "Completar Vuelo"}
+        </button>
+      )}
     </div>
   );
 }
 
-// ── Fila de vuelo (semana) ─────────────────────────────────────────────────
+// ── Tarjeta de vuelo simple (tab Semana) ───────────────────────────────────
 function VueloFila({ vuelo }) {
   return (
     <tr className="ins__tr">
@@ -140,30 +279,63 @@ function AlumnoFila({ alumno, semana, onGuardado }) {
 export default function InstructorDashboard() {
   const [tab, setTab] = useState("hoy");
 
-  const [vuelosHoy, setVuelosHoy]     = useState([]);
-  const [semana, setSemana]           = useState(null);
-  const [vuelosSemana, setVuelosSemana] = useState([]);
-  const [alumnos, setAlumnos]         = useState([]);
+  const [vuelosHoy, setVuelosHoy]         = useState([]);
+  const [semana, setSemana]               = useState(null);
+  const [vuelosSemana, setVuelosSemana]   = useState([]);
+  const [alumnos, setAlumnos]             = useState([]);
   const [semanaProxima, setSemanaProxima] = useState(null);
+  const [advancing, setAdvancing]         = useState(null);
 
   const [loadingHoy, setLoadingHoy]         = useState(true);
   const [loadingSemana, setLoadingSemana]   = useState(false);
   const [loadingAlumnos, setLoadingAlumnos] = useState(true);
 
+  const cargarVuelosHoy = useCallback(async () => {
+    try {
+      const data = await getVuelosHoy();
+      setVuelosHoy(data);
+    } catch { /* silencioso en polling */ }
+  }, []);
+
   // Carga inicial: hoy + alumnos
   useEffect(() => {
-    getVuelosHoy()
-      .then(setVuelosHoy)
-      .catch(() => {})
-      .finally(() => setLoadingHoy(false));
+    Promise.all([
+      cargarVuelosHoy().finally(() => setLoadingHoy(false)),
+      getMisAlumnos()
+        .then((data) => { setAlumnos(data.alumnos); setSemanaProxima(data.semana); })
+        .catch(() => {})
+        .finally(() => setLoadingAlumnos(false)),
+    ]);
+  }, [cargarVuelosHoy]);
 
-    getMisAlumnos()
-      .then((data) => {
-        setAlumnos(data.alumnos);
-        setSemanaProxima(data.semana);
-      })
-      .catch(() => {})
-      .finally(() => setLoadingAlumnos(false));
+  // Polling 30 s (solo tab hoy)
+  useEffect(() => {
+    if (tab !== "hoy") return;
+    const t = setInterval(cargarVuelosHoy, 30000);
+    return () => clearInterval(t);
+  }, [tab, cargarVuelosHoy]);
+
+  // Socket.io tiempo real
+  useEffect(() => {
+    const socket = socketIO(API_URL, {
+      transports: ["websocket", "polling"],
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
+
+    socket.on("vuelo_estado_changed", ({ id_vuelo, estado, registrado_en, duracion_estimada_min, tiempo_vuelo_min }) => {
+      setVuelosHoy((prev) =>
+        prev.map((v) => {
+          if (v.id_vuelo !== id_vuelo) return v;
+          const updated = { ...v, estado, estado_desde: registrado_en };
+          if (duracion_estimada_min != null) updated.duracion_estimada_min = duracion_estimada_min;
+          if (tiempo_vuelo_min != null) updated.tiempo_vuelo_min = tiempo_vuelo_min;
+          return updated;
+        })
+      );
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   // Carga semana al cambiar al tab
@@ -171,13 +343,31 @@ export default function InstructorDashboard() {
     if (tab !== "semana") return;
     setLoadingSemana(true);
     getVuelosSemana()
-      .then((data) => {
-        setSemana(data.semana);
-        setVuelosSemana(data.vuelos);
-      })
+      .then((data) => { setSemana(data.semana); setVuelosSemana(data.vuelos); })
       .catch(() => {})
       .finally(() => setLoadingSemana(false));
   }, [tab]);
+
+  const handleAvanzar = async (id_vuelo, body) => {
+    setAdvancing(id_vuelo);
+    try {
+      const resultado = await avanzarEstadoVuelo(id_vuelo, body);
+      setVuelosHoy((prev) =>
+        prev.map((v) => {
+          if (v.id_vuelo !== resultado.id_vuelo) return v;
+          const updated = { ...v, estado: resultado.estado, estado_desde: resultado.registrado_en };
+          if (resultado.duracion_estimada_min != null) updated.duracion_estimada_min = resultado.duracion_estimada_min;
+          if (resultado.tiempo_vuelo_min != null) updated.tiempo_vuelo_min = resultado.tiempo_vuelo_min;
+          return updated;
+        })
+      );
+    } catch (e) {
+      alert(e.response?.data?.message || "No se pudo avanzar el estado");
+      await cargarVuelosHoy();
+    } finally {
+      setAdvancing(null);
+    }
+  };
 
   const handleGuardado = (id_alumno, nuevoLimite) => {
     setAlumnos((prev) =>
@@ -201,6 +391,7 @@ export default function InstructorDashboard() {
   return (
     <>
       <Header />
+      <ToastMantenimiento />
 
       <div className="ins">
         {/* ── Cabecera ──────────────────────────────────────────────── */}
@@ -252,7 +443,12 @@ export default function InstructorDashboard() {
                   </div>
                   <div className="ins__cards">
                     {porBloqueHoy[b.id_bloque].map((v) => (
-                      <VueloCardHoy key={v.id_vuelo} vuelo={v} />
+                      <VueloCard
+                        key={v.id_vuelo}
+                        vuelo={v}
+                        onAvanzar={handleAvanzar}
+                        advancing={advancing}
+                      />
                     ))}
                   </div>
                 </div>

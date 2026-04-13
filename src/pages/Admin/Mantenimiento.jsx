@@ -5,6 +5,8 @@ import {
   getMantenimientoAeronaves,
   completarMantenimiento,
   registrarHorasManuales,
+  cambiarEstadoAeronave,
+  getVuelosFuturosAeronave,
 } from "../../services/adminApi";
 import "./Mantenimiento.css";
 
@@ -119,6 +121,66 @@ function HorasManualModal({ aeronaves, onClose, onGuardado }) {
   );
 }
 
+// ── Modal confirmar mantenimiento ─────────────────────────────────────────
+function ConfirmarMantenimientoModal({ aeronave, onClose, onConfirmar }) {
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal]     = useState(0);
+  const [saving, setSaving]   = useState(false);
+  const [error, setError]     = useState("");
+
+  useEffect(() => {
+    getVuelosFuturosAeronave(aeronave.id_aeronave)
+      .then((d) => setTotal(d.total))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [aeronave.id_aeronave]);
+
+  const handleConfirmar = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      await onConfirmar();
+      onClose();
+    } catch (e) {
+      setError(e.response?.data?.message || "Error al cambiar estado");
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mnt__overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="mnt__modal">
+        <div className="mnt__modal-header">
+          <h3>Poner en mantenimiento — {aeronave.codigo}</h3>
+          <button className="mnt__modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="mnt__modal-body">
+          {loading ? (
+            <p>Verificando vuelos…</p>
+          ) : (
+            <p style={{ lineHeight: 1.6 }}>
+              {total > 0
+                ? <><strong style={{ color: "#e53e3e" }}>{total} vuelo{total !== 1 ? "s" : ""} futuros</strong> serán cancelados automáticamente.<br />Los alumnos afectados recibirán una notificación.</>
+                : "No hay vuelos futuros afectados."}
+            </p>
+          )}
+          {error && <p className="mnt__error">{error}</p>}
+        </div>
+        <div className="mnt__modal-footer">
+          <button className="mnt__btn" onClick={onClose}>Cancelar</button>
+          <button
+            className="mnt__btn mnt__btn--danger"
+            disabled={saving || loading}
+            onClick={handleConfirmar}
+          >
+            {saving ? "Procesando…" : "Confirmar mantenimiento"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Página principal ───────────────────────────────────────────────────────
 export default function MantenimientoAdmin() {
   const navigate = useNavigate();
@@ -128,6 +190,8 @@ export default function MantenimientoAdmin() {
   const [showModal, setShowModal]           = useState(false);
   const [completing, setCompleting]         = useState(null);
   const [tabMant, setTabMant]               = useState("pendientes");
+  const [modalMant, setModalMant]           = useState(null);
+  const [cambiandoEstado, setCambiandoEstado] = useState(null);
 
   const cargar = useCallback(async () => {
     try {
@@ -142,6 +206,23 @@ export default function MantenimientoAdmin() {
   }, []);
 
   useEffect(() => { cargar(); }, [cargar]);
+
+  const handleCambiarEstado = async (aeronave, estado) => {
+    if (estado === "MANTENIMIENTO") {
+      setModalMant(aeronave);
+      return;
+    }
+    // Activar directamente
+    setCambiandoEstado(aeronave.id_aeronave);
+    try {
+      await cambiarEstadoAeronave(aeronave.id_aeronave, "ACTIVO");
+      await cargar();
+    } catch (e) {
+      alert(e.response?.data?.message || "Error al activar aeronave");
+    } finally {
+      setCambiandoEstado(null);
+    }
+  };
 
   const handleCompletar = async (id_mantenimiento) => {
     if (!window.confirm("¿Marcar este mantenimiento como completado?")) return;
@@ -198,21 +279,30 @@ export default function MantenimientoAdmin() {
                     <tr>
                       <th className="mnt__th">Aeronave</th>
                       <th className="mnt__th">Tipo</th>
+                      <th className="mnt__th">Estado</th>
                       <th className="mnt__th mnt__th--num">Horas acum.</th>
                       <th className="mnt__th mnt__th--num">Próx. revisión</th>
                       <th className="mnt__th">Tipo rev.</th>
                       <th className="mnt__th mnt__th--num">Horas restantes</th>
                       <th className="mnt__th">Progreso</th>
+                      <th className="mnt__th"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {aeronaves.map((a) => {
                       const restantes = parseFloat(a.horas_restantes);
                       const alerta = restantes <= 5 ? "mnt__td--rojo" : restantes <= 10 ? "mnt__td--naranja" : "";
+                      const enMant = a.estado === "MANTENIMIENTO";
+                      const cerca = parseFloat(a.horas_restantes) <= 5;
                       return (
                         <tr key={a.id_aeronave} className="mnt__tr">
                           <td className="mnt__td mnt__td--codigo">{a.codigo}</td>
                           <td className="mnt__td">{a.tipo}</td>
+                          <td className="mnt__td">
+                            <span className={`mnt__tipo-badge ${enMant ? "mnt__tipo-badge--rojo" : ""}`}>
+                              {enMant ? "Mantenimiento" : "Activo"}
+                            </span>
+                          </td>
                           <td className="mnt__td mnt__td--num">
                             {parseFloat(a.horas_acumuladas).toFixed(1)}h
                           </td>
@@ -230,6 +320,25 @@ export default function MantenimientoAdmin() {
                               acumuladas={parseFloat(a.horas_acumuladas)}
                               proxima={parseFloat(a.horas_proxima_revision)}
                             />
+                          </td>
+                          <td className="mnt__td">
+                            {enMant ? (
+                              <button
+                                className="mnt__btn mnt__btn--sm mnt__btn--primary"
+                                disabled={cambiandoEstado === a.id_aeronave}
+                                onClick={() => handleCambiarEstado(a, "ACTIVO")}
+                              >
+                                {cambiandoEstado === a.id_aeronave ? "…" : "Marcar completado"}
+                              </button>
+                            ) : cerca ? (
+                              <button
+                                className="mnt__btn mnt__btn--sm mnt__btn--danger"
+                                disabled={cambiandoEstado === a.id_aeronave}
+                                onClick={() => handleCambiarEstado(a, "MANTENIMIENTO")}
+                              >
+                                {cambiandoEstado === a.id_aeronave ? "…" : "Poner en mantenimiento"}
+                              </button>
+                            ) : null}
                           </td>
                         </tr>
                       );
@@ -322,6 +431,22 @@ export default function MantenimientoAdmin() {
           aeronaves={aeronaves}
           onClose={() => setShowModal(false)}
           onGuardado={cargar}
+        />
+      )}
+
+      {modalMant && (
+        <ConfirmarMantenimientoModal
+          aeronave={modalMant}
+          onClose={() => setModalMant(null)}
+          onConfirmar={async () => {
+            setCambiandoEstado(modalMant.id_aeronave);
+            try {
+              await cambiarEstadoAeronave(modalMant.id_aeronave, "MANTENIMIENTO");
+              await cargar();
+            } finally {
+              setCambiandoEstado(null);
+            }
+          }}
         />
       )}
     </>

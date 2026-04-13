@@ -26,7 +26,10 @@ const ESTADO_CFG = {
   BORRADOR: { label: "Borrador", cls: "mhl__badge--borrador" },
   CANCELADO: { label: "Cancelado", cls: "mhl__badge--cancelado" },
   COMPLETADO: { label: "Completado", cls: "mhl__badge--completado" },
+  SALIDA_HANGAR: { label: "Salida hangar", cls: "mhl__badge--en-vuelo" },
   EN_VUELO: { label: "En vuelo", cls: "mhl__badge--en-vuelo" },
+  REGRESO_HANGAR: { label: "Regreso hangar", cls: "mhl__badge--en-vuelo" },
+  FINALIZANDO: { label: "Finalizando", cls: "mhl__badge--en-vuelo" },
 };
 
 function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
@@ -55,10 +58,14 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
           {esReal && (
             horasTotales >= 0 ? (
               <button className="mhl__btn mhl__btn--plan" onClick={onPlan}>
-                {v.loadsheet_estado === 'ENVIADO' ? 'Ver Loadsheet' : 'Plan de vuelo'}
+                {v.loadsheet_estado === 'COMPLETADO'
+                  ? 'Ver Loadsheet'
+                  : v.loadsheet_estado === 'BORRADOR'
+                  ? 'Revisar plan de vuelo'
+                  : 'Plan de vuelo'}
               </button>
             ) : (
-              <span className="mhl__btn-locked" title="Requiere 35+ horas totales">
+              <span className="mhl__btn-locked" title="El plan de vuelo digital está disponible para alumnos con 0 o más horas de vuelo acumuladas">
                 Plan de vuelo
               </span>
             )

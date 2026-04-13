@@ -1,7 +1,4 @@
-/**
- * Genera el PDF del plan de vuelo replicando el formulario físico de CAAA.
- * Devuelve un Blob PDF listo para subir al servidor.
- */
+
 export async function generarPdfPlanVuelo(datos, vuelo) {
   const pdfMakeModule = await import("pdfmake/build/pdfmake");
   const pdfFontsModule = await import("pdfmake/build/vfs_fonts");
@@ -47,7 +44,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
     defaultStyle: { font: "Helvetica" },
 
     content: [
-      // ── Encabezado ──────────────────────────────────────────────────────────
       {
         columns: [
           {
@@ -77,12 +73,10 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
         margin: [0, 0, 0, 8],
       },
 
-      // ── Tabla principal ──────────────────────────────────────────────────────
       {
         table: {
           widths: ["*"],
           body: [
-            // Fila 1 — Reglas de vuelo (encabezado de sección)
             [
               {
                 table: {
@@ -94,7 +88,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 2 — Lugar / Fecha / Reglas / Hora
             [
               {
                 columns: [
@@ -107,7 +100,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 3 — Aeronave / Tipo / Altitud
             [
               {
                 columns: [
@@ -120,7 +112,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 4 — Ruta
             [
               {
                 columns: [
@@ -130,7 +121,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 5 — Tiempo de ruta / Combustible / Personas a bordo
             [
               {
                 columns: [
@@ -143,7 +133,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 6 — Frecuencias / Destino alterno
             [
               {
                 columns: [
@@ -156,7 +145,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 7 — Destino
             [
               {
                 columns: [
@@ -166,10 +154,8 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Separador — sección pilotos
             [{ table: { widths: ["*"], body: [[hdr("PILOTOS")]] }, layout: "noBorders" }],
 
-            // Fila 8 — Piloto 1
             [
               {
                 columns: [
@@ -181,7 +167,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 9 — Piloto 2 (visible solo si hay datos)
             ...(datos.pilot2_nombre
               ? [
                   [
@@ -197,10 +182,8 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
                 ]
               : []),
 
-            // Separador — sección observaciones y cierre
             [{ table: { widths: ["*"], body: [[hdr("OBSERVACIONES Y CIERRE")]] }, layout: "noBorders" }],
 
-            // Fila 10 — Observaciones
             [
               {
                 columns: [
@@ -210,7 +193,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
               },
             ],
 
-            // Fila 11 — Piloto al mando / Despacho
             [
               {
                 columns: [
@@ -234,7 +216,6 @@ export async function generarPdfPlanVuelo(datos, vuelo) {
         },
       },
 
-      // ── Pie de página ────────────────────────────────────────────────────────
       {
         text: "IMPRESOS RIVAS  TEL: 2225-8205",
         fontSize: 6.5,

@@ -1,8 +1,4 @@
-/**
- * Genera el PDF del loadsheet de navegación replicando el formato físico de CAAA.
- * Orientación horizontal (landscape) A4.
- * Devuelve un Blob PDF listo para subir al servidor.
- */
+
 export async function generarPdfLoadsheet(form, waypoints, vuelo) {
   const pdfMakeModule = await import("pdfmake/build/pdfmake");
   const pdfFontsModule = await import("pdfmake/build/vfs_fonts");
@@ -20,7 +16,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     ? `${vuelo.alumno_nombre ?? ""} ${vuelo.alumno_apellido ?? ""}`.trim()
     : "";
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
   const cell = (text, opts = {}) => ({
     text: String(text ?? ""),
     fontSize: 7,
@@ -47,7 +42,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     margin: [3, 2, 3, 2],
   });
 
-  // ── Cabecera del documento ─────────────────────────────────────────────────
   const headerRow = {
     columns: [
       {
@@ -70,7 +64,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     margin: [0, 0, 0, 6],
   };
 
-  // ── Sección de datos del vuelo ─────────────────────────────────────────────
   const infoRow = {
     table: {
       widths: ["*", "*", "*", "*", "*", "*"],
@@ -94,7 +87,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     margin: [0, 0, 0, 5],
   };
 
-  // ── Tabla de combustible ───────────────────────────────────────────────────
   const fuelItems = [
     ["TAXI",            form.taxi],
     ["TRIP",            form.trip],
@@ -127,7 +119,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     margin: [0, 0, 0, 5],
   };
 
-  // ── Tabla de waypoints ─────────────────────────────────────────────────────
   const wpCols = [
     "WAYPOINT", "ALT/FL", "W/V", "TC", "VAR", "MC",
     "WCA", "MH", "DEV", "CH", "TAS", "GS",
@@ -145,7 +136,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     cell(wp.fuel_req),  cell(wp.fuel_act),
   ]);
 
-  // Asegurar mínimo 5 filas vacías para que el documento tenga espacio de escritura
   while (wpRows.length < 5) {
     wpRows.push(wpCols.map(() => cell("")));
   }
@@ -166,7 +156,6 @@ export async function generarPdfLoadsheet(form, waypoints, vuelo) {
     },
   };
 
-  // ── Definición del documento ───────────────────────────────────────────────
   const docDefinition = {
     pageSize: "A4",
     pageOrientation: "landscape",

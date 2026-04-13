@@ -204,6 +204,21 @@
   font-size: 0.78rem;
 }
 
+.mnt__btn--danger {
+  background: #7f1d1d;
+  color: #fecaca;
+  border-color: #7f1d1d;
+}
+
+.mnt__btn--danger:hover:not(:disabled) { background: #991b1b; }
+
+.mnt__btn--danger:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.mnt__tipo-badge--rojo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 /* ── Modal ───────────────────────────────────────────────────────────────── */
 .mnt__overlay {
   position: fixed;

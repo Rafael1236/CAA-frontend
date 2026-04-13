@@ -61,17 +61,22 @@ function getEstadoDinamico(v, diaHoy) {
   return "COMPLETADO";
 }
 
+// Progreso basado en estado real del vuelo (no en tiempo del bloque)
 function calcProgreso(v) {
-  if (!v.hora_inicio || !v.hora_fin) return 0;
-  const now = new Date();
-  const [hS, mS] = v.hora_inicio.split(":").map(Number);
-  const [hE, mE] = v.hora_fin.split(":").map(Number);
-  const start = new Date(now); start.setHours(hS, mS, 0, 0);
-  const end   = new Date(now); end.setHours(hE, mE, 0, 0);
-  const total = end - start;
-  if (total <= 0) return 100;
-  return Math.min(100, Math.max(0, Math.round(((now - start) / total) * 100)));
+  const { estado } = v;
+  if (!estado || estado === "PUBLICADO" || estado === "PROGRAMADO") return null;
+  if (estado === "SALIDA_HANGAR") return 5;
+  if (estado === "EN_VUELO") return 50;
+  if (estado === "REGRESO_HANGAR" || estado === "FINALIZANDO") return 100;
+  return null; // COMPLETADO, CANCELADO, etc.
 }
+
+const ESTADO_VUELO_META = {
+  SALIDA_HANGAR:  { label: "SALIDA HANGAR",  cls: "pp__tbl-badge--hangar"   },
+  EN_VUELO:       { label: "EN VUELO",        cls: "pp__tbl-badge--envuelo"  },
+  REGRESO_HANGAR: { label: "REGRESO HANGAR",  cls: "pp__tbl-badge--regreso"  },
+  FINALIZANDO:    { label: "FINALIZANDO",     cls: "pp__tbl-badge--finaliz"  },
+};
 
 function tiempoRestante(v) {
   const now = new Date();
@@ -153,7 +158,10 @@ export default function PaginaProgramacion() {
   );
 
   const vuelosEnCurso = useMemo(() =>
-    vuelosConEstado.filter(v => Number(v.dia_semana) === diaHoy && v.estadoDinamico === "EN_VUELO"),
+    vuelosConEstado.filter(v =>
+      Number(v.dia_semana) === diaHoy &&
+      ["SALIDA_HANGAR", "EN_VUELO", "REGRESO_HANGAR", "FINALIZANDO"].includes(v.estado)
+    ),
     [vuelosConEstado, diaHoy]
   );
 
@@ -341,9 +349,8 @@ export default function PaginaProgramacion() {
                       </thead>
                       <tbody>
                         {vuelosEnCurso.map(v => {
-                          const pct  = calcProgreso(v);
-                          const rest = tiempoRestante(v);
-                          const dur  = duracionTotal(v);
+                          const pct      = calcProgreso(v);
+                          const badgeMeta = ESTADO_VUELO_META[v.estado] || { label: v.estado, cls: "pp__tbl-badge--envuelo" };
                           return (
                             <tr key={v.id_vuelo}>
                               <td className="pp__tbl-id">
@@ -358,12 +365,13 @@ export default function PaginaProgramacion() {
                               </td>
                               <td>
                                 <div className="pp__tbl-estado-row">
-                                  <span className="pp__tbl-badge pp__tbl-badge--envuelo">EN VUELO</span>
-                                  <span className="pp__tbl-tiempo">{rest} / {dur}</span>
+                                  <span className={`pp__tbl-badge ${badgeMeta.cls}`}>{badgeMeta.label}</span>
                                 </div>
-                                <div className="pp__tbl-bar-wrap">
-                                  <div className="pp__tbl-bar" style={{ width: `${pct}%` }} />
-                                </div>
+                                {pct !== null && (
+                                  <div className="pp__tbl-bar-wrap">
+                                    <div className="pp__tbl-bar" style={{ width: `${pct}%` }} />
+                                  </div>
+                                )}
                               </td>
                               <td className="pp__tbl-hora">{formatHora(v.hora_inicio)}</td>
                             </tr>

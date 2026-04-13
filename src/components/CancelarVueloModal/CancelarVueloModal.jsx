@@ -73,10 +73,7 @@ export default function CancelarVueloModal({ vuelo, tipoCancel, onClose, onCance
               <ul className="cv-condiciones-lista">
                 {condiciones.map((c) => (
                   <li key={c.id_condicion} className="cv-condicion-item">
-                    <div className="cv-condicion-titulo">{c.titulo}</div>
-                    {c.descripcion && (
-                      <div className="cv-condicion-desc">{c.descripcion}</div>
-                    )}
+                    <div className="cv-condicion-titulo">{c.texto}</div>
                   </li>
                 ))}
               </ul>

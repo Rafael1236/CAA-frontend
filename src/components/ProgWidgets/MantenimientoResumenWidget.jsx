@@ -37,13 +37,10 @@ export default function MantenimientoResumenWidget() {
       ) : (
         <div className="pw__cards">
           {items.map((a) => {
-            const horas_restantes = Number(a.horas_restantes ?? 0);
-            const horas_proxima   = Number(a.horas_proxima_revision ?? 0);
-            const horas_acum      = Number(a.horas_acumuladas ?? 0);
-            const total           = horas_proxima - (horas_acum - horas_restantes);
-            const pct = total > 0
-              ? Math.min(100, Math.max(0, Math.round(((total - horas_restantes) / total) * 100)))
-              : 100;
+            const horas_restantes = parseFloat(a.horas_restantes ?? 0);
+            // Ciclos fijos de 50 horas (0→50, 50→100).
+            // pct = progreso dentro del ciclo actual de 50 hs.
+            const pct = Math.min(100, Math.max(0, Math.round((50 - horas_restantes) / 50 * 100)));
 
             let barCls = "pw__bar--verde";
             if (horas_restantes <= 5)  barCls = "pw__bar--rojo";
@@ -53,16 +50,25 @@ export default function MantenimientoResumenWidget() {
             if (horas_restantes <= 5)  tagCls = "pw__tag--rojo";
             else if (horas_restantes <= 10) tagCls = "pw__tag--naranja";
 
+            const vencida = a.estado === "MANTENIMIENTO";
+            const pronto = !vencida && horas_restantes <= 5;
+
             return (
               <div className="pw__card" key={a.id_aeronave}>
                 <div className="pw__card-row">
                   <span className="pw__card-aeronave">{a.codigo}</span>
-                  <span className={`pw__tag ${tagCls}`}>
-                    {horas_restantes <= 0 ? "¡Vencida!" : `${horas_restantes.toFixed(1)} hs`}
-                  </span>
+                  <div style={{ display: "flex", gap: "4px" }}>
+                    {vencida && <span className="pw__tag pw__tag--rojo">¡Vencida!</span>}
+                    {pronto && <span className="pw__tag pw__tag--naranja">Pronto</span>}
+                    {!vencida && (
+                      <span className={`pw__tag ${tagCls}`}>
+                        {horas_restantes.toFixed(1)} hs
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="pw__card-sub">
-                  {a.tipo_mantenimiento} · {parseFloat(a.horas_acumuladas || 0).toFixed(1)} / {parseFloat(a.horas_proxima_revision || 0).toFixed(1)} hs
+                  {a.tipo_proxima_revision} · {parseFloat(a.horas_acumuladas || 0).toFixed(1)} / {parseFloat(a.horas_proxima_revision || 0).toFixed(1)} hs
                 </div>
                 <div className="pw__bar-wrap">
                   <div className={`pw__bar ${barCls}`} style={{ width: `${pct}%` }} />

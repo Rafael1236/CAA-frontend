@@ -125,6 +125,18 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
+.ins__card--vuelo {
+  min-width: 200px;
+}
+
+.ins__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
 .ins__card-aeronave {
   font-size: 0.9rem;
   font-weight: 800;
@@ -136,6 +148,118 @@
   font-size: 0.84rem;
   font-weight: 600;
   color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Barra de progreso ───────────────────────────────────────────────────── */
+.ins__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.ins__bar-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 99px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.ins__bar {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.ins__bar--full {
+  background: #10b981;
+}
+
+.ins__bar-pct {
+  font-size: 0.7rem;
+  color: #6b7280;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* ── Duration input ──────────────────────────────────────────────────────── */
+.ins__dur-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0.4rem 0;
+}
+
+.ins__dur-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.ins__dur-label--required::after {
+  content: " *";
+  color: #b91c1c;
+}
+
+.ins__dur-input {
+  padding: 5px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  color: #111;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ins__dur-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+}
+
+/* ── Action button ───────────────────────────────────────────────────────── */
+.ins__btn-avanzar {
+  width: 100%;
+  padding: 7px 12px;
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: background 0.15s;
+}
+
+.ins__btn-avanzar:hover:not(:disabled) { background: #163059; }
+
+.ins__btn-avanzar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ins__btn-avanzar--completar {
+  background: #15803d;
+}
+
+.ins__btn-avanzar--completar:hover:not(:disabled) { background: #166534; }
+
+/* ── Completado resumen ──────────────────────────────────────────────────── */
+.ins__completado-resumen {
+  font-size: 0.78rem;
+  color: #374151;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 5px 8px;
+  margin-top: 0.4rem;
 }
 
 /* ── Tags de estado ──────────────────────────────────────────────────────── */
@@ -150,12 +274,13 @@
   white-space: nowrap;
 }
 
-.ins__tag--gris    { background: #f3f4f6; color: #374151; }
-.ins__tag--naranja { background: #fff7ed; color: #c2410c; }
-.ins__tag--azul    { background: #eff6ff; color: #1d4ed8; }
-.ins__tag--morado  { background: #f5f3ff; color: #6d28d9; }
-.ins__tag--verde   { background: #f0fdf4; color: #15803d; }
-.ins__tag--rojo    { background: #fef2f2; color: #b91c1c; }
+.ins__tag--gris     { background: #f3f4f6; color: #374151; }
+.ins__tag--naranja  { background: #fff7ed; color: #c2410c; }
+.ins__tag--azul     { background: #eff6ff; color: #1d4ed8; }
+.ins__tag--morado   { background: #f5f3ff; color: #6d28d9; }
+.ins__tag--amarillo { background: #fefce8; color: #854d0e; }
+.ins__tag--verde    { background: #f0fdf4; color: #15803d; }
+.ins__tag--rojo     { background: #fef2f2; color: #b91c1c; }
 
 /* ── Tabla ───────────────────────────────────────────────────────────────── */
 .ins__table-wrap {

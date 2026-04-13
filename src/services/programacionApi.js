@@ -70,7 +70,6 @@ export const getVuelosActivos = async () => {
   const res = await axios.get(`${API_URL}/turno/vuelos-hoy`, {
     headers: getUserHeader(),
   });
-  // Filtrar solo vuelos con estado activo
   const ACTIVOS = ["EN_VUELO", "SALIDA_HANGAR", "REGRESO_HANGAR"];
   return res.data.filter((v) => ACTIVOS.includes(v.estado));
 };
@@ -94,6 +93,23 @@ export const getCalendarioPublico = async () => {
   return res.data;
 };
 
+export const reasignarAeronave = async (id_vuelo, id_aeronave) => {
+  const res = await axios.post(
+    `${API_URL}/programacion/vuelos/${id_vuelo}/reasignar-aeronave`,
+    { id_aeronave },
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
+export const getAeronavesDisponibles = async (id_semana, id_bloque, dia_semana) => {
+  const res = await axios.get(`${API_URL}/programacion/aeronaves-disponibles`, {
+    params: { id_semana, id_bloque, dia_semana },
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
 export const getAeronavesPublicas = async () => {
   const res = await axios.get(`${API_URL}/calendario/aeronaves`);
   return res.data;
@@ -103,4 +119,4 @@ export const getBloquesPublicos = async () => {
   const res = await axios.get(`${API_URL}/calendario/bloques`);
   return res.data;
 };
-
+

@@ -114,21 +114,49 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
     }
   };
 
-  // ── Generar PDF y completar ────────────────────────────────────────────────
+  // ── Descargar PDF sin completar ────────────────────────────────────────────
+  const handleDescargar = async () => {
+    setSaving(true);
+    try {
+      const pdfBlob = await generarPdfLoadsheet(comb, waypoints, vueloInfo);
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `loadsheet_vuelo_${id_vuelo}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Error al generar el PDF.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ── Guardar primero, luego generar PDF y completar ─────────────────────────
   const handleGenerarYCompletar = async () => {
     setGenerating(true);
     try {
-      await guardarLoadsheet(id_vuelo, { ...comb, waypoints });
+      try {
+        await guardarLoadsheet(id_vuelo, { ...comb, waypoints });
+        setLsEstado("BORRADOR");
+      } catch (e) {
+        alert("Error al guardar el loadsheet. No se envió.\n" + (e.response?.data?.message || ""));
+        return;
+      }
       const pdfBlob = await generarPdfLoadsheet(comb, waypoints, vueloInfo);
       await completarLoadsheet(id_vuelo, pdfBlob);
       setLsEstado("COMPLETADO");
-      alert("Loadsheet completado. PDF generado y guardado.");
+      alert("Loadsheet enviado y completado.");
     } catch (e) {
       alert(e.response?.data?.message || "No se pudo completar el loadsheet.");
     } finally {
       setGenerating(false);
     }
   };
+
+  const isReadonly = lsEstado === "BORRADOR" || lsEstado === "COMPLETADO";
 
   const alumnoNombre = vueloInfo
     ? `${vueloInfo.alumno_nombre ?? ""} ${vueloInfo.alumno_apellido ?? ""}`.trim()
@@ -214,6 +242,7 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
                         onChange={(e) =>
                           setComb((prev) => ({ ...prev, [key]: e.target.value }))
                         }
+                        disabled={isReadonly}
                       />
                     </div>
                   ))}
@@ -224,7 +253,7 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
               <div className="ls-section">
                 <div className="ls-section-title-row">
                   <span className="ls-section-title">Waypoints</span>
-                  <button className="ls-btn-add" onClick={agregarFila}>+ Agregar fila</button>
+                  <button className="ls-btn-add" onClick={agregarFila} disabled={isReadonly}>+ Agregar fila</button>
                 </div>
                 <div className="ls-table-wrapper">
                   <table className="ls-table">
@@ -247,6 +276,7 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
                                 className="ls-cell-input"
                                 value={wp[key]}
                                 onChange={(e) => setWpField(idx, key, e.target.value)}
+                                disabled={isReadonly}
                               />
                             </td>
                           ))}
@@ -255,7 +285,7 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
                               className="ls-btn-del"
                               onClick={() => eliminarFila(idx)}
                               title="Eliminar fila"
-                              disabled={waypoints.length === 1}
+                              disabled={isReadonly || waypoints.length === 1}
                             >
                               ×
                             </button>
@@ -273,24 +303,58 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
         {/* ── Pie ─────────────────────────────────────────────────────────── */}
         {!loading && !error && (
           <div className="ls-footer">
-            <button className="ls-btn" onClick={onClose}>
-              Cerrar
-            </button>
-            <button
-              className="ls-btn ls-btn--primary"
-              onClick={handleGuardar}
-              disabled={saving || generating}
-            >
-              {saving ? "Guardando…" : "Guardar borrador"}
-            </button>
-            <button
-              className="ls-btn ls-btn--success"
-              onClick={handleGenerarYCompletar}
-              disabled={saving || generating || lsEstado === "COMPLETADO"}
-              title={lsEstado === "COMPLETADO" ? "El loadsheet ya fue completado" : ""}
-            >
-              {generating ? "Generando PDF…" : "Generar y completar"}
-            </button>
+            <button className="ls-btn" onClick={onClose}>Cerrar</button>
+
+            {/* Sin loadsheet: editable, guardar o completar */}
+            {lsEstado === null && (
+              <>
+                <button
+                  className="ls-btn ls-btn--primary"
+                  onClick={handleGuardar}
+                  disabled={saving || generating}
+                >
+                  {saving ? "Guardando…" : "Guardar borrador"}
+                </button>
+                <button
+                  className="ls-btn ls-btn--success"
+                  onClick={handleGenerarYCompletar}
+                  disabled={saving || generating}
+                >
+                  {generating ? "Generando…" : "Generar y completar"}
+                </button>
+              </>
+            )}
+
+            {/* Borrador: solo lectura, descargar o enviar */}
+            {lsEstado === "BORRADOR" && (
+              <>
+                <button
+                  className="ls-btn ls-btn--primary"
+                  onClick={handleDescargar}
+                  disabled={saving || generating}
+                >
+                  {saving ? "Generando PDF…" : "Descargar PDF"}
+                </button>
+                <button
+                  className="ls-btn ls-btn--success"
+                  onClick={handleGenerarYCompletar}
+                  disabled={saving || generating}
+                >
+                  {generating ? "Enviando…" : "Enviar y completar"}
+                </button>
+              </>
+            )}
+
+            {/* Completado: solo lectura, solo descarga */}
+            {lsEstado === "COMPLETADO" && (
+              <button
+                className="ls-btn ls-btn--primary"
+                onClick={handleDescargar}
+                disabled={saving || generating}
+              >
+                {saving ? "Generando PDF…" : "Descargar PDF"}
+              </button>
+            )}
           </div>
         )}
 

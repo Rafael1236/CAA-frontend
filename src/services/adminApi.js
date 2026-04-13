@@ -211,3 +211,26 @@ export const registrarHorasManuales = async (id_aeronave, horas, descripcion = "
   );
   return res.data;
 };
+
+export const cambiarEstadoAeronave = async (id, estado) => {
+  const res = await axios.put(
+    `${API_URL}/admin/aeronaves/${id}/estado`,
+    { estado },
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
+export const getAlertasMantenimiento = async () => {
+  const res = await axios.get(`${API_URL}/admin/aeronaves/alertas-mantenimiento`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const getVuelosFuturosAeronave = async (id) => {
+  const res = await axios.get(`${API_URL}/admin/aeronaves/${id}/vuelos-futuros-count`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};

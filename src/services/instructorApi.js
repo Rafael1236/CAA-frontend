@@ -28,6 +28,15 @@ export const getMisAlumnos = async () => {
   return res.data;
 };
 
+export const avanzarEstadoVuelo = async (id_vuelo, body = {}) => {
+  const res = await axios.post(
+    `${API_URL}/instructor/vuelos/${id_vuelo}/avanzar`,
+    body,
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
 export const habilitarVueloExtra = async (id_alumno, id_semana, nuevo_limite) => {
   const res = await axios.patch(
     `${API_URL}/instructor/alumnos/${id_alumno}/habilitar-vuelo-extra`,

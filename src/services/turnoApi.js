@@ -14,15 +14,6 @@ export const getVuelosHoy = async () => {
   return res.data;
 };
 
-export const avanzarEstadoVuelo = async (id_vuelo, duracion_estimada_min = null) => {
-  const res = await axios.post(
-    `${API_URL}/turno/vuelos/${id_vuelo}/avanzar`,
-    duracion_estimada_min != null ? { duracion_estimada_min } : {},
-    { headers: getUserHeader() }
-  );
-  return res.data;
-};
-
 export const getEstadoOperaciones = async () => {
   const res = await axios.get(`${API_URL}/turno/estado-operaciones`, {
     headers: getUserHeader(),

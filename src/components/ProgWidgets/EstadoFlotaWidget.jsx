@@ -67,16 +67,29 @@ export default function EstadoFlotaWidget() {
         <div className="pw__cards">
           {flota.map((a) => {
             const cls = ESTADO_CLS[a.estado_actual] ?? "pw__tag--gris";
+            const horas = parseFloat(a.horas_acumuladas || 0);
+            const proxima = parseFloat(a.horas_proxima_revision || 50);
+            const proxima5 = a.estado !== "MANTENIMIENTO" && horas >= proxima - 5;
             return (
               <div className="pw__card pw__card--flota" key={a.id_aeronave}>
                 <div className="pw__card-row">
                   <span className="pw__card-aeronave">{a.codigo}</span>
-                  <span className={`pw__tag ${cls}`}>
-                    {ESTADO_LABEL[a.estado_actual] ?? a.estado_actual}
-                  </span>
+                  <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
+                    {a.estado === "MANTENIMIENTO" && (
+                      <span className="pw__tag pw__tag--rojo">Mantenimiento</span>
+                    )}
+                    {proxima5 && (
+                      <span className="pw__tag pw__tag--naranja">Próx. mant.</span>
+                    )}
+                    {a.estado !== "MANTENIMIENTO" && !proxima5 && (
+                      <span className={`pw__tag ${cls}`}>
+                        {ESTADO_LABEL[a.estado_actual] ?? a.estado_actual}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="pw__card-sub">
-                  {a.modelo} · {a.horas_acumuladas?.toFixed(1) ?? "0.0"} hs acum.
+                  {a.modelo} · {horas.toFixed(1)} hs acum.
                 </div>
               </div>
             );
