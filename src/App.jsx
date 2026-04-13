@@ -12,6 +12,12 @@ import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
 import DashboardProgramacion from "./pages/Programacion/Dashboard";
 import PaginaProgramacion from "./pages/Programacion/PaginaProgramacion";
 import DashboardAdmin from "./pages/Admin/Dashboard";
+import AuditoriaAdmin from "./pages/Admin/Auditoria";
+import MantenimientoAdmin from "./pages/Admin/Mantenimiento";
+import TurnoDashboard from "./pages/Turno/Dashboard";
+import ProtectedTurno from "./components/routes/ProtectedTurno";
+import InstructorDashboard from "./pages/Instructor/Dashboard";
+import ProtectedInstructor from "./components/routes/ProtectedInstructor";
 import ForcePasswordChange from "./components/routes/ForcePasswordChange";
 import Perfil from "./pages/Perfil/Perfil";
 
@@ -112,6 +118,40 @@ function App() {
               <ProtectedAdmin>
                 <DashboardAdmin />
               </ProtectedAdmin>
+            }
+          />
+          <Route
+            path="/admin/auditoria"
+            element={
+              <ProtectedAdmin>
+                <AuditoriaAdmin />
+              </ProtectedAdmin>
+            }
+          />
+          <Route
+            path="/admin/mantenimiento"
+            element={
+              <ProtectedAdmin>
+                <MantenimientoAdmin />
+              </ProtectedAdmin>
+            }
+          />
+
+          <Route
+            path="/turno"
+            element={
+              <ProtectedTurno>
+                <TurnoDashboard />
+              </ProtectedTurno>
+            }
+          />
+
+          <Route
+            path="/instructor"
+            element={
+              <ProtectedInstructor>
+                <InstructorDashboard />
+              </ProtectedInstructor>
             }
           />
 

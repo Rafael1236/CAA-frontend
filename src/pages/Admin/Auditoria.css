@@ -1,0 +1,297 @@
+.aud {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+/* ── Cabecera ───────────────────────────────────────────────────────────── */
+.aud__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.aud__top-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.aud__back {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  margin-top: 4px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.aud__back:hover { background: #f3f4f6; }
+
+.aud__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #6b7280;
+  margin: 0 0 2px;
+}
+
+.aud__title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin: 0 0 2px;
+}
+
+.aud__subtitle {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.aud__counter {
+  font-size: 0.82rem;
+  color: #6b7280;
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+/* ── Filtros ────────────────────────────────────────────────────────────── */
+.aud__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.aud__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 130px;
+}
+
+.aud__filter-label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.aud__filter-input {
+  padding: 6px 9px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.855rem;
+  color: #111;
+  background: #fff;
+}
+
+.aud__filter-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.aud__filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  padding-bottom: 1px;
+}
+
+.aud__btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.aud__btn:hover { background: #f3f4f6; }
+
+.aud__btn--primary {
+  background: #1e3a5f;
+  color: #fff;
+  border-color: #1e3a5f;
+}
+
+.aud__btn--primary:hover { background: #163059; }
+
+/* ── Tabla ──────────────────────────────────────────────────────────────── */
+.aud__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.aud__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.835rem;
+}
+
+.aud__table th {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.aud__table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  vertical-align: top;
+}
+
+.aud__row:last-child td { border-bottom: none; }
+
+.aud__row--clickable { cursor: pointer; }
+
+.aud__row--clickable:hover td { background: #f0f9ff; }
+
+.aud__row--expanded td { background: #f0f9ff; }
+
+/* ── Celdas específicas ─────────────────────────────────────────────────── */
+.aud__td-fecha  { white-space: nowrap; color: #6b7280; font-size: 0.78rem; }
+.aud__td-entidad { text-transform: lowercase; color: #6b7280; }
+.aud__td-ip     { font-family: monospace; font-size: 0.75rem; color: #9ca3af; }
+.aud__td-expand { width: 28px; text-align: center; }
+.aud__td-desc   { max-width: 260px; }
+
+.aud__chevron { font-size: 0.65rem; color: #6b7280; }
+
+/* ── Badges ─────────────────────────────────────────────────────────────── */
+.aud__rol-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 99px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.aud__rol-badge--admin        { background: #fef3c7; color: #92400e; }
+.aud__rol-badge--alumno       { background: #dbeafe; color: #1e40af; }
+.aud__rol-badge--programacion { background: #d1fae5; color: #065f46; }
+
+.aud__accion-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: #ede9fe;
+  color: #5b21b6;
+  white-space: nowrap;
+}
+
+/* ── Fila de detalle expandida ──────────────────────────────────────────── */
+.aud__row-detail td {
+  background: #fafafa;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0;
+}
+
+.aud__detail {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.aud__json-block {
+  flex: 1;
+  min-width: 220px;
+  max-width: 600px;
+}
+
+.aud__json-label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.aud__json-pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 7px;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre;
+}
+
+/* ── Estados vacíos / carga ─────────────────────────────────────────────── */
+.aud__loading,
+.aud__empty {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* ── Paginación ─────────────────────────────────────────────────────────── */
+.aud__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.aud__page-btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.aud__page-btn:hover:not(:disabled) { background: #f3f4f6; }
+
+.aud__page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.aud__page-info {
+  font-size: 0.84rem;
+  color: #374151;
+  font-weight: 600;
+}

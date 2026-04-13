@@ -21,6 +21,7 @@ export default function ProgramacionCalendar({
   setDragging,
   handleDrop,
   onCancelar,
+  onReasignar,
 }) {
   const safeItems = Array.isArray(items) ? items : [];
   const safeBloqueos = Array.isArray(bloqueos) ? bloqueos : [];
@@ -117,7 +118,15 @@ export default function ProgramacionCalendar({
                             })
                           }
                         >
-                          <span className="alumno">{item.alumno_nombre}</span>
+                          <span className="alumno">
+                            {estadoMostrar === "CANCELADO" &&
+                              item.justificacion_cancelacion
+                                ?.toLowerCase()
+                                .includes("mantenimiento") && (
+                              <span title="Cancelado por mantenimiento" style={{ marginRight: 4 }}>🔧</span>
+                            )}
+                            {item.alumno_nombre}
+                          </span>
                           <span className="instructor">
                             {item.instructor_nombre}
                           </span>
@@ -131,6 +140,27 @@ export default function ProgramacionCalendar({
                                 onClick={() => onCancelar?.(item.id_vuelo)}
                               >
                                 Cancelar
+                              </button>
+                            )}
+
+                          {week === "current" &&
+                            item.id_vuelo &&
+                            estadoMostrar === "CANCELADO" &&
+                            item.justificacion_cancelacion
+                              ?.toLowerCase()
+                              .includes("mantenimiento") && (
+                              <button
+                                className="btn-reasignar-vuelo"
+                                type="button"
+                                onClick={() => onReasignar?.({
+                                  id_vuelo: item.id_vuelo,
+                                  id_semana: item.id_semana,
+                                  id_bloque: item.id_bloque,
+                                  dia_semana: item.dia_semana,
+                                  alumno_nombre: item.alumno_nombre,
+                                })}
+                              >
+                                Reasignar aeronave
                               </button>
                             )}
                         </div>

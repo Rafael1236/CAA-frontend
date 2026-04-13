@@ -180,3 +180,25 @@
   background: rgba(255, 76, 76, 0.22);
   border-color: #FF4C4C;
 }
+
+.btn-reasignar-vuelo {
+  margin-top: 5px;
+  width: 100%;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(217, 158, 46, 0.35);
+  background: rgba(217, 158, 46, 0.08);
+  color: #d69e2e;
+  font-weight: 700;
+  font-size: 0.62rem;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-reasignar-vuelo:hover {
+  background: rgba(217, 158, 46, 0.22);
+  border-color: #d69e2e;
+}

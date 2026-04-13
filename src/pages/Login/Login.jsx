@@ -30,6 +30,8 @@ export default function Login() {
       if (user.rol === "ALUMNO")          navigate("/alumno/dashboard");
       else if (user.rol === "PROGRAMACION") navigate("/programacion/dashboard");
       else if (user.rol === "ADMIN")      navigate("/admin/dashboard");
+      else if (user.rol === "TURNO")       navigate("/turno");
+      else if (user.rol === "INSTRUCTOR")  navigate("/instructor");
     } catch {
       alert("Credenciales incorrectas");
     }

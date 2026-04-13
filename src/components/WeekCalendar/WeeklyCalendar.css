@@ -175,6 +175,80 @@
   border-color: #FF4C4C;
 }
 
+.btn-plan-vuelo {
+  margin-top: 6px;
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-plan-vuelo:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+.plan-vuelo-bloqueado {
+  display: block;
+  margin-top: 6px;
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 0.72rem;
+  color: #6b7280;
+  text-align: center;
+  cursor: default;
+}
+
+.btn-wb {
+  margin-top: 4px;
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-wb:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+}
+
+.btn-loadsheet {
+  margin-top: 4px;
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  background: rgba(124, 58, 237, 0.08);
+  color: #7c3aed;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-loadsheet:hover {
+  background: rgba(124, 58, 237, 0.16);
+  border-color: #7c3aed;
+}
+
 .aeronave-extra-note {
   margin-top: 4px;
   font-size: 11px;

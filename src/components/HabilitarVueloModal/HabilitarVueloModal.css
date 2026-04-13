@@ -1,0 +1,159 @@
+.hv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.hv-modal {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+}
+
+.hv-header {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hv-header-left h2 {
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.hv-semana-label {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.hv-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.hv-body {
+  padding: 1rem 1.5rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Tabla */
+.hv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.hv-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.hv-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.hv-table tr:last-child td {
+  border-bottom: none;
+}
+
+.hv-table tr:hover td {
+  background: #f9fafb;
+}
+
+.hv-limite-actual {
+  font-weight: 600;
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.hv-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hv-input {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #111;
+}
+
+.hv-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.hv-save-btn {
+  padding: 4px 12px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.hv-save-btn:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.hv-save-btn:disabled {
+  background: #86efac;
+  cursor: not-allowed;
+}
+
+.hv-row-error {
+  font-size: 0.72rem;
+  color: #b91c1c;
+  margin-top: 3px;
+}
+
+.hv-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.hv-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
