@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CancelarVueloModal from "../CancelarVueloModal/CancelarVueloModal";
+import ReporteVueloModal from "../ReporteVueloModal/ReporteVueloModal";
 import "./MiHorarioList.css";
 
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -32,9 +33,9 @@ const ESTADO_CFG = {
   FINALIZANDO: { label: "Finalizando", cls: "mhl__badge--en-vuelo" },
 };
 
-function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
-  const esFuturo = new Date(v.fecha_hora_vuelo) > new Date();
-  const msRestantes = new Date(v.fecha_hora_vuelo) - new Date();
+function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan, onReporte }) {
+  const esFuturo = new Date(v.fecha_vuelo) > new Date();
+  const msRestantes = new Date(v.fecha_vuelo) - new Date();
   const esEmergencia = esFuturo && msRestantes / (1000 * 60 * 60) <= 24;
   const esReal = v.aeronave_tipo !== "SIMULADOR";
   const cfg = ESTADO_CFG[v.estado] ?? { label: v.estado, cls: "" };
@@ -82,6 +83,20 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
         </div>
       )}
 
+      {v.estado === "COMPLETADO" && (
+        <div className="mhl__vuelo-actions">
+          <button className="mhl__btn mhl__btn--reporte" onClick={onReporte}>
+            {v.reporte_estado === "COMPLETADO"
+              ? "Ver Reporte de Vuelo"
+              : v.reporte_estado === "PENDIENTE_INSTRUCTOR"
+              ? "Reporte enviado — pendiente instructor"
+              : v.reporte_estado === "BORRADOR"
+              ? "Continuar Reporte de Vuelo"
+              : "Llenar Reporte de Vuelo"}
+          </button>
+        </div>
+      )}
+
       {v.estado === "BORRADOR" && (
         <p className="mhl__vuelo-draft-note">Slot solicitado · pendiente de publicación</p>
       )}
@@ -90,7 +105,8 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
 }
 
 export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefresh }) {
-  const [modalVuelo, setModalVuelo] = useState(null);
+  const [modalVuelo, setModalVuelo]     = useState(null);
+  const [reporteVuelo, setReporteVuelo] = useState(null);
 
   const horasTotales = vuelos.length > 0 ? Number(vuelos[0].horas_totales ?? 0) : 0;
 
@@ -115,7 +131,7 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
   };
 
   const abrirCancelar = (v) => {
-    const ms = new Date(v.fecha_hora_vuelo) - new Date();
+    const ms = new Date(v.fecha_vuelo) - new Date();
     const tipoCancel = ms / (1000 * 60 * 60) > 24 ? "NORMAL" : "EMERGENCIA";
     setModalVuelo({ ...v, tipoCancel });
   };
@@ -142,6 +158,13 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
 
   return (
     <div className="mhl">
+      {reporteVuelo && (
+        <ReporteVueloModal
+          id_vuelo={reporteVuelo.id_vuelo}
+          mode="alumno"
+          onClose={() => { setReporteVuelo(null); onRefresh?.(); }}
+        />
+      )}
       {modalVuelo && (
         <CancelarVueloModal
           vuelo={modalVuelo}
@@ -157,9 +180,9 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
             <div key={dia} className="mhl__day">
               <div className="mhl__day-header">
                 <span className="mhl__day-name">{DIAS[dia - 1]}</span>
-                {primerVuelo?.fecha_hora_vuelo && (
+                {primerVuelo?.fecha_vuelo && (
                   <span className="mhl__day-date">
-                    {formatFecha(primerVuelo.fecha_hora_vuelo)}
+                    {formatFecha(primerVuelo.fecha_vuelo)}
                   </span>
                 )}
               </div>
@@ -171,6 +194,7 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
                   horasTotales={horasTotales}
                   onCancelar={() => abrirCancelar(v)}
                   onPlan={() => abrirLoadsheet(v)}
+                  onReporte={() => setReporteVuelo(v)}
                 />
               ))}
             </div>
