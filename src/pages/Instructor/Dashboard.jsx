@@ -2,12 +2,15 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { io as socketIO } from "socket.io-client";
 import Header from "../../components/Header/Header";
 import ToastMantenimiento from "../../components/ToastMantenimiento/ToastMantenimiento";
+import ChecklistPostvueloModal from "../../components/ChecklistPostvueloModal/ChecklistPostvueloModal";
+import ReporteVueloModal from "../../components/ReporteVueloModal/ReporteVueloModal";
 import {
   getVuelosHoy,
   getVuelosSemana,
   getMisAlumnos,
   habilitarVueloExtra,
   avanzarEstadoVuelo,
+  getReportesPendientes,
 } from "../../services/instructorApi";
 import "./Dashboard.css";
 
@@ -65,7 +68,7 @@ function EstadoTag({ estado }) {
 }
 
 // ── Tarjeta de vuelo interactiva (tab Hoy) ─────────────────────────────────
-function VueloCard({ vuelo, onAvanzar, advancing }) {
+function VueloCard({ vuelo, onAvanzar, onCompletarVuelo, advancing }) {
   const [progreso, setProgreso] = useState(() => calcProgreso(vuelo));
   const [tiempoMin, setTiempoMin] = useState("");
   const timerRef = useRef(null);
@@ -169,8 +172,8 @@ function VueloCard({ vuelo, onAvanzar, advancing }) {
       {isFinalizando && (
         <button
           className="ins__btn-avanzar ins__btn-avanzar--completar"
-          disabled={btnDisabled}
-          onClick={handleConfirmar}
+          disabled={isAdvancing || !tiempoMin || parseInt(tiempoMin, 10) <= 0}
+          onClick={() => onCompletarVuelo(vuelo, tiempoMin)}
         >
           {isAdvancing ? "Procesando…" : "Completar Vuelo"}
         </button>
@@ -290,6 +293,14 @@ export default function InstructorDashboard() {
   const [loadingSemana, setLoadingSemana]   = useState(false);
   const [loadingAlumnos, setLoadingAlumnos] = useState(true);
 
+  // Checklist post-vuelo
+  const [checklistModal, setChecklistModal] = useState(null); // { vuelo, tiempoMin }
+
+  // Reportes pendientes de firma
+  const [reportesPendientes, setReportesPendientes]   = useState([]);
+  const [loadingReportes, setLoadingReportes]         = useState(true);
+  const [reporteModal, setReporteModal]               = useState(null); // vuelo
+
   const cargarVuelosHoy = useCallback(async () => {
     try {
       const data = await getVuelosHoy();
@@ -297,7 +308,14 @@ export default function InstructorDashboard() {
     } catch { /* silencioso en polling */ }
   }, []);
 
-  // Carga inicial: hoy + alumnos
+  const cargarReportesPendientes = useCallback(async () => {
+    try {
+      const data = await getReportesPendientes();
+      setReportesPendientes(data);
+    } catch { /* silencioso */ }
+  }, []);
+
+  // Carga inicial: hoy + alumnos + reportes pendientes
   useEffect(() => {
     Promise.all([
       cargarVuelosHoy().finally(() => setLoadingHoy(false)),
@@ -305,8 +323,9 @@ export default function InstructorDashboard() {
         .then((data) => { setAlumnos(data.alumnos); setSemanaProxima(data.semana); })
         .catch(() => {})
         .finally(() => setLoadingAlumnos(false)),
+      cargarReportesPendientes().finally(() => setLoadingReportes(false)),
     ]);
-  }, [cargarVuelosHoy]);
+  }, [cargarVuelosHoy, cargarReportesPendientes]);
 
   // Polling 30 s (solo tab hoy)
   useEffect(() => {
@@ -369,6 +388,16 @@ export default function InstructorDashboard() {
     }
   };
 
+  const handleAbrirChecklist = (vuelo, tiempoMin) => {
+    setChecklistModal({ vuelo, tiempoMin: parseInt(tiempoMin, 10) });
+  };
+
+  const handleChecklistCompletado = async () => {
+    setChecklistModal(null);
+    await cargarVuelosHoy();
+    await cargarReportesPendientes();
+  };
+
   const handleGuardado = (id_alumno, nuevoLimite) => {
     setAlumnos((prev) =>
       prev.map((a) => a.id_alumno === id_alumno ? { ...a, limite_vuelos: nuevoLimite } : a)
@@ -392,6 +421,24 @@ export default function InstructorDashboard() {
     <>
       <Header />
       <ToastMantenimiento />
+
+      {checklistModal && (
+        <ChecklistPostvueloModal
+          id_vuelo={checklistModal.vuelo.id_vuelo}
+          vueloInfo={checklistModal.vuelo}
+          tiempoVueloMin={checklistModal.tiempoMin}
+          onClose={() => setChecklistModal(null)}
+          onCompleted={handleChecklistCompletado}
+        />
+      )}
+
+      {reporteModal && (
+        <ReporteVueloModal
+          id_vuelo={reporteModal.id_vuelo}
+          mode="instructor"
+          onClose={() => { setReporteModal(null); cargarReportesPendientes(); }}
+        />
+      )}
 
       <div className="ins">
         {/* ── Cabecera ──────────────────────────────────────────────── */}
@@ -447,6 +494,7 @@ export default function InstructorDashboard() {
                         key={v.id_vuelo}
                         vuelo={v}
                         onAvanzar={handleAvanzar}
+                        onCompletarVuelo={handleAbrirChecklist}
                         advancing={advancing}
                       />
                     ))}
@@ -497,6 +545,57 @@ export default function InstructorDashboard() {
             )}
           </div>
         )}
+
+        {/* ── Reportes pendientes de firma ──────────────────────────── */}
+        <div className="ins__section">
+          <h3 className="ins__section-title">
+            Reportes pendientes de firma
+            {reportesPendientes.length > 0 && (
+              <span className="ins__badge-count">{reportesPendientes.length}</span>
+            )}
+          </h3>
+          {loadingReportes ? (
+            <p className="ins__loading">Cargando reportes…</p>
+          ) : reportesPendientes.length === 0 ? (
+            <p className="ins__empty">No hay reportes pendientes de firma.</p>
+          ) : (
+            <div className="ins__table-wrap">
+              <table className="ins__table">
+                <thead>
+                  <tr>
+                    <th className="ins__th">Alumno</th>
+                    <th className="ins__th">Aeronave</th>
+                    <th className="ins__th">Fecha</th>
+                    <th className="ins__th ins__th--center">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportesPendientes.map((r) => (
+                    <tr key={r.id_vuelo} className="ins__tr">
+                      <td className="ins__td">
+                        {r.alumno_nombre} {r.alumno_apellido}
+                      </td>
+                      <td className="ins__td">{r.aeronave_codigo}</td>
+                      <td className="ins__td">
+                        {r.fecha_hora_vuelo
+                          ? new Date(r.fecha_hora_vuelo).toLocaleDateString("es-SV", { day: "numeric", month: "short", year: "numeric" })
+                          : "—"}
+                      </td>
+                      <td className="ins__td ins__td--center">
+                        <button
+                          className="ins__btn-reporte"
+                          onClick={() => setReporteModal(r)}
+                        >
+                          Revisar y firmar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
         {/* ── Alumnos asignados ─────────────────────────────────────── */}
         <div className="ins__section ins__section--alumnos">

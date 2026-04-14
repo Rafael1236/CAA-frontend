@@ -154,3 +154,28 @@ export const completarLoadsheet = async (id_vuelo, pdfBlob) => {
   );
   return res.data;
 };
+
+export const getReporteVuelo = async (id_vuelo) => {
+  const res = await axios.get(`${API_URL}/alumno/vuelos/${id_vuelo}/reporte-vuelo`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const guardarReporteVuelo = async (id_vuelo, datos) => {
+  const res = await axios.put(
+    `${API_URL}/alumno/vuelos/${id_vuelo}/reporte-vuelo`,
+    datos,
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
+export const enviarReporteVuelo = async (id_vuelo, datos) => {
+  const res = await axios.patch(
+    `${API_URL}/alumno/vuelos/${id_vuelo}/reporte-vuelo/enviar`,
+    datos,
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};

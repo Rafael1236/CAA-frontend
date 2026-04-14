@@ -214,6 +214,12 @@
 }
 .mhl__btn--emergency:hover { background: #fee2e2; }
 
+.mhl__btn--reporte {
+  background: #059669;
+  color: #ffffff;
+}
+.mhl__btn--reporte:hover { background: #047857; }
+
 .mhl__btn-locked {
   font-size: 0.78rem;
   font-weight: 600;

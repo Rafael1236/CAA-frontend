@@ -55,7 +55,7 @@ export default function AlumnoDashboard() {
     setLoadingVuelos(true);
     try {
       const data = await getMiHorario(weekMode);
-      setVuelos(Array.isArray(data) ? data : []);
+      setVuelos(Array.isArray(data?.vuelos) ? data.vuelos : []);
     } catch {
       setVuelos([]);
     } finally {

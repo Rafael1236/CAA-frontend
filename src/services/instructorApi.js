@@ -45,3 +45,42 @@ export const habilitarVueloExtra = async (id_alumno, id_semana, nuevo_limite) =>
   );
   return res.data;
 };
+
+export const getReportesPendientes = async () => {
+  const res = await axios.get(`${API_URL}/instructor/reportes-pendientes`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const getReporteVueloInstructor = async (id_vuelo) => {
+  const res = await axios.get(`${API_URL}/instructor/vuelos/${id_vuelo}/reporte-vuelo`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const firmarReporteVuelo = async (id_vuelo, datos) => {
+  const res = await axios.patch(
+    `${API_URL}/instructor/vuelos/${id_vuelo}/reporte-vuelo/firmar`,
+    datos,
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
+
+export const getChecklistPostvuelo = async (id_vuelo) => {
+  const res = await axios.get(`${API_URL}/instructor/vuelos/${id_vuelo}/checklist-postvuelo`, {
+    headers: getUserHeader(),
+  });
+  return res.data;
+};
+
+export const guardarChecklistPostvuelo = async (id_vuelo, datos) => {
+  const res = await axios.post(
+    `${API_URL}/instructor/vuelos/${id_vuelo}/checklist-postvuelo`,
+    datos,
+    { headers: getUserHeader() }
+  );
+  return res.data;
+};
