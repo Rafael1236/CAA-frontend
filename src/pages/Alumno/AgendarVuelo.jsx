@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Header from "../../components/Header/Header";
 import AgendarCalendar from "../../components/AgendarCalendar/AgendarCalendar";
 import { getMiLicencia } from "../../services/alumnoApi";
@@ -27,15 +28,15 @@ export default function AgendarVuelo() {
     try {
       await guardarSolicitud(selecciones);
       setYaGuardado(true);
-      alert("Solicitud guardada correctamente");
+      toast.success("Solicitud guardada correctamente");
       navigate("/alumno/dashboard");
     } catch (err) {
       if (err.response?.status === 409) {
-        alert("Uno de los bloques ya fue tomado por otro alumno");
+        toast.error("Uno de los bloques ya fue tomado por otro alumno");
       } else if (err.response?.status === 403) {
-        alert("La solicitud ya no puede modificarse");
+        toast.warning("La solicitud ya no puede modificarse");
       } else {
-        alert("Error al guardar la solicitud");
+        toast.error("Error al guardar la solicitud");
       }
     }
   };
@@ -64,14 +65,26 @@ export default function AgendarVuelo() {
     load();
   }, []);
 
+  const now = new Date();
+  const svDateStr = now.toLocaleString("en-US", { timeZone: "America/El_Salvador" });
+  const svDate = new Date(svDateStr);
+  let diaSemanaActual = svDate.getDay();
+  if (diaSemanaActual === 0) diaSemanaActual = 7;
+
+  const diasNombres = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  
+  const agendaAbierta = licencia?.dia_apertura_agenda 
+    ? diaSemanaActual >= licencia.dia_apertura_agenda 
+    : true;
+
+  const agendaBloqueada = !agendaAbierta;
+
   const bloqueadoPorEstado = estadoSolicitud !== "BORRADOR";
   const limiteAlcanzado = selecciones.length >= limiteVuelos;
-  // Completamente bloqueado: ya guardó y llegó al límite (a menos que admin aumente el límite)
   const guardadoCompleto = yaGuardado && limiteAlcanzado;
-  // El calendario solo se bloquea totalmente cuando está guardado al límite o el estado no es BORRADOR
-  const calendarBloqueado = bloqueadoPorEstado || guardadoCompleto;
-  // El botón guardar se bloquea si no hay selecciones, el estado no es BORRADOR, o ya está guardado al límite
-  const saveBloqueado = bloqueadoPorEstado || selecciones.length === 0 || guardadoCompleto;
+  
+  const calendarBloqueado = bloqueadoPorEstado || guardadoCompleto || agendaBloqueada;
+  const saveBloqueado = bloqueadoPorEstado || selecciones.length === 0 || guardadoCompleto || agendaBloqueada;
 
   return (
     <>
@@ -125,6 +138,17 @@ export default function AgendarVuelo() {
             </span>
           </div>
         </div>
+
+        {agendaBloqueada && (
+          <div className="ag__alert ag__alert--locked">
+            <span className="ag__alert-icon">🔒</span>
+            <div>
+              <strong>Agenda cerrada:</strong> La agenda para tu nivel <strong>{licencia?.nombre}</strong> abre el <strong>{diasNombres[licencia.dia_apertura_agenda]}</strong>. 
+              <br />
+              <small>Hoy es {diasNombres[diaSemanaActual]}. Los espacios se habilitarán automáticamente el día programado.</small>
+            </div>
+          </div>
+        )}
 
         {bloqueadoPorEstado && (
           <div className="ag__alert">

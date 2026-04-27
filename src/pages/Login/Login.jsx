@@ -1,6 +1,7 @@
 import "./Login.css";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
 import { login } from "../../services/loginApi";
 
 export default function Login() {
@@ -15,25 +16,23 @@ export default function Login() {
     try {
       const data = await login(username, password);
 
-      const user = {
-        ...data,
-        expiresAt: Date.now() + 10 * 60 * 1000,
-      };
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      localStorage.setItem("user", JSON.stringify(user));
+      const user = data.user;
 
       if (user.must_change_password || user.must_set_email) {
         navigate("/perfil");
         return;
       }
 
-      if (user.rol === "ALUMNO")          navigate("/alumno/dashboard");
+      if (user.rol === "ALUMNO")            navigate("/alumno/dashboard");
       else if (user.rol === "PROGRAMACION") navigate("/programacion/dashboard");
-      else if (user.rol === "ADMIN")      navigate("/admin/dashboard");
-      else if (user.rol === "TURNO")       navigate("/turno");
-      else if (user.rol === "INSTRUCTOR")  navigate("/instructor");
+      else if (user.rol === "ADMIN")        navigate("/admin/dashboard");
+      else if (user.rol === "TURNO")        navigate("/turno");
+      else if (user.rol === "INSTRUCTOR")   navigate("/instructor");
     } catch {
-      alert("Credenciales incorrectas");
+      toast.error("Credenciales incorrectas");
     }
   };
 

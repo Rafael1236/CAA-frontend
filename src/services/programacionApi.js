@@ -2,89 +2,54 @@ import axios from "axios";
 
 const API_URL = window.__APP_CONFIG__?.API_URL;
 
-function getUserHeader() {
-  const raw = localStorage.getItem("user");
-  if (!raw) return {};
-  const user = JSON.parse(raw);
-  return { "x-user": JSON.stringify(user) };
-}
-
 export const getBloquesHorario = async () => {
-  const res = await axios.get(
-    `${API_URL}/agendar/bloques-horario`,
-    { headers: getUserHeader() }
-  );
+  const res = await axios.get(`${API_URL}/agendar/bloques-horario`);
   return res.data;
 };
 
 export const getAeronavesActivas = async () => {
-  const res = await axios.get(`${API_URL}/programacion/aeronaves`, {
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/programacion/aeronaves`);
   return res.data;
 };
 
 export const getCalendarioProgramacion = async (week = "next") => {
-  const res = await axios.get(`${API_URL}/programacion/calendario`, {
-    params: { week },
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/programacion/calendario`, { params: { week } });
   return res.data;
 };
 
 export const pasarSolicitudEnRevision = async (id_solicitud) => {
-  const res = await axios.post(
-    `${API_URL}/programacion/solicitudes/${id_solicitud}/en-revision`,
-    {},
-    { headers: getUserHeader() }
-  );
+  const res = await axios.post(`${API_URL}/programacion/solicitudes/${id_solicitud}/en-revision`, {});
   return res.data;
 };
 
 export const guardarCambiosProgramacion = async (movimientos) => {
-  const res = await axios.post(
-    `${API_URL}/programacion/guardar-cambios`,
-    { movimientos },
-    { headers: getUserHeader() }
-  );
+  const res = await axios.post(`${API_URL}/programacion/guardar-cambios`, { movimientos });
   return res.data;
 };
 
 export const getBloquesBloqueados = async () => {
-  const res = await axios.get(`${API_URL}/programacion/bloques-bloqueados`, {
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/programacion/bloques-bloqueados`);
   return res.data;
 };
 
 export const cancelarVueloProgramacion = async (id_vuelo) => {
-  const res = await axios.patch(
-    `${API_URL}/programacion/vuelos/${id_vuelo}/cancelar`,
-    {},
-    { headers: getUserHeader() }
-  );
+  const res = await axios.patch(`${API_URL}/programacion/vuelos/${id_vuelo}/cancelar`, {});
   return res.data;
 };
 
 export const getVuelosActivos = async () => {
-  const res = await axios.get(`${API_URL}/turno/vuelos-hoy`, {
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/turno/vuelos-hoy`);
   const ACTIVOS = ["EN_VUELO", "SALIDA_HANGAR", "REGRESO_HANGAR"];
   return res.data.filter((v) => ACTIVOS.includes(v.estado));
 };
 
 export const getEstadoFlota = async () => {
-  const res = await axios.get(`${API_URL}/programacion/estado-flota`, {
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/programacion/estado-flota`);
   return res.data;
 };
 
 export const getMantenimientoResumen = async () => {
-  const res = await axios.get(`${API_URL}/programacion/mantenimiento-resumen`, {
-    headers: getUserHeader(),
-  });
+  const res = await axios.get(`${API_URL}/programacion/mantenimiento-resumen`);
   return res.data;
 };
 
@@ -96,8 +61,7 @@ export const getCalendarioPublico = async () => {
 export const reasignarAeronave = async (id_vuelo, id_aeronave) => {
   const res = await axios.post(
     `${API_URL}/programacion/vuelos/${id_vuelo}/reasignar-aeronave`,
-    { id_aeronave },
-    { headers: getUserHeader() }
+    { id_aeronave }
   );
   return res.data;
 };
@@ -105,7 +69,6 @@ export const reasignarAeronave = async (id_vuelo, id_aeronave) => {
 export const getAeronavesDisponibles = async (id_semana, id_bloque, dia_semana) => {
   const res = await axios.get(`${API_URL}/programacion/aeronaves-disponibles`, {
     params: { id_semana, id_bloque, dia_semana },
-    headers: getUserHeader(),
   });
   return res.data;
 };
@@ -119,4 +82,3 @@ export const getBloquesPublicos = async () => {
   const res = await axios.get(`${API_URL}/calendario/bloques`);
   return res.data;
 };
-

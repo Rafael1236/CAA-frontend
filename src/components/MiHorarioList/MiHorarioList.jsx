@@ -1,5 +1,6 @@
 import { useState } from "react";
 import CancelarVueloModal from "../CancelarVueloModal/CancelarVueloModal";
+import ReporteVueloModal from "../ReporteVueloModal/ReporteVueloModal";
 import "./MiHorarioList.css";
 
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -30,11 +31,13 @@ const ESTADO_CFG = {
   EN_VUELO: { label: "En vuelo", cls: "mhl__badge--en-vuelo" },
   REGRESO_HANGAR: { label: "Regreso hangar", cls: "mhl__badge--en-vuelo" },
   FINALIZANDO: { label: "Finalizando", cls: "mhl__badge--en-vuelo" },
+  AJUSTADO: { label: "Ajustado", cls: "mhl__badge--ajustado" },
 };
 
-function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
-  const esFuturo = new Date(v.fecha_hora_vuelo) > new Date();
-  const msRestantes = new Date(v.fecha_hora_vuelo) - new Date();
+function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan, onReporte }) {
+  const fechaReferencia = v.fecha_hora_vuelo || v.fecha_vuelo;
+  const esFuturo = new Date(fechaReferencia) > new Date();
+  const msRestantes = new Date(fechaReferencia) - new Date();
   const esEmergencia = esFuturo && msRestantes / (1000 * 60 * 60) <= 24;
   const esReal = v.aeronave_tipo !== "SIMULADOR";
   const cfg = ESTADO_CFG[v.estado] ?? { label: v.estado, cls: "" };
@@ -53,7 +56,7 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
         <span className={`mhl__badge ${cfg.cls}`}>{cfg.label}</span>
       </div>
 
-      {v.estado === "PUBLICADO" && (
+      {(v.estado === "PUBLICADO" || v.estado === "AJUSTADO") && (
         <div className="mhl__vuelo-actions">
           {esReal && (
             horasTotales >= 0 ? (
@@ -71,14 +74,30 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
             )
           )}
 
-          {weekMode === "current" && esFuturo && (
+          {esFuturo && (
             <button
               className={`mhl__btn mhl__btn--cancel${esEmergencia ? " mhl__btn--emergency" : ""}`}
               onClick={onCancelar}
             >
-              {esEmergencia ? "Cancelación de emergencia" : "Solicitar cancelación"}
+              {esEmergencia ? "Cancelar vuelo (Emergencia)" : "Cancelar vuelo"}
             </button>
           )}
+        </div>
+      )}
+
+      {v.estado === "COMPLETADO" && v.reporte_estado === "PENDIENTE_ALUMNO" && (
+        <div className="mhl__vuelo-actions">
+          <button className="mhl__btn mhl__btn--reporte" onClick={onReporte}>
+            Reporte pendiente de firma
+          </button>
+        </div>
+      )}
+
+      {v.estado === "COMPLETADO" && v.reporte_estado === "COMPLETADO" && (
+        <div className="mhl__vuelo-actions">
+          <button className="mhl__btn mhl__btn--reporte" onClick={onReporte}>
+            Ver Reporte de Vuelo
+          </button>
         </div>
       )}
 
@@ -90,7 +109,8 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan }) {
 }
 
 export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefresh }) {
-  const [modalVuelo, setModalVuelo] = useState(null);
+  const [modalVuelo, setModalVuelo]     = useState(null);
+  const [reporteVuelo, setReporteVuelo] = useState(null);
 
   const horasTotales = vuelos.length > 0 ? Number(vuelos[0].horas_totales ?? 0) : 0;
 
@@ -102,20 +122,21 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
   const dias = Object.keys(porDia).map(Number).sort();
 
   const abrirLoadsheet = (v) => {
+    const jwt = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    const token = encodeURIComponent(user);
     const alumnoData = JSON.parse(user);
     const nombreAlumno = encodeURIComponent(
       alumnoData.nombre + ' ' + alumnoData.apellido
     );
 
-    const url = `http://localhost:5174?id_vuelo=${v.id_vuelo}&token=${token}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(v.instructor_nombre)}&licencia=${encodeURIComponent(v.licencia_nombre)}`;
+    const url = `http://localhost:5174?id_vuelo=${v.id_vuelo}&jwt=${encodeURIComponent(jwt)}&token=${encodeURIComponent(user)}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(v.instructor_nombre)}&licencia=${encodeURIComponent(v.licencia_nombre)}`;
 
     window.open(url, '_blank');
   };
 
   const abrirCancelar = (v) => {
-    const ms = new Date(v.fecha_hora_vuelo) - new Date();
+    const fechaRef = v.fecha_hora_vuelo || v.fecha_vuelo;
+    const ms = new Date(fechaRef) - new Date();
     const tipoCancel = ms / (1000 * 60 * 60) > 24 ? "NORMAL" : "EMERGENCIA";
     setModalVuelo({ ...v, tipoCancel });
   };
@@ -142,6 +163,13 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
 
   return (
     <div className="mhl">
+      {reporteVuelo && (
+        <ReporteVueloModal
+          id_vuelo={reporteVuelo.id_vuelo}
+          mode="alumno"
+          onClose={() => { setReporteVuelo(null); onRefresh?.(); }}
+        />
+      )}
       {modalVuelo && (
         <CancelarVueloModal
           vuelo={modalVuelo}
@@ -157,9 +185,9 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
             <div key={dia} className="mhl__day">
               <div className="mhl__day-header">
                 <span className="mhl__day-name">{DIAS[dia - 1]}</span>
-                {primerVuelo?.fecha_hora_vuelo && (
+                {primerVuelo?.fecha_vuelo && (
                   <span className="mhl__day-date">
-                    {formatFecha(primerVuelo.fecha_hora_vuelo)}
+                    {formatFecha(primerVuelo.fecha_vuelo)}
                   </span>
                 )}
               </div>
@@ -171,6 +199,7 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
                   horasTotales={horasTotales}
                   onCancelar={() => abrirCancelar(v)}
                   onPlan={() => abrirLoadsheet(v)}
+                  onReporte={() => setReporteVuelo(v)}
                 />
               ))}
             </div>

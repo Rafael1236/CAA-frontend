@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   getBloquesHorario,
   getBloquesOcupados,
@@ -61,12 +62,12 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
     );
 
     if (mismoBloque) {
-      alert("Solo puedes seleccionar una aeronave por bloque");
+      toast.warning("Solo puedes seleccionar una aeronave por bloque");
       return;
     }
 
     if (selecciones.length >= limiteVuelos) {
-      alert(`Máximo ${limiteVuelos} vuelos`);
+      toast.warning(`Máximo ${limiteVuelos} vuelos`);
       return;
     }
 

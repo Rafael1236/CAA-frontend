@@ -1,0 +1,31 @@
+.adm-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--neutral-light);
+}
+
+.adm-layout__content {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  padding: 28px;
+  background-image: 
+    linear-gradient(rgba(27, 54, 93, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 54, 93, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  min-height: 100vh;
+}
+
+.adm-layout__inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Reset styles for admin pages ── */
+.adm-layout__content .header {
+  display: none !important;
+}
+
+/* Ensure admin pages don't have their own padding-top if they were designed for the fixed header */
+.adm-layout__content > div {
+  padding-top: 0 !important;
+}

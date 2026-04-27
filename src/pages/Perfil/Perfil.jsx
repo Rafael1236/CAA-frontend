@@ -131,6 +131,7 @@ export default function Perfil() {
       const user = JSON.parse(localStorage.getItem("user"));
       if (user) {
         user.must_change_password = p.must_change_password;
+        user.must_set_email = p.must_set_email;
         localStorage.setItem("user", JSON.stringify(user));
       }
 
@@ -160,7 +161,8 @@ export default function Perfil() {
 
   // Botones activos solo si hay cambios y son válidos
   const infoChanged = username !== originalData?.username && username.trim().length > 0;
-  const correoChanged = correo !== originalData?.correo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+  const correoChanged = (correo !== originalData?.correo || perfil?.must_set_email === true)
+    && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
   const passReady = password.length > 0 && errors.length === 0;
 
   return (

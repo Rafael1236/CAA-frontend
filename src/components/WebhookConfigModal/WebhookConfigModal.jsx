@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   getEventosWebhookDisponibles,
   getWebhooks,
@@ -42,7 +43,7 @@ export default function WebhookConfigModal({ open, onClose }) {
       setWebhooks(lista);
       setEventosDisponibles(eventos);
     } catch (e) {
-      alert(e.response?.data?.message || "Error cargando webhooks");
+      toast.error(e.response?.data?.message || "Error cargando webhooks");
     } finally {
       setLoading(false);
     }
@@ -81,7 +82,7 @@ export default function WebhookConfigModal({ open, onClose }) {
           .map((e) => e.evento)
       );
     } catch (e) {
-      alert(e.response?.data?.message || "Error cargando detalle del webhook");
+      toast.error(e.response?.data?.message || "Error cargando detalle del webhook");
     } finally {
       setLoading(false);
     }
@@ -108,12 +109,12 @@ export default function WebhookConfigModal({ open, onClose }) {
       setSaving(true);
 
       if (!form.nombre.trim()) {
-        alert("El nombre es obligatorio");
+        toast.warning("El nombre es obligatorio");
         return;
       }
 
       if (!form.url.trim()) {
-        alert("La URL es obligatoria");
+        toast.warning("La URL es obligatoria");
         return;
       }
 
@@ -131,11 +132,11 @@ export default function WebhookConfigModal({ open, onClose }) {
         });
 
         webhookId = resp.webhook.id_webhook;
-        alert("Webhook creado correctamente");
+        toast.success("Webhook creado correctamente");
       } else {
         await updateWebhook(webhookId, payload);
         await updateWebhookEventos(webhookId, eventosActivos);
-        alert("Webhook actualizado correctamente");
+        toast.success("Webhook actualizado correctamente");
       }
 
       await cargarTodo();
@@ -144,7 +145,7 @@ export default function WebhookConfigModal({ open, onClose }) {
         await seleccionarWebhook(webhookId);
       }
     } catch (e) {
-      alert(e.response?.data?.message || "Error guardando webhook");
+      toast.error(e.response?.data?.message || "Error guardando webhook");
     } finally {
       setSaving(false);
     }
@@ -152,7 +153,7 @@ export default function WebhookConfigModal({ open, onClose }) {
 
   const probar = async () => {
     if (!selectedId) {
-      alert("Primero seleccioná o guardá un webhook");
+      toast.warning("Primero seleccioná o guardá un webhook");
       return;
     }
 
@@ -160,11 +161,9 @@ export default function WebhookConfigModal({ open, onClose }) {
       setSaving(true);
       const resp = await testWebhook(selectedId);
 
-      alert(
-        `Prueba ejecutada\nEstado HTTP: ${resp.status}\nOK: ${resp.ok ? "Sí" : "No"}`
-      );
+      toast.info(`Prueba ejecutada · HTTP ${resp.status} · OK: ${resp.ok ? "Sí" : "No"}`);
     } catch (e) {
-      alert(e.response?.data?.message || "Error probando webhook");
+      toast.error(e.response?.data?.message || "Error probando webhook");
     } finally {
       setSaving(false);
     }

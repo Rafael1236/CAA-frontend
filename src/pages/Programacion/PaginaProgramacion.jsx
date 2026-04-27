@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { io as socketIO } from "socket.io-client";
 import {
   getCalendarioPublico,
   getAeronavesPublicas,
@@ -10,7 +11,10 @@ import Footer from "../../components/Footer/Footer";
 import MetarWidget from "../../components/MetarWidget/MetarWidget";
 import EstadoFlotaWidget from "../../components/ProgWidgets/EstadoFlotaWidget";
 import MantenimientoResumenWidget from "../../components/ProgWidgets/MantenimientoResumenWidget";
+import TickerBar from "../../components/TickerBar/TickerBar";
 import "./PaginaProgramacion.css";
+
+const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 /* ── helpers ──────────────────────────────────────────────────────────────── */
 function jsDayToDb(jsDay) {
@@ -100,6 +104,7 @@ function duracionTotal(v) {
 
 /* ── component ────────────────────────────────────────────────────────────── */
 export default function PaginaProgramacion() {
+  const modoProyeccion = new URLSearchParams(window.location.search).get("modo") === "proyeccion";
   const [vuelos,      setVuelos]      = useState([]);
   const [aeronavesDb, setAeronavesDb] = useState([]);
   const [bloquesDb,   setBloquesDb]   = useState([]);
@@ -117,6 +122,23 @@ export default function PaginaProgramacion() {
   const diaHoy = jsDayToDb(new Date().getDay());
   const [tabActivo,       setTabActivo]       = useState(diaHoy ?? 1);
   const [bloqueFocusIdx,  setBloqueFocusIdx]  = useState(0);
+
+  /* ── proyeccion: ignorar logout de otras pestañas ── */
+  useEffect(() => {
+    if (!modoProyeccion) return;
+    const cachedToken = localStorage.getItem("token");
+    const cachedUser  = localStorage.getItem("user");
+    const handleStorage = (e) => {
+      if (e.key === "token" && e.newValue === null && cachedToken) {
+        localStorage.setItem("token", cachedToken);
+      }
+      if (e.key === "user" && e.newValue === null && cachedUser) {
+        localStorage.setItem("user", cachedUser);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [modoProyeccion]);
 
   /* ── clock ── */
   useEffect(() => {
@@ -138,18 +160,71 @@ export default function PaginaProgramacion() {
   }, [cargarMetar]);
 
   /* ── data ── */
-  useEffect(() => {
+  const cargarDatos = useCallback(async () => {
     setLoading(true);
     setError(false);
-    Promise.all([getCalendarioPublico(), getAeronavesPublicas(), getBloquesPublicos()])
-      .then(([vData, aData, bData]) => {
-        setVuelos(Array.isArray(vData) ? vData : []);
-        setAeronavesDb(Array.isArray(aData) ? aData : []);
-        setBloquesDb(Array.isArray(bData) ? bData : []);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+    try {
+      const [vData, aData, bData] = await Promise.all([
+        getCalendarioPublico(),
+        getAeronavesPublicas(),
+        getBloquesPublicos(),
+      ]);
+      setVuelos(Array.isArray(vData) ? vData : []);
+      setAeronavesDb(Array.isArray(aData) ? aData : []);
+      setBloquesDb(Array.isArray(bData) ? bData : []);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { cargarDatos(); }, [cargarDatos]);
+
+  /* ── socket ── */
+  useEffect(() => {
+    const socketUrl = API_URL.replace(/\/api$/, "");
+    console.log("socket URL:", socketUrl);
+    const socket = socketIO(socketUrl, {
+      transports: ["websocket", "polling"],
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+    });
+
+    socket.on("connect", () => console.log("socket conectado", socket.id));
+    socket.on("connect_error", (err) => console.error("socket error:", err.message));
+
+    socket.on("vuelo_estado_changed", (data) => {
+      console.log("evento recibido", data);
+      const { id_vuelo, estado, registrado_en, aeronave_codigo } = data;
+      setVuelos((prev) =>
+        prev.map((v) =>
+          v.id_vuelo === id_vuelo
+            ? {
+                ...v,
+                estado,
+                estado_desde: registrado_en,
+                ...(aeronave_codigo ? { aeronave_codigo } : {}),
+              }
+            : v
+        )
+      );
+    });
+
+    socket.on("vuelo_cancelado", ({ id_vuelo }) => {
+      setVuelos((prev) =>
+        prev.map((v) =>
+          v.id_vuelo === id_vuelo ? { ...v, estado: "CANCELADO" } : v
+        )
+      );
+    });
+
+    socket.on("bloque_iniciado", () => {
+      cargarDatos();
+    });
+
+    return () => socket.disconnect();
+  }, [cargarDatos]);
 
   /* ── derived ── */
   const vuelosConEstado = useMemo(() =>
@@ -273,7 +348,9 @@ export default function PaginaProgramacion() {
   /* ── render ───────────────────────────────────────────────────────────── */
   return (
     <>
-      <Header />
+      {!modoProyeccion && <Header />}
+
+      <TickerBar />
 
       {/* ── Top info bar ── */}
       <div className="pp__topbar">
@@ -584,6 +661,46 @@ export default function PaginaProgramacion() {
                   )}
                 </div>
               </div>
+              {/* Flota de Aviones */}
+              {aeronavesDb.filter(a => a.tipo === "AVION").length > 0 && (
+                <div className="pp__card pp__flota-card">
+                  <div className="pp__card-head">
+                    <h2 className="pp__card-title">
+                      <i className="bi bi-airplane-fill" /> Flota
+                    </h2>
+                  </div>
+                  <div className="pp__flota-row">
+                    {aeronavesDb
+                      .filter(a => a.tipo === "AVION")
+                      .map(a => (
+                        <div
+                          key={a.id_aeronave}
+                          className={`pp__flota-item ${a.estado === "MANTENIMIENTO" ? "pp__flota-item--mant" : ""}`}
+                        >
+                          <div className="pp__flota-foto-wrap">
+                            {a.foto_url ? (
+                              <img src={a.foto_url} alt={a.codigo} className="pp__flota-foto" />
+                            ) : (
+                              <div className="pp__flota-foto-placeholder">
+                                <i className="bi bi-airplane" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="pp__flota-info">
+                            <div className="pp__flota-codigo">{a.codigo}</div>
+                            <div className="pp__flota-modelo">{a.modelo}</div>
+                            <div className={`pp__flota-estado ${a.estado === "ACTIVO" ? "pp__flota-estado--activo" : "pp__flota-estado--mant"}`}>
+                              {a.estado === "ACTIVO" ? "Operativa" : "Mantenimiento"}
+                            </div>
+                            <div className="pp__flota-horas">{parseFloat(a.horas_acumuladas ?? 0).toFixed(1)} h</div>
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              )}
+
             </div>
 
             {/* ══ Right sidebar ══ */}
@@ -615,6 +732,7 @@ export default function PaginaProgramacion() {
                             {formatHora(v.hora_inicio)} · <strong>{v.aeronave_codigo}</strong>
                           </div>
                           <div className="pp__prox-sub">{v.alumno_nombre}</div>
+                          <div className="pp__prox-ins">Cap. {v.instructor_nombre}</div>
                         </div>
                       </div>
                     ))}
@@ -630,7 +748,7 @@ export default function PaginaProgramacion() {
         </section>
       </main>
 
-      <Footer />
+      {!modoProyeccion && <Footer />}
     </>
   );
 }

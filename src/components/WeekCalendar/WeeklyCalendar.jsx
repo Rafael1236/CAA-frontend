@@ -64,7 +64,7 @@ export default function WeeklyCalendar({ weekMode }) {
     setLoading(true);
 
     const data = await getMiHorario(weekMode);
-    const safeData = Array.isArray(data) ? data : [];
+    const safeData = Array.isArray(data?.vuelos) ? data.vuelos : (Array.isArray(data) ? data : []);
     const grid = {};
 
     safeData.forEach((item) => {
@@ -128,14 +128,14 @@ export default function WeeklyCalendar({ weekMode }) {
   }, [aeronavesPermitidas, horarioRaw]);
 
   const abrirLoadsheet = (vuelo) => {
+    const jwt = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    const token = encodeURIComponent(user);
     const alumnoData = JSON.parse(user);
     const nombreAlumno = encodeURIComponent(
       alumnoData.nombre + ' ' + alumnoData.apellido
     );
 
-    const url = `http://localhost:5174?id_vuelo=${vuelo.id_vuelo}&token=${token}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(vuelo.instructor_nombre)}&licencia=${encodeURIComponent(vuelo.licencia_nombre)}`;
+    const url = `http://localhost:5174?id_vuelo=${vuelo.id_vuelo}&jwt=${encodeURIComponent(jwt)}&token=${encodeURIComponent(user)}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(vuelo.instructor_nombre)}&licencia=${encodeURIComponent(vuelo.licencia_nombre)}`;
 
     window.open(url, '_blank');
   };
@@ -216,7 +216,11 @@ export default function WeeklyCalendar({ weekMode }) {
                                   className="btn-plan-vuelo"
                                   onClick={() => abrirLoadsheet(v)}
                                 >
-                                  Plan de vuelo
+                                  {v.loadsheet_estado === 'COMPLETADO' || v.loadsheet_estado === 'ENVIADO'
+                                    ? 'Ver plan de vuelo'
+                                    : v.loadsheet_estado === 'BORRADOR'
+                                    ? 'Revisar plan de vuelo'
+                                    : 'Plan de vuelo'}
                                 </button>
                               ) : (
                                 <span className="plan-vuelo-bloqueado">Plan de vuelo (0+ h)</span>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   getLoadsheet,
   guardarLoadsheet,
@@ -106,9 +107,9 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
     try {
       await guardarLoadsheet(id_vuelo, { ...comb, waypoints });
       setLsEstado("BORRADOR");
-      alert("Loadsheet guardado como borrador.");
+      toast.success("Loadsheet guardado como borrador.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo guardar el loadsheet.");
+      toast.error(e.response?.data?.message || "No se pudo guardar el loadsheet.");
     } finally {
       setSaving(false);
     }
@@ -128,7 +129,7 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
-      alert("Error al generar el PDF.");
+      toast.error("Error al generar el PDF.");
     } finally {
       setSaving(false);
     }
@@ -142,21 +143,21 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
         await guardarLoadsheet(id_vuelo, { ...comb, waypoints });
         setLsEstado("BORRADOR");
       } catch (e) {
-        alert("Error al guardar el loadsheet. No se envió.\n" + (e.response?.data?.message || ""));
+        toast.error("Error al guardar el loadsheet. No se envió. " + (e.response?.data?.message || ""));
         return;
       }
       const pdfBlob = await generarPdfLoadsheet(comb, waypoints, vueloInfo);
       await completarLoadsheet(id_vuelo, pdfBlob);
-      setLsEstado("COMPLETADO");
-      alert("Loadsheet enviado y completado.");
+      setLsEstado("ENVIADO");
+      toast.success("Loadsheet enviado y completado.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo completar el loadsheet.");
+      toast.error(e.response?.data?.message || "No se pudo completar el loadsheet.");
     } finally {
       setGenerating(false);
     }
   };
 
-  const isReadonly = lsEstado === "BORRADOR" || lsEstado === "COMPLETADO";
+  const isReadonly = lsEstado === "BORRADOR" || lsEstado === "COMPLETADO" || lsEstado === "ENVIADO";
 
   const alumnoNombre = vueloInfo
     ? `${vueloInfo.alumno_nombre ?? ""} ${vueloInfo.alumno_apellido ?? ""}`.trim()
@@ -345,8 +346,8 @@ export default function LoadsheetModal({ id_vuelo, onClose }) {
               </>
             )}
 
-            {/* Completado: solo lectura, solo descarga */}
-            {lsEstado === "COMPLETADO" && (
+            {/* Completado o Enviado: solo lectura, solo descarga */}
+            {(lsEstado === "COMPLETADO" || lsEstado === "ENVIADO") && (
               <button
                 className="ls-btn ls-btn--primary"
                 onClick={handleDescargar}

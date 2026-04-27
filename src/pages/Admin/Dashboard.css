@@ -142,6 +142,49 @@
   color: #0d9488;
 }
 
+.adm__week-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--adm-border);
+}
+
+.adm__week-btn {
+  background: white;
+  border: 1px solid var(--adm-border);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--adm-text);
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.adm__week-btn:hover:not(:disabled) {
+  background: var(--adm-deep);
+  border-color: var(--adm-border2);
+}
+
+.adm__week-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.adm__week-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--adm-text);
+  min-width: 80px;
+  text-align: center;
+}
+
 .adm__section {
   background: var(--adm-card);
   border: 1px solid var(--adm-border);
@@ -298,4 +341,44 @@
   .adm__tabs {
     flex-wrap: wrap;
   }
+}
+
+/* ── Cancellations Table ── */
+.adm__cancel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.adm__cancel-table th {
+  text-align: left;
+  padding: 12px 0;
+  color: var(--adm-text-sub);
+  font-weight: 600;
+  border-bottom: 2px solid var(--adm-border);
+}
+
+.adm__cancel-table td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--adm-border);
+  color: var(--adm-text);
+}
+
+.adm__cancel-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.adm__cancel-badge--normal {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.adm__cancel-badge--emergencia {
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
