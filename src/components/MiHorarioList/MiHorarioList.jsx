@@ -124,14 +124,29 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
   const abrirLoadsheet = (v) => {
     const jwt = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    const alumnoData = JSON.parse(user);
-    const nombreAlumno = encodeURIComponent(
-      alumnoData.nombre + ' ' + alumnoData.apellido
-    );
+    const alumnoData = JSON.parse(user || '{}');
+    const nombreAlumno = `${alumnoData.nombre || ''} ${alumnoData.apellido || ''}`.trim();
 
-    const url = `http://localhost:5174?id_vuelo=${v.id_vuelo}&jwt=${encodeURIComponent(jwt)}&token=${encodeURIComponent(user)}&alumno=${nombreAlumno}&instructor=${encodeURIComponent(v.instructor_nombre)}&licencia=${encodeURIComponent(v.licencia_nombre)}`;
+    let baseUrl = import.meta.env.VITE_LOADSHEET_URL;
+    
+    if (!baseUrl) {
+      if (import.meta.env.PROD) {
+        console.error("ERROR CRÍTICO: VITE_LOADSHEET_URL no está definida en el entorno de producción.");
+        return;
+      }
+      baseUrl = 'http://localhost:5174';
+    }
 
-    window.open(url, '_blank');
+    const params = new URLSearchParams({
+      id_vuelo: v.id_vuelo,
+      jwt: jwt || '',
+      token: user || '',
+      alumno: nombreAlumno,
+      instructor: v.instructor_nombre || '',
+      licencia: v.licencia_nombre || ''
+    });
+
+    window.open(`${baseUrl}?${params.toString()}`, '_blank');
   };
 
   const abrirCancelar = (v) => {
