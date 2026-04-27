@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header/Header";
 import { getAuditoria, getAccionesAuditoria } from "../../services/adminApi";
 import "./Auditoria.css";
 
@@ -91,15 +90,11 @@ export default function AuditoriaAdmin() {
 
   return (
     <>
-      <Header />
 
       <div className="aud">
         {/* ── Cabecera ──────────────────────────────────────────────────── */}
         <div className="aud__top">
           <div className="aud__top-left">
-            <button className="aud__back" onClick={() => navigate("/admin/dashboard")}>
-              ← Volver
-            </button>
             <div>
               <p className="aud__eyebrow">Panel de administración</p>
               <h2 className="aud__title">Registro de auditoría</h2>
@@ -217,7 +212,9 @@ export default function AuditoriaAdmin() {
                         </span>
                       </td>
                       <td>
-                        <span className="aud__accion-badge">{r.accion}</span>
+                        <span className={`aud__accion-badge aud__accion-badge--${r.accion.toLowerCase()}`}>
+                          {r.accion}
+                        </span>
                       </td>
                       <td className="aud__td-entidad">{r.entidad ?? "—"}</td>
                       <td className="aud__td-desc">{r.descripcion ?? "—"}</td>

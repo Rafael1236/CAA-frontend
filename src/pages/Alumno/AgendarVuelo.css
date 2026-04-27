@@ -150,6 +150,24 @@
 }
 .ag__alert--ready strong { color: #00C9A7; }
 
+.ag__alert--locked {
+  background: rgba(100, 116, 139, 0.08);
+  border-color: rgba(100, 116, 139, 0.3);
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ag__alert--locked strong {
+  color: #1e293b;
+}
+.ag__alert--locked small {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 .ag__section {
   background: #ffffff;
   border: 1px solid #e2e8f0;

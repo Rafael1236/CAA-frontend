@@ -117,3 +117,28 @@
   color: #6b7280;
 }
 .fpm-error { color: #b91c1c; }
+
+.fpm-warning {
+  background: #fef9c3;
+  border: 1px solid #ca8a04;
+  color: #713f12;
+  border-radius: 6px;
+  padding: 0.85rem 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.fpm-warning-close {
+  flex-shrink: 0;
+  background: #ca8a04;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.fpm-warning-close:hover { background: #a16207; }

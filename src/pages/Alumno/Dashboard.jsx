@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { io as socketIO } from "socket.io-client";
+import { toast } from "sonner";
 import Header from "../../components/Header/Header";
 import MiHorarioList from "../../components/MiHorarioList/MiHorarioList";
 import MetarWidget from "../../components/MetarWidget/MetarWidget";
@@ -9,6 +11,8 @@ import {
   getMiInfo,
 } from "../../services/alumnoApi";
 import "./Dashboard.css";
+
+const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const CARD_ICONS = {
   licencia: (
@@ -66,6 +70,52 @@ export default function AlumnoDashboard() {
   useEffect(() => {
     fetchVuelos();
   }, [fetchVuelos]);
+
+  const fetchVuelosRef = useRef(fetchVuelos);
+  useEffect(() => { fetchVuelosRef.current = fetchVuelos; }, [fetchVuelos]);
+
+  /* ── socket: real-time vuelo updates ── */
+  useEffect(() => {
+    const socketUrl = API_URL.replace(/\/api$/, "");
+    const socket = socketIO(socketUrl, {
+      transports: ["websocket", "polling"],
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+    });
+
+    socket.on("vuelo_estado_changed", ({ id_vuelo, estado, registrado_en }) => {
+      setVuelos((prev) => {
+        const belongs = prev.some((v) => v.id_vuelo === id_vuelo);
+        if (!belongs) return prev;
+        return prev.map((v) =>
+          v.id_vuelo === id_vuelo
+            ? { ...v, estado, estado_desde: registrado_en }
+            : v
+        );
+      });
+    });
+
+    socket.on("vuelo_cancelado", ({ id_vuelo }) => {
+      setVuelos((prev) => {
+        const belongs = prev.some((v) => v.id_vuelo === id_vuelo);
+        if (!belongs) return prev;
+        return prev.map((v) =>
+          v.id_vuelo === id_vuelo ? { ...v, estado: "CANCELADO" } : v
+        );
+      });
+    });
+
+    socket.on("vuelo_completado", ({ id_vuelo }) => {
+      setVuelos((prev) => {
+        if (!prev.some((v) => v.id_vuelo === id_vuelo)) return prev;
+        toast.info("Tu vuelo ha sido completado. Revisá tu reporte pendiente.");
+        fetchVuelosRef.current();
+        return prev;
+      });
+    });
+
+    return () => socket.disconnect();
+  }, []);
 
   const instructorNombre = info
     ? [info.instructor_nombre, info.instructor_apellido].filter(Boolean).join(" ") || "—"
@@ -154,6 +204,7 @@ export default function AlumnoDashboard() {
               loading={loadingVuelos}
               onRefresh={fetchVuelos}
             />
+
           </div>
 
           {/* ── Sidebar ── */}

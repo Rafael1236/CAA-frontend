@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { getWB, guardarWB, completarWB } from "../../services/alumnoApi";
 import { plantillaToAC, buildPesosPayload } from "../../utils/plantillaToAC";
 import { calcWB, checkCGInEnvelope, fmtMoment } from "../../utils/wbCalc";
@@ -79,9 +80,9 @@ export default function WeightBalanceModal({ id_vuelo, onClose }) {
     try {
       await guardarWB(id_vuelo, buildPayload());
       setWbEstado("BORRADOR");
-      alert("Weight & Balance guardado como borrador.");
+      toast.success("Weight & Balance guardado como borrador.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo guardar el W&B.");
+      toast.error(e.response?.data?.message || "No se pudo guardar el W&B.");
     } finally {
       setSaving(false);
     }
@@ -94,9 +95,9 @@ export default function WeightBalanceModal({ id_vuelo, onClose }) {
       await guardarWB(id_vuelo, buildPayload());
       await completarWB(id_vuelo);
       setWbEstado("COMPLETADO");
-      alert("Weight & Balance completado.");
+      toast.success("Weight & Balance completado.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo completar el W&B.");
+      toast.error(e.response?.data?.message || "No se pudo completar el W&B.");
     } finally {
       setCompleting(false);
     }

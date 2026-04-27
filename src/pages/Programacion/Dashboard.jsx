@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import WeekSelector from "../../components/WeekSelector/WeekSelector";
 import Header from "../../components/Header/Header";
 import {
@@ -8,7 +9,6 @@ import {
   guardarCambiosProgramacion,
   getBloquesBloqueados,
   cancelarVueloProgramacion,
-  reasignarAeronave,
   getAeronavesDisponibles,
 } from "../../services/programacionApi";
 
@@ -220,58 +220,33 @@ const handleDrop = (target) => {
 
   const idOcupado = Number(ocupado.id_detalle);
 
-  const confirmar = window.confirm(
-    `Ese bloque ya está ocupado por ${ocupado.alumno_nombre || ocupado.nombre || "otro vuelo"}. ¿Querés intercambiar ambos vuelos?`
-  );
-
-  if (!confirmar) {
-    setDragging(null);
-    return;
-  }
-
-  setItems((prev) =>
-    prev.map((i) => {
-      const id = Number(i.id_detalle);
-
-      if (id === idDragging) {
-        return { ...i, ...destino };
-      }
-
-      if (id === idOcupado) {
-        return {
-          ...i,
-          id_bloque: origen.id_bloque,
-          dia_semana: origen.dia_semana,
-          id_aeronave: origen.id_aeronave,
-        };
-      }
-
-      return i;
-    })
-  );
-
-  setPendingMoves((prev) => {
-    const sinAmbos = prev.filter((p) => {
-      const id = Number(p.id_detalle);
-      return id !== idDragging && id !== idOcupado;
-    });
-
-    const nuevos = [
-      ...sinAmbos,
-      {
-        id_detalle: idDragging,
-        ...destino,
+  toast(`¿Intercambiar con ${ocupado.alumno_nombre || ocupado.nombre || "otro vuelo"}?`, {
+    action: {
+      label: "Intercambiar",
+      onClick: () => {
+        setItems((prev) =>
+          prev.map((i) => {
+            const id = Number(i.id_detalle);
+            if (id === idDragging) return { ...i, ...destino };
+            if (id === idOcupado) return { ...i, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave };
+            return i;
+          })
+        );
+        setPendingMoves((prev) => {
+          const sinAmbos = prev.filter((p) => {
+            const id = Number(p.id_detalle);
+            return id !== idDragging && id !== idOcupado;
+          });
+          return [
+            ...sinAmbos,
+            { id_detalle: idDragging, ...destino },
+            { id_detalle: idOcupado, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave },
+          ];
+        });
       },
-      {
-        id_detalle: idOcupado,
-        id_bloque: origen.id_bloque,
-        dia_semana: origen.dia_semana,
-        id_aeronave: origen.id_aeronave,
-      },
-    ];
-
-    console.log("PENDING MOVES FINAL:", nuevos);
-    return nuevos;
+    },
+    cancel: { label: "Cancelar", onClick: () => {} },
+    duration: 10000,
   });
 
   setDragging(null);
@@ -280,25 +255,31 @@ const handleDrop = (target) => {
   const semanaPublicadaNext =
     week === "next" && items.some((i) => i.estado_solicitud === "PUBLICADO");
 
-const guardarCambios = async () => {
+const guardarCambios = () => {
   if (week !== "next") return;
 
   if (pendingMoves.length === 0) {
-    alert("No hay cambios para guardar");
+    toast.warning("No hay cambios para guardar");
     return;
   }
 
-  if (!window.confirm("¿Guardar los cambios realizados?")) return;
-
-  console.log("PENDING MOVES ENVIADOS:", pendingMoves);
-
-  try {
-    const resp = await guardarCambiosProgramacion(pendingMoves);
-    alert(resp.message || "Cambios guardados correctamente");
-    await reload();
-  } catch (e) {
-    alert(e.response?.data?.message || "No se pudieron guardar los cambios");
-  }
+  const movesSnapshot = [...pendingMoves];
+  toast("¿Guardar los cambios realizados?", {
+    action: {
+      label: "Guardar",
+      onClick: async () => {
+        try {
+          const resp = await guardarCambiosProgramacion(movesSnapshot);
+          toast.success(resp.message || "Cambios guardados correctamente");
+          await reload();
+        } catch (e) {
+          toast.error(e.response?.data?.message || "No se pudieron guardar los cambios");
+        }
+      },
+    },
+    cancel: { label: "Cancelar", onClick: () => {} },
+    duration: 10000,
+  });
 };
 
   const deshacerCambios = () => {
@@ -311,16 +292,24 @@ const guardarCambios = async () => {
     setModalReasignar(vueloData);
   };
 
-  const onCancelar = async (id_vuelo) => {
+  const onCancelar = (id_vuelo) => {
     if (week !== "current") return;
-    if (!window.confirm("¿Cancelar esta clase?")) return;
-    try {
-      await cancelarVueloProgramacion(id_vuelo);
-      alert("Clase cancelada");
-      await reload();
-    } catch (e) {
-      alert(e.response?.data?.message || "No se pudo cancelar");
-    }
+    toast("¿Cancelar esta clase?", {
+      action: {
+        label: "Cancelar clase",
+        onClick: async () => {
+          try {
+            await cancelarVueloProgramacion(id_vuelo);
+            toast.success("Clase cancelada");
+            await reload();
+          } catch (e) {
+            toast.error(e.response?.data?.message || "No se pudo cancelar");
+          }
+        },
+      },
+      cancel: { label: "No cancelar", onClick: () => {} },
+      duration: 10000,
+    });
   };
 
   const modeIsNext = week === "next";

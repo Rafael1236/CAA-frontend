@@ -1,18 +1,10 @@
 export function getSession() {
+  const token = localStorage.getItem("token");
   const raw = localStorage.getItem("user");
-  if (!raw) return null;
+  if (!token || !raw) return null;
 
   try {
-    const user = JSON.parse(raw);
-
-    if (!user.expiresAt) return null;
-
-    if (Date.now() > user.expiresAt) {
-      localStorage.removeItem("user");
-      return null;
-    }
-
-    return user;
+    return JSON.parse(raw);
   } catch {
     localStorage.removeItem("user");
     return null;

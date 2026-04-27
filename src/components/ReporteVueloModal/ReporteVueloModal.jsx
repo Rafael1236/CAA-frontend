@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   getReporteVuelo,
   guardarReporteVuelo,
   enviarReporteVuelo,
+  firmarReporteVueloAlumno,
 } from "../../services/alumnoApi";
 import {
   getReporteVueloInstructor,
+  guardarReporteVueloInstructor,
   firmarReporteVuelo,
 } from "../../services/instructorApi";
 import SignaturePad from "../SignaturePad/SignaturePad";
@@ -28,32 +31,39 @@ const DATOS_INICIALES = {
 function badge(estado) {
   if (!estado) return null;
   const cfg = {
-    BORRADOR:             { cls: "rv-badge--borrador",    label: "Borrador" },
-    PENDIENTE_INSTRUCTOR: { cls: "rv-badge--pendiente",   label: "Pendiente instructor" },
-    COMPLETADO:           { cls: "rv-badge--completado",  label: "Completado" },
+    BORRADOR: { cls: "rv-badge--borrador", label: "Borrador" },
+    PENDIENTE_INSTRUCTOR: { cls: "rv-badge--pendiente", label: "Pendiente instructor" },
+    PENDIENTE_ALUMNO: { cls: "rv-badge--pendiente", label: "Pendiente firma alumno" },
+    COMPLETADO: { cls: "rv-badge--completado", label: "Completado" },
   };
   const c = cfg[estado];
   if (!c) return null;
   return <span className={`rv-badge ${c.cls}`}>{c.label}</span>;
 }
 
+function formatCorrelativo(aeronaveModelo, idVuelo) {
+  if (!aeronaveModelo || !idVuelo) return "—";
+  return `${aeronaveModelo}-${String(idVuelo).padStart(7, "0")}`;
+}
+
 export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }) {
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [vueloInfo, setVueloInfo] = useState(null);
-  const [estado, setEstado]     = useState(null);
-  const [datos, setDatos]       = useState(DATOS_INICIALES);
-  const [firmaAlumno, setFirmaAlumno]     = useState(null); // base64 o null
+  const [estado, setEstado] = useState(null);
+  const [datos, setDatos] = useState(DATOS_INICIALES);
+  const [firmaAlumno, setFirmaAlumno] = useState(null); // base64 o null
   const [firmaInstructor, setFirmaInstructor] = useState(null);
-  const [saving, setSaving]     = useState(false);
+  const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
 
-  const firmaAlumnoRef     = useRef(null);
+  const firmaAlumnoRef = useRef(null);
   const firmaInstructorRef = useRef(null);
 
-  const isReadonly = mode === "alumno"
-    ? (estado === "PENDIENTE_INSTRUCTOR" || estado === "COMPLETADO")
-    : true; // instructor nunca edita datos
+  // Instructor fills form (editable when null or BORRADOR); alumno never edits data
+  const isReadonly = mode === "instructor"
+    ? (estado === "PENDIENTE_ALUMNO" || estado === "COMPLETADO")
+    : true;
 
   // ── Carga inicial ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -71,16 +81,16 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
           const r = data.reporte;
           setEstado(r.estado);
           setDatos({
-            tipo_vuelo:           r.tipo_vuelo           ?? "",
-            tacometro_salida:     r.tacometro_salida     ?? "",
-            tacometro_llegada:    r.tacometro_llegada    ?? "",
-            hobbs_salida:         r.hobbs_salida         ?? "",
-            hobbs_llegada:        r.hobbs_llegada        ?? "",
-            combustible_salida:   r.combustible_salida   ?? "",
-            combustible_llegada:  r.combustible_llegada  ?? "",
+            tipo_vuelo: r.tipo_vuelo ?? "",
+            tacometro_salida: r.tacometro_salida ?? "",
+            tacometro_llegada: r.tacometro_llegada ?? "",
+            hobbs_salida: r.hobbs_salida ?? "",
+            hobbs_llegada: r.hobbs_llegada ?? "",
+            combustible_salida: r.combustible_salida ?? "",
+            combustible_llegada: r.combustible_llegada ?? "",
             cantidad_combustible: r.cantidad_combustible ?? "",
           });
-          if (r.firma_alumno)     setFirmaAlumno(r.firma_alumno);
+          if (r.firma_alumno) setFirmaAlumno(r.firma_alumno);
           if (r.firma_instructor) setFirmaInstructor(r.firma_instructor);
         }
       } catch (e) {
@@ -95,63 +105,61 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
     setDatos((prev) => ({ ...prev, [key]: val }));
   }
 
-  // ── Guardar borrador ───────────────────────────────────────────────────────
+  // ── Guardar borrador (instructor) ─────────────────────────────────────────
   async function handleGuardar() {
     setSaving(true);
     try {
-      await guardarReporteVuelo(id_vuelo, datos);
+      if (mode === "instructor") {
+        await guardarReporteVueloInstructor(id_vuelo, datos);
+      } else {
+        await guardarReporteVuelo(id_vuelo, datos);
+      }
       setEstado("BORRADOR");
     } catch {
-      alert("Error al guardar el borrador.");
+      toast.error("Error al guardar el borrador.");
     } finally {
       setSaving(false);
     }
   }
 
-  // ── Enviar reporte (alumno firma) ──────────────────────────────────────────
-  async function handleEnviar() {
-    if (firmaAlumnoRef.current?.isEmpty()) {
-      alert("Debe dibujar su firma antes de enviar.");
-      return;
-    }
-    const firma = firmaAlumnoRef.current.toDataURL();
-    setSaving(true);
-    try {
-      await enviarReporteVuelo(id_vuelo, { ...datos, firma_alumno: firma });
-      setFirmaAlumno(firma);
-      setEstado("PENDIENTE_INSTRUCTOR");
-    } catch {
-      alert("Error al enviar el reporte.");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // ── Instructor firma y completa ────────────────────────────────────────────
+  // ── Instructor firma y envía a alumno ─────────────────────────────────────
   async function handleFirmarInstructor() {
     if (firmaInstructorRef.current?.isEmpty()) {
-      alert("Debe dibujar su firma antes de completar.");
+      toast.warning("Debe dibujar su firma antes de enviar.");
       return;
     }
     const firma = firmaInstructorRef.current.toDataURL();
     setGenerating(true);
     try {
-      const pdfBase64 = await generarPdfReporteVuelo({
-        vueloInfo,
-        datos,
-        firmaAlumno,
-        firmaInstructor: firma,
-      });
       await firmarReporteVuelo(id_vuelo, {
+        ...datos,
         firma_instructor: firma,
-        archivo_pdf: pdfBase64,
       });
       setFirmaInstructor(firma);
-      setEstado("COMPLETADO");
+      setEstado("PENDIENTE_ALUMNO");
     } catch {
-      alert("Error al completar el reporte.");
+      toast.error("Error al enviar el reporte al alumno.");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  // ── Alumno firma y completa ────────────────────────────────────────────────
+  async function handleFirmarAlumno() {
+    if (firmaAlumnoRef.current?.isEmpty()) {
+      toast.warning("Debe dibujar su firma antes de completar.");
+      return;
+    }
+    const firma = firmaAlumnoRef.current.toDataURL();
+    setSaving(true);
+    try {
+      await firmarReporteVueloAlumno(id_vuelo, firma);
+      setFirmaAlumno(firma);
+      setEstado("COMPLETADO");
+    } catch {
+      toast.error("Error al firmar el reporte.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -203,7 +211,7 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
             <div className="rv-header-meta">
               {v.aeronave_codigo && <span>{v.aeronave_codigo}</span>}
               {v.aeronave_modelo && <span> · {v.aeronave_modelo}</span>}
-              {v.alumno_nombre   && <span> · {v.alumno_nombre}</span>}
+              {v.alumno_nombre && <span> · {v.alumno_nombre}</span>}
             </div>
           </div>
           <button className="rv-close" onClick={onClose}>×</button>
@@ -218,12 +226,12 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
             <div className="rv-section-title">Datos del vuelo</div>
             <div className="rv-info-grid">
               {[
-                { label: "Reporte #",    val: v.id_vuelo ?? "—" },
-                { label: "Hora",         val: horaStr },
-                { label: "Fecha",        val: fechaStr },
-                { label: "Tipo avión",   val: v.aeronave_modelo ?? "—" },
-                { label: "Avión No.",    val: v.aeronave_codigo ?? "—" },
-                { label: "Vuelo No.",    val: v.id_vuelo ?? "—" },
+                { label: "Reporte #", val: formatCorrelativo(v.aeronave_modelo, v.id_vuelo) },
+                { label: "Hora", val: horaStr },
+                { label: "Fecha", val: fechaStr },
+                { label: "Tipo avión", val: v.aeronave_modelo ?? "—" },
+                { label: "Avión No.", val: v.aeronave_codigo ?? "—" },
+                { label: "Vuelo No.", val: formatCorrelativo(v.aeronave_modelo, v.id_vuelo) },
               ].map(({ label, val }) => (
                 <div key={label} className="rv-info-field">
                   <span className="rv-label">{label}</span>
@@ -254,24 +262,33 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
             <div className="rv-section-title">Tacómetro, Hobbs y Combustible</div>
             <div className="rv-data-grid">
               {[
-                { key: "tacometro_salida",     label: "Tacómetro Salida" },
-                { key: "tacometro_llegada",    label: "Tacómetro Llegada" },
-                { key: "hobbs_salida",         label: "Hobbs Salida" },
-                { key: "hobbs_llegada",        label: "Hobbs Llegada" },
-                { key: "combustible_salida",   label: "Combustible Salida" },
-                { key: "combustible_llegada",  label: "Combustible Llegada" },
+                { key: "tacometro_salida", label: "Tacómetro Salida" },
+                { key: "tacometro_llegada", label: "Tacómetro Llegada" },
+                { key: "hobbs_salida", label: "Hobbs Salida" },
+                { key: "hobbs_llegada", label: "Hobbs Llegada" },
+                { key: "combustible_salida", label: "Combustible Salida" },
+                { key: "combustible_llegada", label: "Combustible Llegada" },
                 { key: "cantidad_combustible", label: "Cantidad agregada" },
               ].map(({ key, label }) => (
                 <div key={key} className="rv-data-field">
                   <span className="rv-label">{label}</span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className="rv-input"
-                    value={datos[key]}
-                    onChange={(e) => setField(key, e.target.value)}
-                    disabled={isReadonly}
-                  />
+                  {isReadonly ? (
+                    <span className="rv-info-val">
+                      {datos[key] !== "" && !isNaN(parseFloat(datos[key]))
+                        ? parseFloat(datos[key]).toFixed(1)
+                        : "—"}
+                    </span>
+                  ) : (
+                    <input
+                      type="number"
+                      step="0.1"
+                      max="9999.9"
+                      placeholder="0000.0"
+                      className="rv-input"
+                      value={datos[key]}
+                      onChange={(e) => setField(key, e.target.value)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -281,30 +298,6 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
           <div className="rv-section">
             <div className="rv-section-title">Firmas</div>
             <div className="rv-firmas-grid">
-              {/* Firma alumno */}
-              <div className="rv-firma-box">
-                <div className="rv-firma-label">Firma del Alumno</div>
-                <SignaturePad
-                  ref={firmaAlumnoRef}
-                  width={320}
-                  height={120}
-                  disabled={mode !== "alumno" || isReadonly}
-                  value={firmaAlumno}
-                />
-                {!isReadonly && mode === "alumno" && firmaAlumno == null && (
-                  <button
-                    className="rv-btn-clear"
-                    onClick={() => firmaAlumnoRef.current?.clear()}
-                  >
-                    Limpiar
-                  </button>
-                )}
-                <div className="rv-firma-name">
-                  {v.alumno_nombre ?? "—"}
-                  {v.alumno_licencia && <span className="rv-firma-lic"> · Lic. {v.alumno_licencia}</span>}
-                </div>
-              </div>
-
               {/* Firma instructor */}
               <div className="rv-firma-box">
                 <div className="rv-firma-label">Firma del Instructor</div>
@@ -312,10 +305,10 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
                   ref={firmaInstructorRef}
                   width={320}
                   height={120}
-                  disabled={mode !== "instructor" || estado !== "PENDIENTE_INSTRUCTOR"}
+                  disabled={isReadonly || mode !== "instructor"}
                   value={firmaInstructor}
                 />
-                {mode === "instructor" && estado === "PENDIENTE_INSTRUCTOR" && (
+                {mode === "instructor" && !isReadonly && (
                   <button
                     className="rv-btn-clear"
                     onClick={() => firmaInstructorRef.current?.clear()}
@@ -328,6 +321,30 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
                   {v.instructor_licencia && <span className="rv-firma-lic"> · Lic. {v.instructor_licencia}</span>}
                 </div>
               </div>
+
+              {/* Firma alumno */}
+              <div className="rv-firma-box">
+                <div className="rv-firma-label">Firma del Alumno</div>
+                <SignaturePad
+                  ref={firmaAlumnoRef}
+                  width={320}
+                  height={120}
+                  disabled={mode !== "alumno" || estado !== "PENDIENTE_ALUMNO"}
+                  value={firmaAlumno}
+                />
+                {mode === "alumno" && estado === "PENDIENTE_ALUMNO" && firmaAlumno == null && (
+                  <button
+                    className="rv-btn-clear"
+                    onClick={() => firmaAlumnoRef.current?.clear()}
+                  >
+                    Limpiar
+                  </button>
+                )}
+                <div className="rv-firma-name">
+                  {v.alumno_nombre ?? "—"}
+                  {v.alumno_licencia && <span className="rv-firma-lic"> · Lic. {v.alumno_licencia}</span>}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -338,34 +355,34 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
             Cerrar
           </button>
 
-          {/* Alumno — sin estado todavía o borrador */}
-          {mode === "alumno" && (estado === null || estado === "BORRADOR") && (
+          {/* Instructor — borrador o sin estado: puede guardar y firmar */}
+          {mode === "instructor" && !isReadonly && (
             <>
               <button
                 className="rv-btn rv-btn--primary"
                 onClick={handleGuardar}
-                disabled={saving}
+                disabled={saving || generating}
               >
                 {saving ? "Guardando…" : "Guardar borrador"}
               </button>
               <button
                 className="rv-btn rv-btn--success"
-                onClick={handleEnviar}
-                disabled={saving}
+                onClick={handleFirmarInstructor}
+                disabled={saving || generating}
               >
-                {saving ? "Enviando…" : "Enviar reporte"}
+                {generating ? "Enviando…" : "Firmar y enviar a alumno"}
               </button>
             </>
           )}
 
-          {/* Instructor — pendiente de firma */}
-          {mode === "instructor" && estado === "PENDIENTE_INSTRUCTOR" && (
+          {/* Alumno — pendiente de su firma */}
+          {mode === "alumno" && estado === "PENDIENTE_ALUMNO" && (
             <button
               className="rv-btn rv-btn--success"
-              onClick={handleFirmarInstructor}
-              disabled={generating}
+              onClick={handleFirmarAlumno}
+              disabled={saving}
             >
-              {generating ? "Completando…" : "Firmar y completar"}
+              {saving ? "Firmando…" : "Firmar reporte"}
             </button>
           )}
 

@@ -1,0 +1,141 @@
+.adm-sidebar {
+  width: var(--sidebar-w);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  border-right: 1px solid var(--neutral-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.02);
+}
+
+/* ── Logo ── */
+.adm-sidebar__top {
+  padding: 24px;
+}
+
+.adm-sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
+
+.adm-sidebar__logo-box {
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adm-sidebar__logo-icon {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+/* ── Nav ── */
+.adm-sidebar__nav {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adm-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 0.925rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.adm-sidebar__link:hover {
+  background-color: var(--neutral-light);
+  color: var(--primary);
+}
+
+.adm-sidebar__link--active {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.adm-sidebar__icon {
+  font-size: 1.1rem;
+}
+
+/* ── Bottom ── */
+.adm-sidebar__bottom {
+  padding: 16px;
+  margin-top: auto;
+}
+
+.adm-sidebar__user {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.adm-sidebar__user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.adm-sidebar__user-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.adm-sidebar__user-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.adm-sidebar__divider {
+  height: 1px;
+  background-color: var(--neutral-border);
+  margin: 8px 0;
+}
+
+.adm-sidebar__logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--secondary);
+  font-size: 0.925rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.adm-sidebar__logout:hover {
+  background-color: var(--secondary-light);
+}

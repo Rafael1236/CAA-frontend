@@ -1,7 +1,13 @@
 .trn {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 80px 40px 60px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Cabecera ────────────────────────────────────────────────────────────── */
@@ -49,21 +55,22 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  border-radius: 10px;
-  padding: 0.85rem 1.25rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  border-radius: 12px;
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 2rem;
   border: 1px solid transparent;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .trn__ops--activo {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
+  background: #ecfdf5;
+  border-color: #10b98130;
 }
 
 .trn__ops--inactivo {
   background: #fef2f2;
-  border-color: #fecaca;
+  border-color: #ef444430;
 }
 
 .trn__ops-left {
@@ -83,18 +90,71 @@
 .trn__ops--inactivo .trn__ops-dot { background: #dc2626; }
 
 .trn__ops-label {
-  font-size: 0.875rem;
-  color: #374151;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
 }
+
+.trn__ops-status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trn__ops--activo   .trn__ops-status-badge { background: #10b981; color: #fff; }
+.trn__ops--inactivo .trn__ops-status-badge { background: #ef4444; color: #fff; }
 
 .trn__ops-motivo {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.2);
   padding: 2px 8px;
-  border-radius: 99px;
-  background: #fee2e2;
-  color: #991b1b;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.trn__ops-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.trn__ops-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #1e3a5f;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trn__ops-btn:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.trn__ops-btn--primary {
+  background: #1e3a5f;
+  color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.trn__ops-btn--secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.trn__ops-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .trn__ops-right {
@@ -112,26 +172,14 @@
   color: #111;
 }
 
-.trn__ops-btn {
-  padding: 6px 14px;
-  border-radius: 7px;
-  border: 1px solid;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
 .trn__ops--activo .trn__ops-btn {
-  background: #dc2626;
+  background: #ef4444;
   color: #fff;
-  border-color: #dc2626;
 }
 
 .trn__ops--inactivo .trn__ops-btn {
-  background: #16a34a;
+  background: #10b981;
   color: #fff;
-  border-color: #16a34a;
 }
 
 .trn__ops-btn:hover { opacity: 0.88; }
@@ -199,21 +247,22 @@
 }
 
 .trn__tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 
-.trn__tag--gris     { background: #f3f4f6; color: #374151; }
-.trn__tag--naranja  { background: #fff7ed; color: #c2410c; }
-.trn__tag--azul     { background: #eff6ff; color: #1d4ed8; }
-.trn__tag--morado   { background: #f5f3ff; color: #6d28d9; }
-.trn__tag--amarillo { background: #fefce8; color: #854d0e; }
-.trn__tag--verde    { background: #f0fdf4; color: #15803d; }
+.trn__tag--gris     { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.trn__tag--naranja  { background: #fff7ed; color: #c2410c; border: 1px solid #f9731620; }
+.trn__tag--azul     { background: #eff6ff; color: #1d4ed8; border: 1px solid #3b82f620; }
+.trn__tag--morado   { background: #f5f3ff; color: #6d28d9; border: 1px solid #8b5cf620; }
+.trn__tag--amarillo { background: #fffbeb; color: #d97706; border: 1px solid #f59e0b20; }
+.trn__tag--verde    { background: #ecfdf5; color: #059669; border: 1px solid #10b98120; }
 
 .trn__card-nombres {
   display: flex;
@@ -317,4 +366,229 @@
   padding: 3rem;
   color: #9ca3af;
   font-size: 0.875rem;
+}
+
+/* ── Publicar aviso (ticker) ─────────────────────────────────────────────── */
+.trn__ticker-form {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.trn__ticker-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.trn__ticker-form-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trn__ticker-clear {
+  background: none;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  border-radius: 6px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.trn__ticker-clear:hover {
+  background: #fee2e2;
+}
+
+.trn__ticker-activo {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+
+.trn__ticker-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.trn__ticker-input {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.trn__ticker-input:focus {
+  border-color: #0f766e;
+}
+
+.trn__ticker-btn {
+  background: #1e3a5f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.trn__ticker-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.trn__ticker-btn:hover:not(:disabled) {
+  background: #2d5080;
+}
+
+.trn__ticker-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.trn__ticker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  transition: all 0.2s;
+}
+
+.trn__ticker-item:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.trn__ticker-item-text {
+  font-size: 0.875rem;
+  color: #334155;
+  font-weight: 500;
+  line-height: 1.4;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.trn__ticker-item-del {
+  background: #fee2e2;
+  color: #ef4444;
+  border: none;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.trn__ticker-item-del:hover {
+  background: #fecaca;
+  transform: scale(1.1);
+}
+
+/* ── Modales ─────────────────────────────────────────────────────────────── */
+.trn__modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.trn__modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.trn__modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.5rem;
+}
+
+.trn__modal-text {
+  font-size: 0.95rem;
+  color: #475569;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+.trn__modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.trn__modal-btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.trn__modal-btn--cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+}
+
+.trn__modal-btn--cancel:hover {
+  background: #e2e8f0;
+}
+
+.trn__modal-btn--danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.trn__modal-btn--danger:hover {
+  background: #dc2626;
+}
+
+.trn__modal-btn--primary {
+  background: #10b981;
+  color: #fff;
+}
+
+.trn__modal-btn--primary:hover {
+  background: #059669;
 }

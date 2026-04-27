@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { toJpeg } from 'html-to-image'
 import jsPDF from 'jspdf'
 import { useLoadSheet } from '../context/LoadSheetContext'
@@ -27,7 +28,7 @@ export default function Step4Summary({ id_vuelo, saving, onGuardarBorrador, onCo
       const el = document.getElementById('print-area')
       if (!el) {
         setPdfLoading(false)
-        alert('Activa la vista previa primero.')
+        toast.warning('Activa la vista previa primero.')
         return
       }
       const dataUrl = await toJpeg(el, { quality: 0.93, pixelRatio: 1.5, backgroundColor: '#ffffff' })
@@ -44,7 +45,7 @@ export default function Step4Summary({ id_vuelo, saving, onGuardarBorrador, onCo
       pdf.addImage(dataUrl, 'JPEG', xOff, yOff, imgW, imgH)
       pdf.save(`loadsheet-${ac?.reg || 'caaa'}.pdf`)
     } catch (err) {
-      alert('Error generando PDF: ' + (err?.message || String(err)))
+      toast.error('Error generando PDF: ' + (err?.message || String(err)))
     }
     setPdfLoading(false)
   }

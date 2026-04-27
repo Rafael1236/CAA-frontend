@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./tailwind.css";
+import "./index.css";
+import "./api/axiosConfig";
 
 import App from "./App.jsx";
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { getAlumnosListAdmin, getAlumnoPerfilAdmin, setSoleado } from "../../services/adminApi";
 import "./AlumnoPerfilModal.css";
 
@@ -54,7 +55,7 @@ export default function AlumnoPerfilModal({ onClose }) {
       await setSoleado(perfil.id_alumno, nuevoValor);
       setPerfil((prev) => ({ ...prev, soleado: nuevoValor }));
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo actualizar el estado soleado");
+      toast.error(e.response?.data?.message || "No se pudo actualizar el estado soleado");
     } finally {
       setToggling(false);
     }

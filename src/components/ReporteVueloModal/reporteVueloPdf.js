@@ -27,6 +27,10 @@ export async function generarPdfReporteVuelo({
     ? new Date(v.fecha_hora_vuelo).toLocaleTimeString("es-SV", { hour: "2-digit", minute: "2-digit" })
     : "—";
 
+  const correlativo = (v.aeronave_modelo && v.id_vuelo)
+    ? `${v.aeronave_modelo}-${String(v.id_vuelo).padStart(7, "0")}`
+    : "—";
+
   const cell = (text, opts = {}) => ({
     text: String(text ?? ""),
     fontSize: 8,
@@ -53,15 +57,21 @@ export async function generarPdfReporteVuelo({
     margin: [0, 0, 0, 4],
   });
 
+  const formatNum = (val) => {
+    if (val === null || val === undefined || val === "") return "—";
+    const n = parseFloat(val);
+    return isNaN(n) ? val : n.toFixed(1);
+  };
+
   // Filas de datos
   const dataRows = [
-    ["Tacómetro Salida",    d.tacometro_salida    ?? "—"],
-    ["Tacómetro Llegada",   d.tacometro_llegada   ?? "—"],
-    ["Hobbs Salida",        d.hobbs_salida        ?? "—"],
-    ["Hobbs Llegada",       d.hobbs_llegada       ?? "—"],
-    ["Combustible Salida",  d.combustible_salida  ?? "—"],
-    ["Combustible Llegada", d.combustible_llegada ?? "—"],
-    ["Cantidad agregada",   d.cantidad_combustible ?? "—"],
+    ["Tacómetro Salida",    formatNum(d.tacometro_salida)],
+    ["Tacómetro Llegada",   formatNum(d.tacometro_llegada)],
+    ["Hobbs Salida",        formatNum(d.hobbs_salida)],
+    ["Hobbs Llegada",       formatNum(d.hobbs_llegada)],
+    ["Combustible Salida",  formatNum(d.combustible_salida)],
+    ["Combustible Llegada", formatNum(d.combustible_llegada)],
+    ["Cantidad agregada",   formatNum(d.cantidad_combustible)],
   ];
 
   const docDefinition = {
@@ -100,12 +110,12 @@ export async function generarPdfReporteVuelo({
               hdr("VUELO No."),
             ],
             [
-              cell(v.id_vuelo ?? "—"),
+              cell(correlativo),
               cell(horaStr),
               cell(fechaStr),
               cell(v.aeronave_modelo ?? "—"),
               cell(v.aeronave_codigo ?? "—"),
-              cell(v.id_vuelo ?? "—"),
+              cell(correlativo),
             ],
           ],
         },
@@ -190,7 +200,7 @@ export async function generarPdfReporteVuelo({
     try {
       const pdfDoc = pdfMake.createPdf(docDefinition);
       if (download) {
-        pdfDoc.download(`reporte-vuelo-${v.id_vuelo ?? "x"}.pdf`);
+        pdfDoc.download(`reporte-vuelo-${correlativo}.pdf`);
         resolve(null);
       } else {
         pdfDoc.getBase64((base64) => resolve(base64));

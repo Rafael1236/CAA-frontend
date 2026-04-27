@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { getPlanVuelo, guardarPlanVuelo, completarPlanVuelo } from "../../services/alumnoApi";
 import { generarPdfPlanVuelo } from "./planVueloPdf";
 import "./PlanVueloModal.css";
@@ -93,9 +94,9 @@ export default function PlanVueloModal({ id_vuelo, onClose }) {
     try {
       await guardarPlanVuelo(id_vuelo, form);
       setPlanEstado("BORRADOR");
-      alert("Plan guardado como borrador.");
+      toast.success("Plan guardado como borrador.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo guardar el plan.");
+      toast.error(e.response?.data?.message || "No se pudo guardar el plan.");
     } finally {
       setSaving(false);
     }
@@ -114,9 +115,9 @@ export default function PlanVueloModal({ id_vuelo, onClose }) {
       await completarPlanVuelo(id_vuelo, pdfBlob);
 
       setPlanEstado("COMPLETADO");
-      alert("Plan de vuelo completado. PDF generado y guardado.");
+      toast.success("Plan de vuelo completado. PDF generado y guardado.");
     } catch (e) {
-      alert(e.response?.data?.message || "No se pudo completar el plan.");
+      toast.error(e.response?.data?.message || "No se pudo completar el plan.");
     } finally {
       setGenerating(false);
     }

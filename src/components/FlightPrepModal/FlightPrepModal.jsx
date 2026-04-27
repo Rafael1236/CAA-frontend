@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { LoadSheetProvider, useLoadSheet } from './context/LoadSheetContext'
 import { plantillaToAC, buildPesosPayload } from '../../utils/plantillaToAC'
 import { calcFuel } from '../../utils/fuelCalc'
@@ -18,9 +19,10 @@ import './FlightPrepModal.css'
 // ─────────────────────────────────────────────────────────────────────────────
 function FlightPrepModalInner({ id_vuelo, soleado, onClose }) {
   const { state, dispatch } = useLoadSheet()
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
-  const [saving,  setSaving]  = useState(false)
+  const [loading,    setLoading]    = useState(true)
+  const [error,      setError]      = useState(null)
+  const [saving,     setSaving]     = useState(false)
+  const [emailWarn,  setEmailWarn]  = useState(false)
 
   // ── Carga inicial ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -103,7 +105,7 @@ function FlightPrepModalInner({ id_vuelo, soleado, onClose }) {
         dispatch({ type: 'SET_LS_ESTADO', payload: 'BORRADOR' })
       }
     } catch (err) {
-      alert('Error al guardar: ' + (err?.response?.data?.message || err.message))
+      toast.error('Error al guardar: ' + (err?.response?.data?.message || err.message))
     } finally {
       setSaving(false)
     }
@@ -119,13 +121,19 @@ function FlightPrepModalInner({ id_vuelo, soleado, onClose }) {
 
       if (soleado) {
         const pdfBlob = await generatePdfBlob()
-        await completarLoadsheet(id_vuelo, pdfBlob)
-        dispatch({ type: 'SET_LS_ESTADO', payload: 'COMPLETADO' })
+        const result  = await completarLoadsheet(id_vuelo, pdfBlob)
+        dispatch({ type: 'SET_LS_ESTADO', payload: 'ENVIADO' })
+
+        if (result?.emailError) {
+          setEmailWarn(true)
+          setSaving(false)
+          return          // deja el modal abierto con el banner amarillo
+        }
       }
 
       onClose()
     } catch (err) {
-      alert('Error al completar: ' + (err?.response?.data?.message || err.message))
+      toast.error('Error al completar: ' + (err?.response?.data?.message || err.message))
       setSaving(false)
     }
   }
@@ -197,6 +205,13 @@ function FlightPrepModalInner({ id_vuelo, soleado, onClose }) {
 
           {error && (
             <div className="fpm-error">Error: {error}</div>
+          )}
+
+          {emailWarn && (
+            <div className="fpm-warning">
+              Loadsheet guardado correctamente. El email al instructor no se pudo enviar — intentá de nuevo más tarde.
+              <button className="fpm-warning-close" onClick={onClose}>Cerrar</button>
+            </div>
           )}
 
           {!loading && !error && (

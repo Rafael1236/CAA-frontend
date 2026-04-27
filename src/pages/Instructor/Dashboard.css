@@ -1,7 +1,13 @@
 .ins {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 80px 40px 60px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Cabecera ────────────────────────────────────────────────────────────── */
@@ -84,45 +90,106 @@
   margin: 0 0 1rem;
 }
 
-/* ── Bloques (tab Hoy) ───────────────────────────────────────────────────── */
-.ins__bloque {
-  margin-bottom: 1.5rem;
+/* ── Cuadrícula Semanal ────────────────────────────────────────────────── */
+.ins__semana-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-.ins__bloque-header {
+.ins__day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ins__day-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.ins__bloque-hora {
-  font-size: 0.95rem;
+.ins__day-name {
+  font-size: 1.1rem;
   font-weight: 800;
   color: #1e3a5f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.ins__bloque-count {
-  font-size: 0.75rem;
-  color: #6b7280;
-  font-weight: 600;
+.ins__day-today {
+  background: #3b82f6;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
 }
 
-.ins__cards {
+.ins__day-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
 }
 
 .ins__card {
   background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 9px;
-  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  gap: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ins__card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f640;
+}
+
+.ins__card--today {
+  border-left: 4px solid #3b82f6;
+  background: #f8fafc;
+}
+
+.ins__card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ins__card-hora {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.ins__card-sep {
+  color: #cbd5e1;
+}
+
+.ins__card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.ins__btn-reporte--outline {
+  background: transparent;
+  color: #059669;
+  border: 1px solid #059669;
+}
+
+.ins__btn-reporte--outline:hover {
+  background: #05966908;
 }
 
 .ins__card--vuelo {
@@ -161,9 +228,9 @@
 
 .ins__bar-track {
   flex: 1;
-  height: 6px;
+  height: 8px;
   border-radius: 99px;
-  background: #e5e7eb;
+  background: #f1f5f9;
   overflow: hidden;
 }
 
@@ -171,7 +238,7 @@
   height: 100%;
   background: #3b82f6;
   border-radius: 99px;
-  transition: width 0.5s ease;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ins__bar--full {
@@ -179,11 +246,10 @@
 }
 
 .ins__bar-pct {
-  font-size: 0.7rem;
-  color: #6b7280;
-  font-weight: 600;
-  white-space: nowrap;
-  min-width: 28px;
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 700;
+  min-width: 32px;
   text-align: right;
 }
 
@@ -264,23 +330,23 @@
 
 /* ── Tags de estado ──────────────────────────────────────────────────────── */
 .ins__tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 99px;
-  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+  letter-spacing: 0.03em;
 }
 
-.ins__tag--gris     { background: #f3f4f6; color: #374151; }
-.ins__tag--naranja  { background: #fff7ed; color: #c2410c; }
-.ins__tag--azul     { background: #eff6ff; color: #1d4ed8; }
-.ins__tag--morado   { background: #f5f3ff; color: #6d28d9; }
-.ins__tag--amarillo { background: #fefce8; color: #854d0e; }
-.ins__tag--verde    { background: #f0fdf4; color: #15803d; }
-.ins__tag--rojo     { background: #fef2f2; color: #b91c1c; }
+.ins__tag--publicado   { background: #eff6ff; color: #1d4ed8; border: 1px solid #3b82f620; }
+.ins__tag--salida      { background: #fff7ed; color: #c2410c; border: 1px solid #f9731620; }
+.ins__tag--vuelo       { background: #ecfdf5; color: #059669; border: 1px solid #10b98120; }
+.ins__tag--regreso     { background: #fffbeb; color: #d97706; border: 1px solid #f59e0b20; }
+.ins__tag--finalizando { background: #f5f3ff; color: #6d28d9; border: 1px solid #8b5cf620; }
+.ins__tag--completado  { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+.ins__tag--cancelado   { background: #fef2f2; color: #dc2626; border: 1px solid #ef444420; }
 
 /* ── Tabla ───────────────────────────────────────────────────────────────── */
 .ins__table-wrap {

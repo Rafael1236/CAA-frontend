@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "sonner";
 
-import Home from "./pages/Home/Dashboard";
 import Login from "./pages/Login/Login";
 import DashboardAlumno from "./pages/Alumno/Dashboard";
 import ProtectedAlumno from "./components/routes/ProtectedAlumno";
@@ -20,6 +20,9 @@ import InstructorDashboard from "./pages/Instructor/Dashboard";
 import ProtectedInstructor from "./components/routes/ProtectedInstructor";
 import ForcePasswordChange from "./components/routes/ForcePasswordChange";
 import Perfil from "./pages/Perfil/Perfil";
+import AdminLayout from "./components/AdminLayout/AdminLayout";
+import PerfilesAdmin from "./pages/Admin/Perfiles";
+import AlumnosAdmin from "./pages/Admin/Alumnos";
 
 const IDLE_MS = 10 * 60 * 1000;
 
@@ -39,21 +42,24 @@ function App() {
     };
 
     const logout = () => {
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       window.location.href = "/login";
     };
 
+    const isProyeccion = () =>
+      new URLSearchParams(window.location.search).get("modo") === "proyeccion";
+
     const reset = () => {
+      if (isProyeccion()) return;
+
       const user = readUser();
       if (!user) return;
 
-      if (user.expiresAt && Date.now() > user.expiresAt) {
+      if (!localStorage.getItem("token")) {
         logout();
         return;
       }
-
-      user.expiresAt = Date.now() + IDLE_MS;
-      localStorage.setItem("user", JSON.stringify(user));
 
       clearTimeout(t);
       t = setTimeout(logout, IDLE_MS);
@@ -72,9 +78,10 @@ function App() {
 
   return (
     <Router>
+      <Toaster position="top-right" richColors duration={4000} />
       <ForcePasswordChange>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/perfil" element={<Perfil />} />
           <Route
@@ -116,7 +123,9 @@ function App() {
             path="/admin/dashboard"
             element={
               <ProtectedAdmin>
-                <DashboardAdmin />
+                <AdminLayout>
+                  <DashboardAdmin />
+                </AdminLayout>
               </ProtectedAdmin>
             }
           />
@@ -124,7 +133,9 @@ function App() {
             path="/admin/auditoria"
             element={
               <ProtectedAdmin>
-                <AuditoriaAdmin />
+                <AdminLayout>
+                  <AuditoriaAdmin />
+                </AdminLayout>
               </ProtectedAdmin>
             }
           />
@@ -132,7 +143,29 @@ function App() {
             path="/admin/mantenimiento"
             element={
               <ProtectedAdmin>
-                <MantenimientoAdmin />
+                <AdminLayout>
+                  <MantenimientoAdmin />
+                </AdminLayout>
+              </ProtectedAdmin>
+            }
+          />
+          <Route
+            path="/admin/perfiles"
+            element={
+              <ProtectedAdmin>
+                <AdminLayout>
+                  <PerfilesAdmin />
+                </AdminLayout>
+              </ProtectedAdmin>
+            }
+          />
+          <Route
+            path="/admin/alumnos"
+            element={
+              <ProtectedAdmin>
+                <AdminLayout>
+                  <AlumnosAdmin />
+                </AdminLayout>
               </ProtectedAdmin>
             }
           />
@@ -155,7 +188,7 @@ function App() {
             }
           />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </ForcePasswordChange>
     </Router>

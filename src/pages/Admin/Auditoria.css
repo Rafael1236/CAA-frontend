@@ -1,7 +1,13 @@
 .aud {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 80px 40px 60px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Cabecera ───────────────────────────────────────────────────────────── */
@@ -69,12 +75,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 0.75rem;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.25rem;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .aud__filter-group {
@@ -161,19 +168,25 @@
 }
 
 .aud__table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid #f3f4f6;
-  color: #374151;
-  vertical-align: top;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  vertical-align: middle;
+}
+
+.aud__row:nth-child(even):not(.aud__row--expanded) td {
+  background: #f8fafc50;
 }
 
 .aud__row:last-child td { border-bottom: none; }
 
-.aud__row--clickable { cursor: pointer; }
+.aud__row--clickable { cursor: pointer; transition: all 0.2s; }
 
-.aud__row--clickable:hover td { background: #f0f9ff; }
+.aud__row--clickable:hover td { 
+  background: #f1f5f9 !important; 
+}
 
-.aud__row--expanded td { background: #f0f9ff; }
+.aud__row--expanded td { background: #f1f5f9; }
 
 /* ── Celdas específicas ─────────────────────────────────────────────────── */
 .aud__td-fecha  { white-space: nowrap; color: #6b7280; font-size: 0.78rem; }
@@ -186,31 +199,43 @@
 
 /* ── Badges ─────────────────────────────────────────────────────────────── */
 .aud__rol-badge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 99px;
-  font-size: 0.67rem;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: #f3f4f6;
-  color: #374151;
+  letter-spacing: 0.03em;
 }
 
-.aud__rol-badge--admin        { background: #fef3c7; color: #92400e; }
-.aud__rol-badge--alumno       { background: #dbeafe; color: #1e40af; }
-.aud__rol-badge--programacion { background: #d1fae5; color: #065f46; }
+.aud__rol-badge--admin        { background: #1a3a5c; color: #fff; }
+.aud__rol-badge--instructor   { background: #10b98120; color: #059669; }
+.aud__rol-badge--alumno       { background: #0ea5e920; color: #0284c7; }
+.aud__rol-badge--turno        { background: #f59e0b20; color: #d97706; }
+.aud__rol-badge--programacion { background: #8b5cf620; color: #7c3aed; }
 
 .aud__accion-badge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 5px;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  background: #ede9fe;
-  color: #5b21b6;
-  white-space: nowrap;
+  letter-spacing: 0.02em;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.aud__accion-badge--cancelacion_emergencia {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #ef444420;
+}
+
+.aud__accion-badge--login_ok {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #10b98120;
 }
 
 /* ── Fila de detalle expandida ──────────────────────────────────────────── */

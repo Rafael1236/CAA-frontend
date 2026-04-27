@@ -157,6 +157,7 @@
 .mhl__badge--cancelado  { background: #fee2e2; color: #991b1b; }
 .mhl__badge--completado { background: #e0f2fe; color: #0c4a6e; }
 .mhl__badge--en-vuelo   { background: #f0fdf4; color: #166534; border: 1px solid #86efac; }
+.mhl__badge--ajustado   { background: #e0e7ff; color: #4338ca; }
 
 /* Botones de acción */
 .mhl__vuelo-actions {

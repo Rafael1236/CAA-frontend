@@ -6,6 +6,7 @@ export default function Header() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
@@ -51,11 +52,11 @@ export default function Header() {
                   Dashboard
                 </Link>
 
-                {(user.rol === "ADMIN" || user.rol === "PROGRAMACION") && (
-                  <Link to="/programacion" className="header__action-link">
+                {["ADMIN", "PROGRAMACION", "TURNO"].includes(user.rol) && (
+                  <a href="/programacion?modo=proyeccion" target="_blank" rel="noopener noreferrer" className="header__action-link">
                     <span className="header__action-icon">📅</span>
                     Programación
-                  </Link>
+                  </a>
                 )}
 
                 <Link to="/perfil" className="header__action-link">

@@ -1,5 +1,9 @@
-import { useRef, useState } from "react";
-import { guardarChecklistPostvuelo } from "../../services/instructorApi";
+import { useRef, useState, useEffect } from "react";
+import {
+  getChecklistPostvuelo,
+  guardarChecklistPostvuelo,
+  eliminarChecklistPostvuelo,
+} from "../../services/instructorApi";
 import { avanzarEstadoVuelo } from "../../services/instructorApi";
 import SignaturePad from "../SignaturePad/SignaturePad";
 import "./ChecklistPostvueloModal.css";
@@ -29,20 +33,67 @@ const ITEMS = [
 const INITIAL_CHECKS = Object.fromEntries(ITEMS.map((i) => [i.key, false]));
 
 export default function ChecklistPostvueloModal({ id_vuelo, vueloInfo, tiempoVueloMin, onClose, onCompleted }) {
-  const [checks, setChecks]       = useState(INITIAL_CHECKS);
+  const [checks, setChecks]           = useState(INITIAL_CHECKS);
   const [comentarios, setComentarios] = useState("");
-  const [saving, setSaving]       = useState(false);
-  const [error, setError]         = useState("");
+  const [loading, setLoading]         = useState(true);
+  const [saving, setSaving]           = useState(false);
+  const [deleting, setDeleting]       = useState(false);
+  const [error, setError]             = useState("");
   const firmaRef = useRef(null);
 
   const allChecked = ITEMS.every((i) => checks[i.key]);
-
   const v = vueloInfo ?? {};
 
-  function toggle(key) {
-    setChecks((prev) => ({ ...prev, [key]: !prev[key] }));
+  // Cargar datos existentes al abrir
+  useEffect(() => {
+    setLoading(true);
+    getChecklistPostvuelo(id_vuelo)
+      .then((data) => {
+        if (data) {
+          const loaded = {};
+          ITEMS.forEach(({ key }) => { loaded[key] = data[key] ?? false; });
+          setChecks(loaded);
+          setComentarios(data.comentarios ?? "");
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [id_vuelo]);
+
+  // Auto-guardar en BD cada vez que se marca un ítem
+  async function toggle(key) {
+    const newChecks = { ...checks, [key]: !checks[key] };
+    setChecks(newChecks);
+    try {
+      await guardarChecklistPostvuelo(id_vuelo, { ...newChecks, comentarios });
+    } catch {
+      // silencioso
+    }
   }
 
+  // Auto-guardar comentarios al salir del campo
+  async function handleComentariosBlur() {
+    try {
+      await guardarChecklistPostvuelo(id_vuelo, { ...checks, comentarios });
+    } catch {
+      // silencioso
+    }
+  }
+
+  // Cancelar: borrar checklist de BD y cerrar (sin avanzar vuelo)
+  async function handleCancelar() {
+    setDeleting(true);
+    try {
+      await eliminarChecklistPostvuelo(id_vuelo);
+    } catch {
+      // ignorar errores al cancelar
+    } finally {
+      setDeleting(false);
+    }
+    onClose();
+  }
+
+  // Completar: guardar estado final con firma y avanzar vuelo a COMPLETADO
   async function handleCompletar() {
     if (!allChecked) {
       setError("Debe marcar todos los ítems del checklist.");
@@ -54,8 +105,6 @@ export default function ChecklistPostvueloModal({ id_vuelo, vueloInfo, tiempoVue
     }
     setError("");
     const firma = firmaRef.current.toDataURL();
-
-    // Obtener licencia del instructor desde localStorage
     const user = JSON.parse(localStorage.getItem("user") ?? "{}");
     const licencia = user.numero_licencia ?? user.licencia ?? "";
 
@@ -71,7 +120,7 @@ export default function ChecklistPostvueloModal({ id_vuelo, vueloInfo, tiempoVue
       await avanzarEstadoVuelo(id_vuelo, body);
       onCompleted?.();
     } catch (e) {
-      setError("Error al guardar el checklist. Intenta de nuevo.");
+      setError(e.response?.data?.message || "Error al guardar el checklist. Intenta de nuevo.");
     } finally {
       setSaving(false);
     }
@@ -101,78 +150,89 @@ export default function ChecklistPostvueloModal({ id_vuelo, vueloInfo, tiempoVue
         <div className="cpv-body">
           {error && <div className="cpv-error">{error}</div>}
 
-          {/* Checklist */}
-          <div className="cpv-section">
-            <div className="cpv-progress">
-              {ITEMS.filter((i) => checks[i.key]).length} / {ITEMS.length} completados
-            </div>
-            <ul className="cpv-list">
-              {ITEMS.map(({ key, label }) => (
-                <li
-                  key={key}
-                  className={`cpv-item ${checks[key] ? "cpv-item--checked" : ""}`}
-                  onClick={() => toggle(key)}
-                >
-                  <span className="cpv-checkbox">
-                    {checks[key] ? "☑" : "☐"}
-                  </span>
-                  <span className="cpv-item-label">{label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Comentarios */}
-          <div className="cpv-section">
-            <div className="cpv-section-title">Comentarios</div>
-            <textarea
-              className="cpv-textarea"
-              rows={3}
-              placeholder="Observaciones adicionales…"
-              value={comentarios}
-              onChange={(e) => setComentarios(e.target.value)}
-            />
-          </div>
-
-          {/* Firma */}
-          <div className="cpv-section">
-            <div className="cpv-section-title">Firma del Piloto</div>
-            <div className="cpv-firma-row">
-              <div className="cpv-firma-box">
-                <SignaturePad ref={firmaRef} width={320} height={110} />
-                <button
-                  className="cpv-btn-clear"
-                  onClick={() => firmaRef.current?.clear()}
-                >
-                  Limpiar
-                </button>
-              </div>
-              <div className="cpv-firma-info">
-                <div className="cpv-firma-label">Nombre del Piloto</div>
-                <div className="cpv-firma-name">
-                  {v.instructor_nombre ?? JSON.parse(localStorage.getItem("user") ?? "{}")?.nombre ?? "—"}
+          {loading ? (
+            <p style={{ padding: "1rem", textAlign: "center" }}>Cargando checklist…</p>
+          ) : (
+            <>
+              {/* Checklist */}
+              <div className="cpv-section">
+                <div className="cpv-progress">
+                  {ITEMS.filter((i) => checks[i.key]).length} / {ITEMS.length} completados
                 </div>
-                <div className="cpv-firma-label" style={{ marginTop: 8 }}>Licencia N°</div>
-                <div className="cpv-firma-lic">
-                  {JSON.parse(localStorage.getItem("user") ?? "{}")?.numero_licencia ?? "—"}
+                <ul className="cpv-list">
+                  {ITEMS.map(({ key, label }) => (
+                    <li
+                      key={key}
+                      className={`cpv-item ${checks[key] ? "cpv-item--checked" : ""}`}
+                      onClick={() => toggle(key)}
+                    >
+                      <span className="cpv-checkbox">
+                        {checks[key] ? "☑" : "☐"}
+                      </span>
+                      <span className="cpv-item-label">{label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Comentarios */}
+              <div className="cpv-section">
+                <div className="cpv-section-title">Comentarios</div>
+                <textarea
+                  className="cpv-textarea"
+                  rows={3}
+                  placeholder="Observaciones adicionales…"
+                  value={comentarios}
+                  onChange={(e) => setComentarios(e.target.value)}
+                  onBlur={handleComentariosBlur}
+                />
+              </div>
+
+              {/* Firma */}
+              <div className="cpv-section">
+                <div className="cpv-section-title">Firma del Piloto</div>
+                <div className="cpv-firma-row">
+                  <div className="cpv-firma-box">
+                    <SignaturePad ref={firmaRef} width={320} height={110} />
+                    <button
+                      className="cpv-btn-clear"
+                      onClick={() => firmaRef.current?.clear()}
+                    >
+                      Limpiar
+                    </button>
+                  </div>
+                  <div className="cpv-firma-info">
+                    <div className="cpv-firma-label">Nombre del Piloto</div>
+                    <div className="cpv-firma-name">
+                      {v.instructor_nombre ?? JSON.parse(localStorage.getItem("user") ?? "{}")?.nombre ?? "—"}
+                    </div>
+                    <div className="cpv-firma-label" style={{ marginTop: 8 }}>Licencia N°</div>
+                    <div className="cpv-firma-lic">
+                      {JSON.parse(localStorage.getItem("user") ?? "{}")?.numero_licencia ?? "—"}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
 
         {/* ── Footer ── */}
         <div className="cpv-footer">
-          {!allChecked && (
+          {!loading && !allChecked && (
             <span className="cpv-hint">Marque todos los ítems para continuar</span>
           )}
-          <button className="cpv-btn" onClick={onClose} disabled={saving}>
-            Cancelar
+          <button
+            className="cpv-btn"
+            onClick={handleCancelar}
+            disabled={saving || deleting}
+          >
+            {deleting ? "Borrando…" : "Cancelar"}
           </button>
           <button
             className={`cpv-btn cpv-btn--success ${!allChecked ? "cpv-btn--disabled-look" : ""}`}
             onClick={handleCompletar}
-            disabled={saving}
+            disabled={saving || deleting || loading}
           >
             {saving ? "Finalizando vuelo…" : "Completar checklist y finalizar vuelo"}
           </button>
