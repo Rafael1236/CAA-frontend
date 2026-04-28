@@ -208,6 +208,13 @@
 }
 .mhl__btn--cancel:hover { background: #ffedd5; }
 
+.mhl__btn--withdraw {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+}
+.mhl__btn--withdraw:hover { background: #dbeafe; }
+
 .mhl__btn--emergency {
   background: #fef2f2;
   color: #b91c1c;

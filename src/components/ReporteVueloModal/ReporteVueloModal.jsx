@@ -102,8 +102,25 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
   }, [id_vuelo, mode]);
 
   function setField(key, val) {
+    const numericFields = [
+      "tacometro_salida", "tacometro_llegada",
+      "hobbs_salida", "hobbs_llegada",
+      "combustible_salida", "combustible_llegada",
+      "cantidad_combustible"
+    ];
+
+    if (numericFields.includes(key)) {
+      // Permitir solo números y un punto decimal
+      // Formato: hasta 4 dígitos, un punto opcional, y hasta 1 decimal
+      const regex = /^\d{0,4}(\.\d{0,1})?$/;
+      if (val !== "" && !regex.test(val)) {
+        return; // Ignorar cambio si no cumple el formato
+      }
+    }
+
     setDatos((prev) => ({ ...prev, [key]: val }));
   }
+
 
   // ── Guardar borrador (instructor) ─────────────────────────────────────────
   async function handleGuardar() {
@@ -280,14 +297,14 @@ export default function ReporteVueloModal({ id_vuelo, mode = "alumno", onClose }
                     </span>
                   ) : (
                     <input
-                      type="number"
-                      step="0.1"
-                      max="9999.9"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0000.0"
                       className="rv-input"
                       value={datos[key]}
                       onChange={(e) => setField(key, e.target.value)}
                     />
+
                   )}
                 </div>
               ))}

@@ -78,12 +78,13 @@ function VueloCard({ v, weekMode, horasTotales, onSolicitarCancelacion, onQuitar
 
           {esFuturo && v.estado_solicitud_cancelacion === 'PENDIENTE' && (
             <button
-              className="mhl__btn mhl__btn--cancel"
+              className="mhl__btn mhl__btn--withdraw"
               onClick={onQuitarSolicitud}
             >
               Quitar solicitud
             </button>
           )}
+
           {esFuturo && v.estado_solicitud_cancelacion !== 'PENDIENTE' && (
             <button
               className="mhl__btn mhl__btn--cancel"

@@ -97,7 +97,7 @@ export default function AgendarVuelo() {
             <p className="ag__eyebrow">Próxima semana</p>
             <h2 className="ag__title">Agendar vuelos</h2>
             <p className="ag__subtitle">
-              Seleccioná hasta 3 bloques de vuelo para la semana siguiente.
+              Seleccioná hasta {limiteVuelos} bloques de vuelo para la semana siguiente.
             </p>
           </div>
 
@@ -110,12 +110,13 @@ export default function AgendarVuelo() {
             </button>
             <button
               className="ag__btn-save"
-              disabled={saveBloqueado}
+              disabled={saveBloqueado || (selecciones.length > limiteVuelos)}
               onClick={handleGuardar}
             >
-              Guardar ({selecciones.length}/{limiteVuelos})
+              {selecciones.length > limiteVuelos ? "Exceso de vuelos" : `Guardar (${selecciones.length}/${limiteVuelos})`}
             </button>
           </div>
+
         </div>
 
         <div className="ag__info-strip">
@@ -158,12 +159,20 @@ export default function AgendarVuelo() {
           </div>
         )}
 
+        {selecciones.length > limiteVuelos && (
+          <div className="ag__alert ag__alert--warn">
+            <span className="ag__alert-icon">⚠</span>
+            <strong>Límite excedido:</strong> Tu límite actual es de {limiteVuelos} vuelos, pero tenés {selecciones.length} seleccionados. Por favor, desmarcá {selecciones.length - limiteVuelos} para poder guardar.
+          </div>
+        )}
+
         {guardadoCompleto && !bloqueadoPorEstado && (
           <div className="ag__alert ag__alert--info">
             <span className="ag__alert-icon">✓</span>
             Tu solicitud ya fue guardada ({selecciones.length}/{limiteVuelos} vuelos). Esperá a que sea revisada.
           </div>
         )}
+
 
         {limiteAlcanzado && !guardadoCompleto && !bloqueadoPorEstado && (
           <div className="ag__alert ag__alert--ready">
