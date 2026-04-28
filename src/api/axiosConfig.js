@@ -12,6 +12,9 @@ export const API_URL = BASE_URL + "/api";
 // URL para Sockets (misma que la base)
 export const SOCKET_URL = BASE_URL;
 
+// URL para Loadsheet (Plan de Vuelo)
+export const LOADSHEET_URL = window.__APP_CONFIG__?.LOADSHEET_URL || import.meta.env.VITE_LOADSHEET_URL || "http://localhost:5174";
+
 const getApiUrl = () => API_URL;
 
 // ── Request interceptor: attach JWT to every request ─────────────────────────

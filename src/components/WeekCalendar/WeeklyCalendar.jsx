@@ -10,6 +10,7 @@ import {
   getAeronavesPermitidas,
 } from "../../services/agendarApi";
 
+import { LOADSHEET_URL } from "../../api/axiosConfig";
 import "./WeeklyCalendar.css";
 
 const DIAS = [
@@ -133,15 +134,7 @@ export default function WeeklyCalendar({ weekMode }) {
     const alumnoData = JSON.parse(user || '{}');
     const nombreAlumno = `${alumnoData.nombre || ''} ${alumnoData.apellido || ''}`.trim();
 
-    let baseUrl = import.meta.env.VITE_LOADSHEET_URL;
-    
-    if (!baseUrl) {
-      if (import.meta.env.PROD) {
-        console.error("ERROR CRÍTICO: VITE_LOADSHEET_URL no está definida en el entorno de producción.");
-        return;
-      }
-      baseUrl = 'http://localhost:5174';
-    }
+    const baseUrl = LOADSHEET_URL;
 
     const params = new URLSearchParams({
       id_vuelo: vuelo.id_vuelo,

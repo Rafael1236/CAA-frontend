@@ -3,6 +3,7 @@ import CancelarVueloModal from "../CancelarVueloModal/CancelarVueloModal";
 import { quitarSolicitudCancelacion } from "../../services/alumnoApi";
 import { toast } from "sonner";
 import ReporteVueloModal from "../ReporteVueloModal/ReporteVueloModal";
+import { LOADSHEET_URL } from "../../api/axiosConfig";
 import "./MiHorarioList.css";
 
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -138,15 +139,7 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
     const alumnoData = JSON.parse(user || '{}');
     const nombreAlumno = `${alumnoData.nombre || ''} ${alumnoData.apellido || ''}`.trim();
 
-    let baseUrl = import.meta.env.VITE_LOADSHEET_URL;
-    
-    if (!baseUrl) {
-      if (import.meta.env.PROD) {
-        console.error("ERROR CRÍTICO: VITE_LOADSHEET_URL no está definida en el entorno de producción.");
-        return;
-      }
-      baseUrl = 'http://localhost:5174';
-    }
+    const baseUrl = LOADSHEET_URL;
 
     const params = new URLSearchParams({
       id_vuelo: v.id_vuelo,
