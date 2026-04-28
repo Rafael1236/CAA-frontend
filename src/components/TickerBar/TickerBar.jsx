@@ -10,6 +10,7 @@ const MIN_DURATION = 15;
 const MAX_DURATION = 90;
 
 function calcDuration(text) {
+  if (!text) return MIN_DURATION;
   const secs = Math.round(text.length / CHARS_PER_SECOND);
   return Math.min(MAX_DURATION, Math.max(MIN_DURATION, secs));
 }
@@ -115,7 +116,7 @@ export default function TickerBar() {
           style={{ animationDuration: `${duration}s` }}
           ref={animRef}
         >
-          {msg.contenido?.toUpperCase()}
+          {msg.contenido ? String(msg.contenido).toUpperCase() : ""}
         </span>
       </div>
       {mensajes.length > 1 && (
