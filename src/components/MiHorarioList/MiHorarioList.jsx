@@ -46,7 +46,7 @@ function VueloCard({ v, weekMode, horasTotales, onSolicitarCancelacion, onQuitar
   const cfg = ESTADO_CFG[v.estado] ?? { label: v.estado, cls: "" };
 
   return (
-    <div className={`mhl__vuelo mhl__vuelo--${v.estado?.toLowerCase()}`}>
+    <div className={`mhl__vuelo mhl__vuelo--${v.estado ? String(v.estado).toLowerCase() : 'unknown'}`}>
       <div className="mhl__vuelo-row">
         <div className="mhl__vuelo-meta">
           <span className="mhl__vuelo-hora">{formatHora12(v.hora_inicio)}</span>

@@ -242,7 +242,7 @@ export default function AlumnoDashboard() {
                       <div key={s.id_solicitud_cancelacion} style={{ background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <span style={{ fontWeight: 600 }}>Aeronave: {s.aeronave_codigo}</span>
-                          <span className={`mhl__badge mhl__badge--${s.estado.toLowerCase()}`}>
+                          <span className={`mhl__badge mhl__badge--${s.estado ? String(s.estado).toLowerCase() : 'pendiente'}`}>
                             {s.estado}
                           </span>
                         </div>

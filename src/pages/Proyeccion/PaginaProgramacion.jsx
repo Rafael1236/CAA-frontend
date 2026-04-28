@@ -204,7 +204,7 @@ export default function PaginaProgramacion() {
                 ))
               ) : metar ? metar.raw : "Cargando…"}
               {metar?.decoded?.condicion && (
-                <span className={`pp__topbar-badge pp__topbar-badge--${metar.decoded.condicion.toLowerCase()}`}>
+                <span className={`pp__topbar-badge pp__topbar-badge--${String(metar.decoded.condicion).toLowerCase()}`}>
                   {metar.decoded.condicion}
                 </span>
               )}
