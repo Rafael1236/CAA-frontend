@@ -1,48 +1,49 @@
 import { useEffect, useState } from "react";
-import { getCondicionesCancelacion, cancelarVuelo } from "../../services/alumnoApi";
+import { getCondicionesCancelacion, solicitarCancelacion } from "../../services/alumnoApi";
 import "./CancelarVueloModal.css";
 
 /**
  * Props:
  *   vuelo          – { id_vuelo, fecha_hora_vuelo, ... }
- *   tipoCancel     – "NORMAL" | "EMERGENCIA"
  *   onClose()      – cierra sin refrescar
- *   onCancelado()  – llamado tras cancelación exitosa
+ *   onCancelado()  – llamado tras enviar solicitud exitosa
  */
-export default function CancelarVueloModal({ vuelo, tipoCancel, onClose, onCancelado }) {
+export default function CancelarVueloModal({ vuelo, onClose, onCancelado }) {
   const [condiciones, setCondiciones] = useState([]);
+  const [cancelacionesAceptadasMes, setCancelacionesAceptadasMes] = useState(0);
   const [loadingCond, setLoadingCond] = useState(true);
-  const [aceptado, setAceptado] = useState(false);
-  const [justificacion, setJustificacion] = useState("");
-  const [archivo, setArchivo] = useState(null);
+  const [aceptadoCondiciones, setAceptadoCondiciones] = useState(false);
+  const [aceptadoMulta, setAceptadoMulta] = useState(false);
+  const [motivo, setMotivo] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     getCondicionesCancelacion()
-      .then(setCondiciones)
+      .then((res) => {
+        setCondiciones(res.condiciones || []);
+        setCancelacionesAceptadasMes(res.cancelaciones_aceptadas_mes || 0);
+      })
       .catch(() => setCondiciones([]))
       .finally(() => setLoadingCond(false));
   }, []);
 
+  const tieneMulta = cancelacionesAceptadasMes >= 4;
+
   const puedeConfirmar =
-    aceptado &&
-    justificacion.trim().length > 0 &&
-    (tipoCancel === "NORMAL" || archivo !== null) &&
+    aceptadoCondiciones &&
+    motivo.trim().length > 0 &&
+    (!tieneMulta || aceptadoMulta) &&
     !submitting;
 
   const handleConfirmar = async () => {
     setError("");
     setSubmitting(true);
     try {
-      await cancelarVuelo(vuelo.id_vuelo, {
-        tipo_cancelacion: tipoCancel,
-        justificacion_cancelacion: justificacion.trim(),
-        archivo,
-      });
+      await solicitarCancelacion(vuelo.id_vuelo, motivo.trim());
       onCancelado();
     } catch (e) {
-      setError(e.response?.data?.message || "No se pudo cancelar el vuelo. Intentá de nuevo.");
+      setError(e.response?.data?.message || "No se pudo solicitar la cancelación. Intentá de nuevo.");
     } finally {
       setSubmitting(false);
     }
@@ -54,15 +55,27 @@ export default function CancelarVueloModal({ vuelo, tipoCancel, onClose, onCance
 
         {/* Header */}
         <div className="cv-header">
-          <h2>Cancelar vuelo</h2>
-          <span className={tipoCancel === "EMERGENCIA" ? "cv-badge-emergencia" : "cv-badge-normal"}>
-            {tipoCancel === "EMERGENCIA" ? "Emergencia" : "Normal"}
-          </span>
+          <h2>Solicitar cancelación</h2>
           <button className="cv-close" onClick={onClose} aria-label="Cerrar">×</button>
         </div>
 
         {/* Body */}
         <div className="cv-body">
+
+          {/* Aviso Multa */}
+          {tieneMulta && (
+            <div style={{ backgroundColor: '#fef2f2', border: '1px solid #f87171', padding: '12px', borderRadius: '6px', marginBottom: '16px', color: '#b91c1c', fontSize: '0.9rem' }}>
+              ⚠ Has superado 4 cancelaciones este mes. Esta solicitud tiene un costo de $35. ¿Aceptás el cargo?
+              <label style={{ display: 'flex', alignItems: 'center', marginTop: '10px', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                <input
+                  type="checkbox"
+                  checked={aceptadoMulta}
+                  onChange={(e) => setAceptadoMulta(e.target.checked)}
+                />
+                Sí, acepto el cargo.
+              </label>
+            </div>
+          )}
 
           {/* Condiciones */}
           {loadingCond ? (
@@ -84,40 +97,25 @@ export default function CancelarVueloModal({ vuelo, tipoCancel, onClose, onCance
           <label className="cv-acepto">
             <input
               type="checkbox"
-              checked={aceptado}
-              onChange={(e) => setAceptado(e.target.checked)}
+              checked={aceptadoCondiciones}
+              onChange={(e) => setAceptadoCondiciones(e.target.checked)}
             />
             He leído y acepto las condiciones de cancelación
           </label>
 
-          {/* Justificación */}
+          {/* Motivo */}
           <div className="cv-field">
             <label className="cv-label">
-              Justificación <span style={{ color: "#dc2626" }}>*</span>
+              Motivo <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <textarea
               className="cv-textarea"
-              placeholder="Explicá brevemente el motivo de la cancelación…"
-              value={justificacion}
-              onChange={(e) => setJustificacion(e.target.value)}
+              placeholder="Explicá brevemente el motivo de tu solicitud de cancelación…"
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
               rows={3}
             />
           </div>
-
-          {/* Archivo (solo EMERGENCIA) */}
-          {tipoCancel === "EMERGENCIA" && (
-            <div className="cv-field">
-              <label className="cv-label">
-                Documento adjunto <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => setArchivo(e.target.files[0] || null)}
-              />
-              <span className="cv-file-hint">PDF, JPG o PNG · máx. 10 MB</span>
-            </div>
-          )}
 
           {error && <div className="cv-error">{error}</div>}
         </div>
@@ -132,7 +130,7 @@ export default function CancelarVueloModal({ vuelo, tipoCancel, onClose, onCance
             onClick={handleConfirmar}
             disabled={!puedeConfirmar}
           >
-            {submitting ? "Cancelando…" : "Confirmar cancelación"}
+            {submitting ? "Enviando…" : "Enviar solicitud"}
           </button>
         </div>
 

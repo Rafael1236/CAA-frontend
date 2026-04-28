@@ -1,10 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { io as socketIO } from "socket.io-client";
 import axios from "axios";
+import { API_URL, SOCKET_URL } from "../../api/axiosConfig";
 import "./TickerBar.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000/api";
-const SOCKET_URL = API_URL.replace(/\/api$/, "");
 
 // Base duration per character in seconds (scales with message length)
 const CHARS_PER_SECOND = 8;
@@ -19,6 +17,7 @@ function calcDuration(text) {
 export default function TickerBar() {
   const [mensajes, setMensajes] = useState([]);
   const [idx, setIdx] = useState(0);
+  const [iteracion, setIteracion] = useState(0);
   const bufferRef = useRef([]);
   const animRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -43,6 +42,12 @@ export default function TickerBar() {
   // Carga inicial
   useEffect(() => {
     cargarMensajes();
+  }, [cargarMensajes]);
+
+  // Polling cada 60s para remover mensajes que expiran
+  useEffect(() => {
+    const t = setInterval(cargarMensajes, 60000);
+    return () => clearInterval(t);
   }, [cargarMensajes]);
 
   // Socket — solo actualizamos el buffer, la rotación aplicará los cambios después
@@ -88,6 +93,7 @@ export default function TickerBar() {
         setMensajes(nextData);
         // Avanzar al siguiente en la nueva lista
         setIdx((prev) => (prev + 1) % nextData.length);
+        setIteracion(prev => prev + 1);
       }
     }, duration * 1000);
 
@@ -104,12 +110,12 @@ export default function TickerBar() {
       <span className="ticker-bar__label">AVISO</span>
       <div className="ticker-bar__track">
         <span
-          key={`${msg.id_mensaje}-${idx}`}
+          key={`${msg.id_mensaje}-${idx}-${iteracion}`}
           className="ticker-bar__text"
           style={{ animationDuration: `${duration}s` }}
           ref={animRef}
         >
-          {msg.contenido}
+          {msg.contenido?.toUpperCase()}
         </span>
       </div>
       {mensajes.length > 1 && (

@@ -4,32 +4,7 @@
   gap: 24px;
 }
 
-.perf__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
 
-.perf__eyebrow {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.perf__title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin: 0;
-}
-
-.perf__subtitle {
-  color: #64748b;
-  margin: 4px 0 0 0;
-}
 
 .perf__card {
   background: white;

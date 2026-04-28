@@ -23,7 +23,7 @@ export default function HeaderPublico() {
 
   const getDashboardLink = () => {
     if (!user) return "/";
-    const rol = user.rol.toUpperCase();
+    const rol = user?.rol?.toUpperCase() || "";
     if (rol === "ADMIN") return "/admin/dashboard";
     if (rol === "PROGRAMACION") return "/programacion/dashboard";
     if (rol === "ALUMNO") return "/alumno/dashboard";

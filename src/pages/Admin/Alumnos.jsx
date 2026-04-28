@@ -91,26 +91,21 @@ export default function AlumnosAdmin() {
 
   return (
     <div className="alms">
-      <div className="alms__top">
-        <div className="alms__top-left">
-          <p className="alms__eyebrow">Panel de administración</p>
-          <h2 className="alms__title">Gestión de Alumnos</h2>
-          <p className="alms__subtitle">Habilitación de vuelos extra por semana</p>
-        </div>
-      </div>
-
       <div className="alms__card">
-        <div className="alms__card-header">
-          <div className="alms__week-info">
+        <div className="alms__card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#1B365D' }}>Gestión de Alumnos</h3>
+            <p className="alms__hint" style={{ marginTop: '4px' }}>
+              Aumentá el límite de vuelos permitidos para agendar en la próxima semana.
+            </p>
+          </div>
+          <div className="alms__week-info" style={{ margin: 0 }}>
             <i className="bi bi-calendar-check"></i>
             <div>
               <span className="alms__week-label">Semana de planificación</span>
               <span className="alms__week-dates">{semanaLabel || "No disponible"}</span>
             </div>
           </div>
-          <p className="alms__hint">
-            Aumentá el límite de vuelos permitidos para que el alumno pueda agendar más slots en la próxima semana.
-          </p>
         </div>
 
         <div className="alms__body">

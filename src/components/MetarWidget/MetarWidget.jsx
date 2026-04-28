@@ -86,13 +86,13 @@ export default function MetarWidget() {
             {d.viento && (
               <div className="mw__cell">
                 <span className="mw__cell-label"><i className="bi bi-wind" /> Viento</span>
-                <span className="mw__cell-value">{d.viento.texto}</span>
+                <span className="mw__cell-value">{d.viento.texto || d.viento}</span>
               </div>
             )}
             {d.visibilidad && (
               <div className="mw__cell">
                 <span className="mw__cell-label"><i className="bi bi-eye" /> Visibilidad</span>
-                <span className="mw__cell-value">{d.visibilidad.texto}</span>
+                <span className="mw__cell-value">{d.visibilidad.texto || d.visibilidad}</span>
               </div>
             )}
             {d.temperatura !== null && d.temperatura !== undefined && (
@@ -104,7 +104,7 @@ export default function MetarWidget() {
             {d.qnh && (
               <div className="mw__cell">
                 <span className="mw__cell-label"><i className="bi bi-arrow-down-circle" /> QNH</span>
-                <span className="mw__cell-value">{d.qnh.valor} {d.qnh.unidad}</span>
+                <span className="mw__cell-value">{d.qnh.valor || d.qnh} {d.qnh.unidad || ""}</span>
               </div>
             )}
           </div>

@@ -16,9 +16,8 @@ import {
 } from "../../services/turnoApi";
 import SuspenderOperacionesModal from "../../components/SuspenderOperacionesModal/SuspenderOperacionesModal";
 import GestionarSuspensionModal from "../../components/SuspenderOperacionesModal/GestionarSuspensionModal";
+import { API_URL, SOCKET_URL } from "../../api/axiosConfig";
 import "./Dashboard.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const ESTADO_LABEL = {
   PUBLICADO: "Programado",
@@ -40,7 +39,7 @@ const ESTADO_COLOR = {
   COMPLETADO: "trn__tag--verde",
 };
 
-const MOTIVOS = ["CLIMA", "VIENTO", "VISIBILIDAD", "REVISION_PISTA"];
+const MOTIVOS = ["CLIMA", "VIENTO", "VISIBILIDAD", "REVISION_PISTA", "NOTAM"];
 
 function formatHora(h) {
   return h?.slice(0, 5) ?? "";
@@ -189,7 +188,7 @@ export default function TurnoDashboard() {
 
   // Socket.io tiempo real
   useEffect(() => {
-    const socket = socketIO(API_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
+    const socket = socketIO(SOCKET_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
 
     socket.on("vuelo_estado_changed", ({ id_vuelo, estado, registrado_en, duracion_estimada_min }) => {
       setVuelos((prev) =>
@@ -294,12 +293,14 @@ export default function TurnoDashboard() {
             <p className="trn__eyebrow">Panel de turno</p>
             <h2 className="trn__title">Dashboard operativo</h2>
             <p className="trn__subtitle">
+              <i className="bi bi-calendar3" style={{ marginRight: '8px', color: 'var(--trn-accent)' }}></i>
               Vuelos del día · {new Date().toLocaleDateString("es-AR", {
                 weekday: "long", day: "numeric", month: "long",
               })}
             </p>
           </div>
           <div className="trn__counter">
+            <i className="bi bi-airplane-engines" style={{ marginRight: '10px' }}></i>
             {!loading && (
               <span>{vuelos.length} vuelo{vuelos.length !== 1 ? "s" : ""} activo{vuelos.length !== 1 ? "s" : ""}</span>
             )}
@@ -315,7 +316,10 @@ export default function TurnoDashboard() {
         {/* ── Publicar aviso (ticker) ───────────────────────────────── */}
         <div className="trn__ticker-form">
           <div className="trn__ticker-form-head">
-            <span className="trn__ticker-form-title">Avisos del ticker</span>
+            <span className="trn__ticker-form-title">
+              <i className="bi bi-megaphone" style={{ color: 'var(--trn-accent)' }}></i>
+              Avisos del ticker
+            </span>
             {tickerMensajes.length > 0 && (
               <button className="trn__ticker-clear" onClick={handleLimpiarTicker}>
                 Limpiar todos

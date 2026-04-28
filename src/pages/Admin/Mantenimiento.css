@@ -1,7 +1,7 @@
 .mnt {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 80px 40px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -10,69 +10,22 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Cabecera ────────────────────────────────────────────────────────────── */
-.mnt__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-}
 
-.mnt__top-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.mnt__back {
-  background: none;
-  border: 1px solid #d1d5db;
-  border-radius: 7px;
-  padding: 6px 12px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  margin-top: 4px;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-
-.mnt__back:hover { background: #f3f4f6; }
-
-.mnt__eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #6b7280;
-  margin: 0 0 2px;
-}
-
-.mnt__title {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #1e3a5f;
-  margin: 0 0 2px;
-}
-
-.mnt__subtitle {
-  font-size: 0.82rem;
-  color: #6b7280;
-  margin: 0;
-}
 
 /* ── Secciones ───────────────────────────────────────────────────────────── */
 .mnt__section {
-  margin-bottom: 2.5rem;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .mnt__section-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #1e3a5f;
-  margin: 0 0 0.85rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1B365D;
+  margin: 0 0 1rem;
 }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */

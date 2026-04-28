@@ -18,6 +18,8 @@ export default function Perfil() {
   const [telefono, setTelefono]           = useState("");
   const [numeroLicencia, setNumeroLicencia] = useState("");
   const [certMedico, setCertMedico]       = useState("");
+  const [seguroVida, setSeguroVida]       = useState("");
+  const [seguroVigencia, setSeguroVigencia] = useState("");
   const [alumnoMsg, setAlumnoMsg]         = useState("");
 
   const [password, setPassword] = useState("");
@@ -45,6 +47,8 @@ export default function Perfil() {
         setTelefono(p.telefono || "");
         setNumeroLicencia(p.numero_licencia || "");
         setCertMedico(p.certificado_medico ? p.certificado_medico.slice(0, 10) : "");
+        setSeguroVida(p.seguro_vida || "");
+        setSeguroVigencia(p.seguro_vida_vencimiento ? p.seguro_vida_vencimiento.slice(0, 10) : "");
       }
       return p;
     } catch (e) {
@@ -63,6 +67,8 @@ export default function Perfil() {
         telefono,
         numero_licencia: numeroLicencia,
         certificado_medico: certMedico || null,
+        seguro_vida: seguroVida || null,
+        seguro_vida_vencimiento: seguroVigencia || null,
       });
       setAlumnoMsg(r.message);
       await refreshPerfil();
@@ -158,6 +164,13 @@ export default function Perfil() {
     ? Math.ceil((new Date(certMedico) - new Date()) / (1000 * 60 * 60 * 24))
     : null;
   const certPorVencer = diasCert !== null && diasCert <= 30;
+
+  const diasSeguro = seguroVigencia
+    ? Math.ceil((new Date(seguroVigencia) - new Date()) / (1000 * 60 * 60 * 24))
+    : null;
+  const seguroVencido = diasSeguro !== null && diasSeguro < 0;
+  const seguroProximo = diasSeguro !== null && diasSeguro >= 0 && diasSeguro <= 30;
+  const seguroColor = seguroVencido ? '#ef4444' : seguroProximo ? '#eab308' : '#22c55e';
 
   // Botones activos solo si hay cambios y son válidos
   const infoChanged = username !== originalData?.username && username.trim().length > 0;
@@ -302,6 +315,30 @@ export default function Perfil() {
                       value={certMedico}
                       onChange={(e) => setCertMedico(e.target.value)}
                     />
+                  </div>
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">Seguro de vida</label>
+                    <input
+                      className="perfil-input"
+                      type="text"
+                      value={seguroVida}
+                      onChange={(e) => setSeguroVida(e.target.value)}
+                      placeholder="Nombre del seguro"
+                    />
+                  </div>
+                  <div className="perfil-field-group">
+                    <label className="perfil-label">Vigencia del seguro</label>
+                    <input
+                      className={`perfil-input ${seguroVencido ? "perfil-input--alerta" : ""}`}
+                      type="date"
+                      value={seguroVigencia}
+                      onChange={(e) => setSeguroVigencia(e.target.value)}
+                    />
+                    {seguroVigencia && (
+                      <span style={{ fontSize: '0.8rem', marginTop: '4px', fontWeight: '500', display: 'block', color: seguroColor }}>
+                        {seguroVencido ? "Vencido" : `Vence el ${new Date(seguroVigencia + "T00:00:00").toLocaleDateString('es-SV', {day: '2-digit', month: '2-digit', year: 'numeric'})}`}
+                      </span>
+                    )}
                   </div>
                   <div className="perfil-field-group">
                     <label className="perfil-label">Soleado</label>

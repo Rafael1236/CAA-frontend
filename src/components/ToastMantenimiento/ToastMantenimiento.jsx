@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { io as socketIO } from "socket.io-client";
+import { SOCKET_URL } from "../../api/axiosConfig";
 import "./ToastMantenimiento.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 const TOAST_DURATION = 8000;
 let nextId = 1;
 
@@ -20,7 +19,7 @@ export default function ToastMantenimiento() {
   }, [removeToast]);
 
   useEffect(() => {
-    const socket = socketIO(API_URL, {
+    const socket = socketIO(SOCKET_URL, {
       transports: ["websocket", "polling"],
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,

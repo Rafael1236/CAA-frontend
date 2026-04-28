@@ -1,5 +1,7 @@
 import { useState } from "react";
 import CancelarVueloModal from "../CancelarVueloModal/CancelarVueloModal";
+import { quitarSolicitudCancelacion } from "../../services/alumnoApi";
+import { toast } from "sonner";
 import ReporteVueloModal from "../ReporteVueloModal/ReporteVueloModal";
 import "./MiHorarioList.css";
 
@@ -34,7 +36,7 @@ const ESTADO_CFG = {
   AJUSTADO: { label: "Ajustado", cls: "mhl__badge--ajustado" },
 };
 
-function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan, onReporte }) {
+function VueloCard({ v, weekMode, horasTotales, onSolicitarCancelacion, onQuitarSolicitud, onPlan, onReporte }) {
   const fechaReferencia = v.fecha_hora_vuelo || v.fecha_vuelo;
   const esFuturo = new Date(fechaReferencia) > new Date();
   const msRestantes = new Date(fechaReferencia) - new Date();
@@ -74,12 +76,20 @@ function VueloCard({ v, weekMode, horasTotales, onCancelar, onPlan, onReporte })
             )
           )}
 
-          {esFuturo && (
+          {esFuturo && v.estado_solicitud_cancelacion === 'PENDIENTE' && (
             <button
-              className={`mhl__btn mhl__btn--cancel${esEmergencia ? " mhl__btn--emergency" : ""}`}
-              onClick={onCancelar}
+              className="mhl__btn mhl__btn--cancel"
+              onClick={onQuitarSolicitud}
             >
-              {esEmergencia ? "Cancelar vuelo (Emergencia)" : "Cancelar vuelo"}
+              Quitar solicitud
+            </button>
+          )}
+          {esFuturo && v.estado_solicitud_cancelacion !== 'PENDIENTE' && (
+            <button
+              className="mhl__btn mhl__btn--cancel"
+              onClick={onSolicitarCancelacion}
+            >
+              Solicitar cancelación
             </button>
           )}
         </div>
@@ -150,10 +160,20 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
   };
 
   const abrirCancelar = (v) => {
-    const fechaRef = v.fecha_hora_vuelo || v.fecha_vuelo;
-    const ms = new Date(fechaRef) - new Date();
-    const tipoCancel = ms / (1000 * 60 * 60) > 24 ? "NORMAL" : "EMERGENCIA";
-    setModalVuelo({ ...v, tipoCancel });
+    setModalVuelo(v);
+  };
+
+  const handleQuitarSolicitud = async (v) => {
+    if (!v.id_solicitud_cancelacion) return;
+    if (!window.confirm("¿Estás seguro de que querés retirar la solicitud de cancelación?")) return;
+
+    try {
+      await quitarSolicitudCancelacion(v.id_solicitud_cancelacion);
+      toast.success("Solicitud retirada correctamente");
+      onRefresh?.();
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Error al retirar solicitud");
+    }
   };
 
   if (loading) {
@@ -188,9 +208,8 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
       {modalVuelo && (
         <CancelarVueloModal
           vuelo={modalVuelo}
-          tipoCancel={modalVuelo.tipoCancel}
           onClose={() => setModalVuelo(null)}
-          onCancelado={() => { setModalVuelo(null); onRefresh?.(); }}
+          onCancelado={() => { setModalVuelo(null); onRefresh?.(); toast.success("Solicitud enviada exitosamente"); }}
         />
       )}
       <div className="mhl__list">
@@ -212,7 +231,8 @@ export default function MiHorarioList({ vuelos = [], weekMode, loading, onRefres
                   v={v}
                   weekMode={weekMode}
                   horasTotales={horasTotales}
-                  onCancelar={() => abrirCancelar(v)}
+                  onSolicitarCancelacion={() => abrirCancelar(v)}
+                  onQuitarSolicitud={() => handleQuitarSolicitud(v)}
                   onPlan={() => abrirLoadsheet(v)}
                   onReporte={() => setReporteVuelo(v)}
                 />

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = window.__APP_CONFIG__?.API_URL;
+import { API_URL } from "../api/axiosConfig";
 
 // ── Calendario / semana ───────────────────────────────────────────────────────
 export const getCalendarioAdmin = async (week = "next") => {
@@ -50,8 +50,13 @@ export const getVuelosFuturosAeronave = async (id) => {
 };
 
 // ── Vuelos ────────────────────────────────────────────────────────────────────
-export const cancelarVueloAdmin = async (id_vuelo, motivo) => {
-  const res = await axios.patch(`${API_URL}/admin/vuelos/${id_vuelo}/cancelar`, { motivo });
+export const getSolicitudesCancelacion = async (estado = 'PENDIENTE') => {
+  const res = await axios.get(`${API_URL}/admin/solicitudes-cancelacion`, { params: { estado } });
+  return res.data;
+};
+
+export const resolverSolicitudCancelacion = async (id, decision) => {
+  const res = await axios.post(`${API_URL}/admin/solicitudes-cancelacion/${id}/resolver`, { decision });
   return res.data;
 };
 

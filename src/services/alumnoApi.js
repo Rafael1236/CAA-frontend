@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = window.__APP_CONFIG__?.API_URL;
+import { API_URL } from "../api/axiosConfig";
 
 export const getMiHorario = async (week) => {
   if (!localStorage.getItem("token")) return [];
@@ -23,12 +23,18 @@ export const getMiProximoMantenimiento = async () => {
   return res.data;
 };
 
-export const cancelarVuelo = async (id_vuelo, { tipo_cancelacion, justificacion_cancelacion, archivo }) => {
-  const formData = new FormData();
-  formData.append("tipo_cancelacion", tipo_cancelacion);
-  formData.append("justificacion_cancelacion", justificacion_cancelacion);
-  if (archivo) formData.append("archivo", archivo);
-  const res = await axios.patch(`${API_URL}/alumno/vuelos/${id_vuelo}/cancelar`, formData);
+export const solicitarCancelacion = async (id_vuelo, motivo) => {
+  const res = await axios.post(`${API_URL}/alumno/vuelos/${id_vuelo}/solicitar-cancelacion`, { motivo });
+  return res.data;
+};
+
+export const quitarSolicitudCancelacion = async (id_solicitud) => {
+  const res = await axios.delete(`${API_URL}/alumno/solicitudes-cancelacion/${id_solicitud}`);
+  return res.data;
+};
+
+export const getMisSolicitudesCancelacion = async () => {
+  const res = await axios.get(`${API_URL}/alumno/mis-solicitudes-cancelacion`);
   return res.data;
 };
 

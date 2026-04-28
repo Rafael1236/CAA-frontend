@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      const rol = user.rol.toUpperCase();
+      const rol = user?.rol?.toUpperCase() || "";
       if (rol === "ALUMNO") {
         navigate("/alumno/dashboard");
       }

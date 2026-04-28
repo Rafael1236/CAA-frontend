@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const API_URL = window.__APP_CONFIG__?.API_URL;
+import { API_URL } from "../api/axiosConfig";
 
 export const getPerfil = async () => {
   const res = await axios.get(`${API_URL}/usuario/perfil`);
@@ -22,7 +21,7 @@ export const updatePerfilInfo = async (username) => {
   return res.data;
 };
 
-export const updatePerfilAlumno = async ({ telefono, numero_licencia, certificado_medico }) => {
-  const res = await axios.put(`${API_URL}/usuario/update-perfil-alumno`, { telefono, numero_licencia, certificado_medico });
+export const updatePerfilAlumno = async ({ telefono, numero_licencia, certificado_medico, seguro_vida, seguro_vida_vencimiento }) => {
+  const res = await axios.put(`${API_URL}/usuario/update-perfil-alumno`, { telefono, numero_licencia, certificado_medico, seguro_vida, seguro_vida_vencimiento });
   return res.data;
 };

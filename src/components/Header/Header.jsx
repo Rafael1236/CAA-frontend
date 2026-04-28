@@ -13,7 +13,7 @@ export default function Header() {
 
   const getDashboardLink = () => {
     if (!user) return "/";
-    const rol = user.rol.toUpperCase();
+    const rol = user?.rol?.toUpperCase() || "";
     if (rol === "ADMIN") return "/admin/dashboard";
     if (rol === "PROGRAMACION") return "/programacion/dashboard";
     if (rol === "ALUMNO") return "/alumno/dashboard";
@@ -53,7 +53,7 @@ export default function Header() {
                 </Link>
 
                 {["ADMIN", "PROGRAMACION", "TURNO"].includes(user.rol) && (
-                  <a href="/programacion?modo=proyeccion" target="_blank" rel="noopener noreferrer" className="header__action-link">
+                  <a href="/proyeccion?modo=proyeccion" target="_blank" rel="noopener noreferrer" className="header__action-link">
                     <span className="header__action-icon">📅</span>
                     Programación
                   </a>

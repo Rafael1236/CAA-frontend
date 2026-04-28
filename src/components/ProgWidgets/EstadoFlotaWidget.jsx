@@ -1,9 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { io as socketIO } from "socket.io-client";
 import { getEstadoFlota } from "../../services/programacionApi";
+import { SOCKET_URL } from "../../api/axiosConfig";
 import "./ProgWidgets.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const ESTADO_LABEL = {
   VOLANDO:      "En vuelo",
@@ -37,7 +36,7 @@ export default function EstadoFlotaWidget() {
   }, [cargar]);
 
   useEffect(() => {
-    const socket = socketIO(API_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
+    const socket = socketIO(SOCKET_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
     socket.on("vuelo_estado_changed", () => cargar());
     return () => socket.disconnect();
   }, [cargar]);

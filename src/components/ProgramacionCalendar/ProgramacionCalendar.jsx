@@ -20,7 +20,6 @@ export default function ProgramacionCalendar({
   bloqueos = [],
   setDragging,
   handleDrop,
-  onCancelar,
   onReasignar,
 }) {
   const safeItems = Array.isArray(items) ? items : [];
@@ -131,17 +130,7 @@ export default function ProgramacionCalendar({
                             {item.instructor_nombre}
                           </span>
 
-                          {week === "current" &&
-                            item.id_vuelo &&
-                            estadoMostrar !== "CANCELADO" && (
-                              <button
-                                className="btn-cancelar-vuelo"
-                                type="button"
-                                onClick={() => onCancelar?.(item.id_vuelo)}
-                              >
-                                Cancelar
-                              </button>
-                            )}
+
 
                           {week === "current" &&
                             item.id_vuelo &&

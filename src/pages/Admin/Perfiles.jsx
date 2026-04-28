@@ -31,6 +31,8 @@ export default function PerfilesAdmin() {
   const [loadingPerfil, setLoadingPerfil] = useState(false);
   const [errorPerfil, setErrorPerfil] = useState("");
   const [toggling, setToggling] = useState(false);
+  const [search, setSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     getAlumnosListAdmin()
@@ -71,40 +73,67 @@ export default function PerfilesAdmin() {
     }
   };
 
-  const dias = perfil ? diasHastaVencer(perfil.certified_medico || perfil.certificado_medico) : null;
+  const dias = perfil ? diasHastaVencer(perfil.certificado_medico) : null;
   const certPorVencer = dias !== null && dias <= 30;
+
+  const diasSeguro = perfil ? diasHastaVencer(perfil.seguro_vida_vencimiento) : null;
+  const seguroPorVencer = diasSeguro !== null && diasSeguro <= 30;
+
+  const filteredAlumnos = alumnos.filter(a =>
+    a.nombre_completo.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="perf">
-      <div className="perf__top">
-        <div className="perf__top-left">
-          <p className="perf__eyebrow">Panel de administración</p>
-          <h2 className="perf__title">Perfiles de Alumnos</h2>
-          <p className="perf__subtitle">Gestión de documentación y estados</p>
-        </div>
-      </div>
-
       <div className="perf__card perf__selector-card">
-        <div className="perf__selector-row">
+        <div className="perf__card-header" style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <i className="bi bi-person-badge" style={{ color: '#1B365D', fontSize: '1.2rem' }}></i>
+          <div>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#1B365D' }}>Perfiles de Alumnos</h3>
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Gestión de documentación y estados</p>
+          </div>
+        </div>
+        <div className="perf__selector-row" style={{ padding: '24px' }}>
           <label className="perf__label" htmlFor="ap-select">
             Seleccionar alumno para ver detalles
           </label>
-          <select
-            id="ap-select"
-            className="perf__select"
-            value={selectedId}
-            onChange={(e) => setSelectedId(e.target.value)}
-            disabled={loadingList}
-          >
-            <option value="">
-              {loadingList ? "Cargando lista…" : "— Elegí un alumno —"}
-            </option>
-            {alumnos.map((a) => (
-              <option key={a.id_alumno} value={a.id_alumno}>
-                {a.nombre_completo}
-              </option>
-            ))}
-          </select>
+          <div className="perf__combobox-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+            <input
+              id="ap-select"
+              type="text"
+              className="perf__select"
+              style={{ width: '100%', boxSizing: 'border-box' }}
+              placeholder={loadingList ? "Cargando lista…" : "Buscar alumno por nombre o apellido..."}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              disabled={loadingList}
+            />
+            {showDropdown && filteredAlumnos.length > 0 && (
+              <ul style={{ position: 'absolute', top: '100%', left: 0, width: '100%', background: '#fff', border: '1px solid #1B365D', borderRadius: '4px', zIndex: 10, maxHeight: '250px', overflowY: 'auto', listStyle: 'none', padding: 0, margin: '4px 0 0 0', color: '#1B365D', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                {filteredAlumnos.map(a => (
+                  <li
+                    key={a.id_alumno}
+                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', borderBottom: '1px solid #e2e8f0', fontSize: '0.9rem', fontWeight: '500' }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setSelectedId(a.id_alumno);
+                      setSearch(a.nombre_completo);
+                      setShowDropdown(false);
+                    }}
+                    onMouseEnter={(e) => { e.target.style.background = '#1B365D'; e.target.style.color = '#fff'; }}
+                    onMouseLeave={(e) => { e.target.style.background = '#fff'; e.target.style.color = '#1B365D'; }}
+                  >
+                    {a.nombre_completo}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
 
@@ -171,8 +200,23 @@ export default function PerfilesAdmin() {
                   <span className={`perf__field-val ${certPorVencer ? (dias < 0 ? "text-danger" : "text-warning") : ""}`}>
                     {formatFecha(perfil.certificado_medico)}
                     {dias !== null && (
-                      <span className={`perf__dias-badge ${dias < 0 ? "perf__dias-badge--danger" : "perf__dias-badge--warning"}`}>
-                        {dias < 0 ? `VENCIDO` : `${dias} días`}
+                      <span className={`perf__dias-badge ${dias < 0 ? "perf__dias-badge--danger" : "perf__dias-badge--warning"}`} style={dias > 30 ? { background: '#dcfce7', color: '#166534' } : {}}>
+                        {dias < 0 ? `VENCIDO` : dias <= 30 ? `${dias} días` : 'VIGENTE'}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="perf__field">
+                  <span className="perf__field-label">Seguro de Vida</span>
+                  <span className="perf__field-val">{perfil.seguro_vida || "—"}</span>
+                </div>
+                <div className="perf__field">
+                  <span className="perf__field-label">Vigencia del Seguro</span>
+                  <span className={`perf__field-val ${seguroPorVencer ? (diasSeguro < 0 ? "text-danger" : "text-warning") : ""}`}>
+                    {formatFecha(perfil.seguro_vida_vencimiento)}
+                    {diasSeguro !== null && (
+                      <span className={`perf__dias-badge ${diasSeguro < 0 ? "perf__dias-badge--danger" : diasSeguro <= 30 ? "perf__dias-badge--warning" : ""}`} style={diasSeguro > 30 ? { background: '#dcfce7', color: '#166534' } : {}}>
+                        {diasSeguro < 0 ? `VENCIDO` : diasSeguro <= 30 ? `${diasSeguro} días` : 'VIGENTE'}
                       </span>
                     )}
                   </span>

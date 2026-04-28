@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getBloquesHorario } from "../../services/adminApi";
 import "./SuspenderOperacionesModal.css";
 
-const MOTIVOS = ["CLIMA", "VIENTO", "VISIBILIDAD", "REVISION_PISTA"];
+const MOTIVOS = ["CLIMA", "VIENTO", "VISIBILIDAD", "REVISION_PISTA", "NOTAM"];
 
 export default function SuspenderOperacionesModal({ onClose, onConfirm }) {
   const [motivo, setMotivo] = useState(MOTIVOS[0]);
