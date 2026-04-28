@@ -97,7 +97,12 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
                   </td>
                 )}
 
-                <td className="aeronave-cell">{a.codigo}</td>
+                  <td className="aeronave-cell">
+                    <div className="aeronave-badge">
+                      <i className="bi bi-airplane-engines me-2"></i>
+                      {a.codigo}
+                    </div>
+                  </td>
 
                 {DIAS.map((d) => {
                   if (isBloqueado(b.id_bloque, d.id)) {
@@ -122,7 +127,7 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
                     <td key={d.id} className="slot-cell">
                       <button
                         className={`slot-btn ${
-                          ocupado ? "ocupado" : selected ? "selected" : ""
+                          ocupado ? "ocupado" : selected ? "selected" : "available"
                         }`}
                         disabled={bloqueado || ocupado}
                         onClick={() =>
@@ -132,12 +137,20 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
                             id_aeronave: a.id_aeronave,
                           })
                         }
+                        title={ocupado ? "Bloque ocupado" : selected ? "Seleccionado" : "Disponible para agendar"}
                       >
-                        {ocupado ? "Ocupado" : selected ? "✓" : ""}
+                        {ocupado ? (
+                          <span>Ocupado</span>
+                        ) : selected ? (
+                          <i className="bi bi-check-lg"></i>
+                        ) : (
+                          <span className="slot-dot"></span>
+                        )}
                       </button>
                     </td>
                   );
                 })}
+
               </tr>
             ))
           )}

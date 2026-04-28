@@ -1,9 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { io as socketIO } from "socket.io-client";
 import { getVuelosActivos } from "../../services/programacionApi";
+import { SOCKET_URL } from "../../api/axiosConfig";
 import "./ProgWidgets.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 const ACTIVOS = ["EN_VUELO", "SALIDA_HANGAR", "REGRESO_HANGAR"];
 
 const ESTADO_LABEL = {
@@ -89,7 +88,7 @@ export default function VuelosActivosWidget() {
   }, [cargar]);
 
   useEffect(() => {
-    const socket = socketIO(API_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
+    const socket = socketIO(SOCKET_URL, { transports: ["websocket", "polling"], reconnectionDelay: 1000, reconnectionAttempts: 5 });
 
     socket.on("vuelo_estado_changed", ({ id_vuelo, estado, registrado_en }) => {
       if (ACTIVOS.includes(estado)) {

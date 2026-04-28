@@ -10,7 +10,7 @@ import ProtectedProgramacion from "./components/routes/ProtectedProgramacion";
 import ProtectedProgramacionPage from "./components/routes/ProtectedProgramacionPage";
 import AgendarVuelo from "./pages/Alumno/AgendarVuelo";
 import DashboardProgramacion from "./pages/Programacion/Dashboard";
-import PaginaProgramacion from "./pages/Programacion/PaginaProgramacion";
+import PaginaProgramacion from "./pages/Proyeccion/PaginaProgramacion";
 import DashboardAdmin from "./pages/Admin/Dashboard";
 import AuditoriaAdmin from "./pages/Admin/Auditoria";
 import MantenimientoAdmin from "./pages/Admin/Mantenimiento";
@@ -23,6 +23,7 @@ import Perfil from "./pages/Perfil/Perfil";
 import AdminLayout from "./components/AdminLayout/AdminLayout";
 import PerfilesAdmin from "./pages/Admin/Perfiles";
 import AlumnosAdmin from "./pages/Admin/Alumnos";
+import CancelacionesAdmin from "./pages/Admin/Cancelaciones";
 
 const IDLE_MS = 10 * 60 * 1000;
 
@@ -85,7 +86,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/perfil" element={<Perfil />} />
           <Route
-            path="/programacion"
+            path="/proyeccion"
             element={
               <ProtectedProgramacionPage>
                 <PaginaProgramacion />
@@ -165,6 +166,16 @@ function App() {
               <ProtectedAdmin>
                 <AdminLayout>
                   <AlumnosAdmin />
+                </AdminLayout>
+              </ProtectedAdmin>
+            }
+          />
+          <Route
+            path="/admin/cancelaciones"
+            element={
+              <ProtectedAdmin>
+                <AdminLayout>
+                  <CancelacionesAdmin />
                 </AdminLayout>
               </ProtectedAdmin>
             }

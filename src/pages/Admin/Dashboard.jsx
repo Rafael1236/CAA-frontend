@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ToastMantenimiento from "../../components/ToastMantenimiento/ToastMantenimiento";
-import TickerBar from "../../components/TickerBar/TickerBar";
 import AdminCalendar from "../../components/AdminCalendar/AdminCalendar";
 import {
   getCalendarioAdmin,
@@ -10,25 +9,25 @@ import {
   guardarCambiosAdmin,
   publicarSemana,
   getBloquesBloqueadosAdmin as getBloquesBloqueados,
-  cancelarVueloAdmin,
   getInstructoresActivos,
   cambiarInstructorVuelo,
 } from "../../services/adminApi";
 import "./Dashboard.css";
 
 export default function AdminDashboard() {
-  const [week, setWeek]                   = useState("next");
-  const [bloques, setBloques]             = useState([]);
-  const [aeronaves, setAeronaves]         = useState([]);
-  const [items, setItems]                 = useState([]);
+  const [week, setWeek] = useState("next");
+  const [bloques, setBloques] = useState([]);
+  const [aeronaves, setAeronaves] = useState([]);
+  const [items, setItems] = useState([]);
   const [originalItems, setOriginalItems] = useState([]);
-  const [pendingMoves, setPendingMoves]   = useState([]);
-  const [dragging, setDragging]           = useState(null);
-  const [loading, setLoading]             = useState(true);
-  const [bloqueos, setBloqueos]           = useState([]);
+  const [pendingMoves, setPendingMoves] = useState([]);
+  const [dragging, setDragging] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [bloqueos, setBloqueos] = useState([]);
   const [showVueloExtraModal, setShowVueloExtraModal] = useState(false);
   const [showAlumnoPerfil, setShowAlumnoPerfil] = useState(false);
   const [instructores, setInstructores] = useState([]);
+  const [publicada, setPublicada] = useState(true);
 
   const load = async (w = week) => {
     setLoading(true);
@@ -41,8 +40,9 @@ export default function AdminDashboard() {
       ]);
       setBloques(b);
       setAeronaves(a);
-      setItems(cal);
-      setOriginalItems(cal);
+      setItems(cal.items || []);
+      setOriginalItems(cal.items || []);
+      setPublicada(cal.publicada);
       setBloqueos(blq);
       setPendingMoves([]);
     } finally {
@@ -53,173 +53,173 @@ export default function AdminDashboard() {
   useEffect(() => { load(); }, [week]);
 
   useEffect(() => {
-    getInstructoresActivos().then(setInstructores).catch(() => {});
+    getInstructoresActivos().then(setInstructores).catch(() => { });
   }, []);
 
-const handleDrop = (target) => {
-  if (!dragging) return;
+  const handleDrop = (target) => {
+    if (!dragging) return;
 
-  const origen = {
-    id_bloque: dragging.id_bloque,
-    dia_semana: dragging.dia_semana,
-    id_aeronave: dragging.id_aeronave,
-  };
+    const origen = {
+      id_bloque: dragging.id_bloque,
+      dia_semana: dragging.dia_semana,
+      id_aeronave: dragging.id_aeronave,
+    };
 
-  if (
-    Number(origen.id_bloque) === Number(target.id_bloque) &&
-    Number(origen.dia_semana) === Number(target.dia_semana) &&
-    Number(origen.id_aeronave) === Number(target.id_aeronave)
-  ) {
-    setDragging(null);
-    return;
-  }
-
-  const vueloArrastrado = items.find(
-    (i) => Number(i.id_detalle) === Number(dragging.id_detalle)
-  );
-
-  if (!vueloArrastrado) {
-    setDragging(null);
-    return;
-  }
-
-  const ocupado = items.find(
-    (i) =>
-      Number(i.id_bloque) === Number(target.id_bloque) &&
-      Number(i.dia_semana) === Number(target.dia_semana) &&
-      Number(i.id_aeronave) === Number(target.id_aeronave) &&
-      Number(i.id_detalle) !== Number(dragging.id_detalle)
-  );
-
-  const hayConflictoHorario = (vuelo, destino, excluirIds = []) => {
-    const conflictoAlumno = items.find(
-      (i) =>
-        !excluirIds.includes(Number(i.id_detalle)) &&
-        Number(i.dia_semana) === Number(destino.dia_semana) &&
-        Number(i.id_bloque) === Number(destino.id_bloque) &&
-        Number(i.id_alumno) === Number(vuelo.id_alumno)
-    );
-
-    if (conflictoAlumno) {
-      return "El alumno ya tiene un vuelo en ese horario";
-    }
-
-    const conflictoInstructor = items.find(
-      (i) =>
-        !excluirIds.includes(Number(i.id_detalle)) &&
-        Number(i.dia_semana) === Number(destino.dia_semana) &&
-        Number(i.id_bloque) === Number(destino.id_bloque) &&
-        Number(i.id_instructor) === Number(vuelo.id_instructor)
-    );
-
-    if (conflictoInstructor) {
-      return "El instructor ya tiene un vuelo en ese horario";
-    }
-
-    return null;
-  };
-
-  if (!ocupado) {
-    const conflicto = hayConflictoHorario(vueloArrastrado, target, [
-      Number(vueloArrastrado.id_detalle),
-    ]);
-
-    if (conflicto) {
-      toast.error(conflicto);
+    if (
+      Number(origen.id_bloque) === Number(target.id_bloque) &&
+      Number(origen.dia_semana) === Number(target.dia_semana) &&
+      Number(origen.id_aeronave) === Number(target.id_aeronave)
+    ) {
       setDragging(null);
       return;
     }
 
-    setItems((prev) =>
-      prev.map((i) =>
-        Number(i.id_detalle) === Number(dragging.id_detalle)
-          ? { ...i, ...target }
-          : i
-      )
+    const vueloArrastrado = items.find(
+      (i) => Number(i.id_detalle) === Number(dragging.id_detalle)
     );
 
-    setPendingMoves((prev) => [
-      ...prev.filter((m) => Number(m.id_detalle) !== Number(dragging.id_detalle)),
-      { id_detalle: dragging.id_detalle, ...target },
-    ]);
+    if (!vueloArrastrado) {
+      setDragging(null);
+      return;
+    }
+
+    const ocupado = items.find(
+      (i) =>
+        Number(i.id_bloque) === Number(target.id_bloque) &&
+        Number(i.dia_semana) === Number(target.dia_semana) &&
+        Number(i.id_aeronave) === Number(target.id_aeronave) &&
+        Number(i.id_detalle) !== Number(dragging.id_detalle)
+    );
+
+    const hayConflictoHorario = (vuelo, destino, excluirIds = []) => {
+      const conflictoAlumno = items.find(
+        (i) =>
+          !excluirIds.includes(Number(i.id_detalle)) &&
+          Number(i.dia_semana) === Number(destino.dia_semana) &&
+          Number(i.id_bloque) === Number(destino.id_bloque) &&
+          Number(i.id_alumno) === Number(vuelo.id_alumno)
+      );
+
+      if (conflictoAlumno) {
+        return "El alumno ya tiene un vuelo en ese horario";
+      }
+
+      const conflictoInstructor = items.find(
+        (i) =>
+          !excluirIds.includes(Number(i.id_detalle)) &&
+          Number(i.dia_semana) === Number(destino.dia_semana) &&
+          Number(i.id_bloque) === Number(destino.id_bloque) &&
+          Number(i.id_instructor) === Number(vuelo.id_instructor)
+      );
+
+      if (conflictoInstructor) {
+        return "El instructor ya tiene un vuelo en ese horario";
+      }
+
+      return null;
+    };
+
+    if (!ocupado) {
+      const conflicto = hayConflictoHorario(vueloArrastrado, target, [
+        Number(vueloArrastrado.id_detalle),
+      ]);
+
+      if (conflicto) {
+        toast.error(conflicto);
+        setDragging(null);
+        return;
+      }
+
+      setItems((prev) =>
+        prev.map((i) =>
+          Number(i.id_detalle) === Number(dragging.id_detalle)
+            ? { ...i, ...target }
+            : i
+        )
+      );
+
+      setPendingMoves((prev) => [
+        ...prev.filter((m) => Number(m.id_detalle) !== Number(dragging.id_detalle)),
+        { id_detalle: dragging.id_detalle, ...target },
+      ]);
+
+      setDragging(null);
+      return;
+    }
+
+    toast(`¿Intercambiar con ${ocupado.alumno_nombre}?`, {
+      action: {
+        label: "Intercambiar",
+        onClick: () => {
+          const conflictoArrastrado = hayConflictoHorario(vueloArrastrado, target, [
+            Number(vueloArrastrado.id_detalle),
+            Number(ocupado.id_detalle),
+          ]);
+          if (conflictoArrastrado) { toast.error(conflictoArrastrado); return; }
+
+          const conflictoOcupado = hayConflictoHorario(ocupado, origen, [
+            Number(vueloArrastrado.id_detalle),
+            Number(ocupado.id_detalle),
+          ]);
+          if (conflictoOcupado) { toast.error(conflictoOcupado); return; }
+
+          setItems((prev) =>
+            prev.map((i) => {
+              if (Number(i.id_detalle) === Number(vueloArrastrado.id_detalle)) return { ...i, ...target };
+              if (Number(i.id_detalle) === Number(ocupado.id_detalle)) return { ...i, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave };
+              return i;
+            })
+          );
+          setPendingMoves((prev) => {
+            const sinAmbos = prev.filter(
+              (m) =>
+                Number(m.id_detalle) !== Number(vueloArrastrado.id_detalle) &&
+                Number(m.id_detalle) !== Number(ocupado.id_detalle)
+            );
+            return [
+              ...sinAmbos,
+              { id_detalle: vueloArrastrado.id_detalle, ...target },
+              { id_detalle: ocupado.id_detalle, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave },
+            ];
+          });
+        },
+      },
+      cancel: { label: "Cancelar", onClick: () => { } },
+      duration: 10000,
+    });
 
     setDragging(null);
-    return;
-  }
-
-  toast(`¿Intercambiar con ${ocupado.alumno_nombre}?`, {
-    action: {
-      label: "Intercambiar",
-      onClick: () => {
-        const conflictoArrastrado = hayConflictoHorario(vueloArrastrado, target, [
-          Number(vueloArrastrado.id_detalle),
-          Number(ocupado.id_detalle),
-        ]);
-        if (conflictoArrastrado) { toast.error(conflictoArrastrado); return; }
-
-        const conflictoOcupado = hayConflictoHorario(ocupado, origen, [
-          Number(vueloArrastrado.id_detalle),
-          Number(ocupado.id_detalle),
-        ]);
-        if (conflictoOcupado) { toast.error(conflictoOcupado); return; }
-
-        setItems((prev) =>
-          prev.map((i) => {
-            if (Number(i.id_detalle) === Number(vueloArrastrado.id_detalle)) return { ...i, ...target };
-            if (Number(i.id_detalle) === Number(ocupado.id_detalle)) return { ...i, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave };
-            return i;
-          })
-        );
-        setPendingMoves((prev) => {
-          const sinAmbos = prev.filter(
-            (m) =>
-              Number(m.id_detalle) !== Number(vueloArrastrado.id_detalle) &&
-              Number(m.id_detalle) !== Number(ocupado.id_detalle)
-          );
-          return [
-            ...sinAmbos,
-            { id_detalle: vueloArrastrado.id_detalle, ...target },
-            { id_detalle: ocupado.id_detalle, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave },
-          ];
-        });
-      },
-    },
-    cancel: { label: "Cancelar", onClick: () => {} },
-    duration: 10000,
-  });
-
-  setDragging(null);
-};
+  };
 
   const deshacerCambios = () => {
     setItems(originalItems);
     setPendingMoves([]);
   };
 
-const guardarCambios = () => {
-  if (pendingMoves.length === 0) {
-    toast.warning("No hay cambios para guardar");
-    return;
-  }
+  const guardarCambios = () => {
+    if (pendingMoves.length === 0) {
+      toast.warning("No hay cambios para guardar");
+      return;
+    }
 
-  const movesSnapshot = [...pendingMoves];
-  toast("¿Guardar los cambios realizados?", {
-    action: {
-      label: "Guardar",
-      onClick: async () => {
-        try {
-          const resp = await guardarCambiosAdmin(movesSnapshot);
-          toast.success(resp.message || "Cambios guardados correctamente");
-          load();
-        } catch (e) {
-          toast.error(e.response?.data?.message || "No se pudieron guardar los cambios");
-        }
+    const movesSnapshot = [...pendingMoves];
+    toast("¿Guardar los cambios realizados?", {
+      action: {
+        label: "Guardar",
+        onClick: async () => {
+          try {
+            const resp = await guardarCambiosAdmin(movesSnapshot);
+            toast.success(resp.message || "Cambios guardados correctamente");
+            load();
+          } catch (e) {
+            toast.error(e.response?.data?.message || "No se pudieron guardar los cambios");
+          }
+        },
       },
-    },
-    cancel: { label: "Cancelar", onClick: () => {} },
-    duration: 10000,
-  });
-};
+      cancel: { label: "Cancelar", onClick: () => { } },
+      duration: 10000,
+    });
+  };
 
   const publicar = () => {
     toast("¿Publicar la próxima semana?", {
@@ -237,7 +237,7 @@ const guardarCambios = () => {
           load();
         },
       },
-      cancel: { label: "Cancelar", onClick: () => {} },
+      cancel: { label: "Cancelar", onClick: () => { } },
       duration: 10000,
     });
   };
@@ -251,65 +251,6 @@ const guardarCambios = () => {
     }
   };
 
-  const onCancelar = (id_vuelo) => {
-    toast("¿Cancelar este vuelo/clase?", {
-      action: {
-        label: "Cancelar vuelo",
-        onClick: async () => {
-          try {
-            await cancelarVueloAdmin(id_vuelo);
-            toast.success("Vuelo cancelado");
-            load();
-          } catch (e) {
-            if (e.response?.status === 400) {
-              let motivoInput = "";
-              toast.custom((t) => (
-                <div style={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 10, padding: "1rem 1.25rem", minWidth: 320 }}>
-                  <p style={{ margin: "0 0 0.5rem", fontSize: "0.875rem", color: "#f1f5f9", fontWeight: 600 }}>
-                    Motivo de cancelación (obligatorio, &lt;24 h)
-                  </p>
-                  <input
-                    autoFocus
-                    style={{ width: "100%", padding: "6px 10px", borderRadius: 6, border: "1px solid #475569", background: "#0f172a", color: "#f1f5f9", fontSize: "0.875rem", boxSizing: "border-box", marginBottom: "0.75rem" }}
-                    placeholder="Ingresá el motivo…"
-                    onChange={(ev) => { motivoInput = ev.target.value; }}
-                  />
-                  <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                    <button
-                      style={{ padding: "5px 14px", borderRadius: 6, border: "1px solid #475569", background: "transparent", color: "#94a3b8", cursor: "pointer", fontSize: "0.8rem" }}
-                      onClick={() => toast.dismiss(t)}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#dc2626", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}
-                      onClick={async () => {
-                        if (!motivoInput.trim()) return;
-                        toast.dismiss(t);
-                        try {
-                          await cancelarVueloAdmin(id_vuelo, motivoInput.trim());
-                          toast.success("Vuelo cancelado");
-                          load();
-                        } catch (e2) {
-                          toast.error(e2.response?.data?.message || "No se pudo cancelar");
-                        }
-                      }}
-                    >
-                      Confirmar
-                    </button>
-                  </div>
-                </div>
-              ), { duration: Infinity });
-            } else {
-              toast.error(e.response?.data?.message || "No se pudo cancelar");
-            }
-          }
-        },
-      },
-      cancel: { label: "No cancelar", onClick: () => {} },
-      duration: 10000,
-    });
-  };
 
   const getWeekNumber = (offset = 0) => {
     const d = new Date();
@@ -325,100 +266,112 @@ const guardarCambios = () => {
 
   return (
     <>
-      <TickerBar />
       <ToastMantenimiento />
 
       <div className="adm">
 
-        <div className="adm__top">
-          <div className="adm__top-left">
-            <p className="adm__eyebrow">Panel de administración</p>
-            <h2 className="adm__title">Gestión de horarios</h2>
-            <p className="adm__subtitle">
-              Programación y publicación semanal de vuelos
-            </p>
-          </div>
-        </div>
-
         <div className="adm__stats">
-          <div className="adm__stat">
+          <div className="adm__stat adm__stat--blue">
+            <div className="adm__stat-header">
+              <span className="adm__stat-lbl">VUELOS EN CALENDARIO</span>
+              <i className="bi bi-airplane adm__stat-icon"></i>
+            </div>
             <span className="adm__stat-num">{items.length}</span>
-            <span className="adm__stat-lbl">Vuelos en calendario</span>
+            <span className="adm__stat-sub">Semana {currentWeekDisplay}</span>
           </div>
-          <div className="adm__stat">
+
+          <div className="adm__stat adm__stat--gold">
+            <div className="adm__stat-header">
+              <span className="adm__stat-lbl">AERONAVES ACTIVAS</span>
+              <i className="bi bi-tools adm__stat-icon"></i>
+            </div>
             <span className="adm__stat-num">{aeronaves.length}</span>
-            <span className="adm__stat-lbl">Aeronaves activas</span>
+            <span className="adm__stat-sub">Operativas</span>
           </div>
-          <div className="adm__stat">
-            <span
-              className="adm__stat-num"
-              style={{ color: pendingMoves.length > 0 ? "var(--adm-gold)" : "var(--adm-teal)" }}
-            >
+
+          <div className="adm__stat adm__stat--blue">
+            <div className="adm__stat-header">
+              <span className="adm__stat-lbl">CAMBIOS PENDIENTES</span>
+              <i className="bi bi-arrow-left-right adm__stat-icon"></i>
+            </div>
+            <span className="adm__stat-num" style={{ color: pendingMoves.length > 0 ? "#f59e0b" : "inherit" }}>
               {pendingMoves.length}
             </span>
-            <span className="adm__stat-lbl">Cambios pendientes</span>
+            <span className="adm__stat-sub">Sin guardar</span>
           </div>
-          <div className="adm__stat">
-            <span className="adm__stat-num" style={{ color: "var(--adm-red)" }}>
+
+          <div className="adm__stat adm__stat--red">
+            <div className="adm__stat-header">
+              <span className="adm__stat-lbl">CANCELACIONES</span>
+              <i className="bi bi-x-circle adm__stat-icon" style={{ color: '#ef4444' }}></i>
+            </div>
+            <span className="adm__stat-num" style={{ color: "#ef4444" }}>
               {items.filter(v => v.estado_vuelo === 'CANCELADO').length}
             </span>
-            <span className="adm__stat-lbl">Cancelaciones</span>
+            <span className="adm__stat-sub">Esta semana</span>
           </div>
         </div>
 
         <div className="adm__section">
-          <div className="adm__section-header">
-            <div className="adm__section-info">
-              <h3 className="adm__section-title">Horario semanal</h3>
-              <p className="adm__section-hint">
-                {modeIsNext
-                  ? "Editable · arrastrá para reorganizar · publicable"
-                  : "Vista de solo lectura · podés cancelar vuelos individuales"}
-              </p>
+          <div className="adm__section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <i className="bi bi-calendar3" style={{ color: '#1B365D', fontSize: '1.2rem' }}></i>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: '#1e293b' }}>Calendario de Vuelos</h3>
             </div>
 
-            <div className="adm__week-selector">
-              <button 
-                className="adm__week-btn" 
-                onClick={() => setWeek("current")}
-                disabled={week === "current"}
-              >
-                &lt;
-              </button>
-              <span className="adm__week-label">Semana {currentWeekDisplay}</span>
-              <button 
-                className="adm__week-btn" 
-                onClick={() => setWeek("next")}
-                disabled={week === "next"}
-              >
-                &gt;
-              </button>
-            </div>
-
-            {modeIsNext && (
-              <div className="adm__actions">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+              <div className="adm__week-selector" style={{ background: 'transparent', border: 'none', padding: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <button
-                  className="adm__btn"
-                  onClick={deshacerCambios}
-                  disabled={!pendingMoves.length}
+                  className="adm__week-btn"
+                  onClick={() => setWeek("current")}
+                  disabled={week === "current"}
+                  style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid #cbd5e1', background: 'white', cursor: week === 'current' ? 'default' : 'pointer', opacity: week === 'current' ? 0.5 : 1 }}
                 >
-                  ✕ Deshacer
+                  &lt;
                 </button>
+                <span className="adm__week-label" style={{ color: '#1B365D', fontWeight: 700, fontSize: '0.9rem' }}>Semana {currentWeekDisplay}</span>
                 <button
-                  className="adm__btn"
-                  onClick={guardarCambios}
-                  disabled={pendingMoves.length === 0}
+                  className="adm__week-btn"
+                  onClick={() => setWeek("next")}
+                  disabled={week === "next"}
+                  style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid #cbd5e1', background: 'white', cursor: week === 'next' ? 'default' : 'pointer', opacity: week === 'next' ? 0.5 : 1 }}
                 >
-                  ✓ Guardar ({pendingMoves.length})
-                </button>
-                <button
-                  className="adm__btn adm__btn--publish"
-                  onClick={publicar}
-                >
-                  ▲ Publicar semana
+                  &gt;
                 </button>
               </div>
-            )}
+
+              {(modeIsNext || !publicada) && (
+                <div className="adm__actions" style={{ display: 'flex', gap: '8px' }}>
+                  {modeIsNext && pendingMoves.length > 0 && (
+                    <>
+                      <button
+                        className="adm__btn"
+                        onClick={deshacerCambios}
+                        style={{ border: '1px solid #ef4444', color: '#ef4444', borderRadius: '4px', padding: '6px 12px', background: 'transparent', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+                      >
+                        ✕ Deshacer
+                      </button>
+                      <button
+                        className="adm__btn"
+                        onClick={guardarCambios}
+                        style={{ backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+                      >
+                        ✓ Guardar ({pendingMoves.length})
+                      </button>
+                    </>
+                  )}
+                  {!publicada && (
+                    <button
+                      className="adm__btn adm__btn--publish"
+                      onClick={publicar}
+                      style={{ backgroundColor: '#1B365D', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 16px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <i className="bi bi-send-fill"></i> Publicar semana
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {loading ? (
@@ -439,7 +392,6 @@ const guardarCambios = () => {
               dragging={dragging}
               handleDrop={handleDrop}
               week={week}
-              onCancelar={onCancelar}
               instructores={instructores}
               onCambiarInstructor={onCambiarInstructor}
               onRefresh={() => load()}

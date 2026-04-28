@@ -41,11 +41,11 @@ export default function AdminCalendar({
   dragging,
   handleDrop,
   week = "next",
-  onCancelar,
   instructores = [],
   onCambiarInstructor,
   onRefresh,
   aeronaves = [],
+  onGuardarCambio,
 }) {
   const isEditable = week === "next";
   const dates = getDatesForWeek(week);
@@ -118,24 +118,29 @@ export default function AdminCalendar({
     try {
       // 1. Change Instructor if modified
       if (Number(tempInstructorId) !== Number(item.id_instructor)) {
-        await onCambiarInstructor(item.id_detalle, Number(tempInstructorId));
+        if (onCambiarInstructor) {
+          await onCambiarInstructor(item.id_detalle, Number(tempInstructorId));
+        }
       }
 
       // 2. Change Aircraft if modified
       if (Number(tempAeronaveId) !== Number(item.id_aeronave)) {
-        // We use the existing guardarCambiosAdmin logic by sending a single move
-        const { guardarCambiosAdmin } = await import("../../services/adminApi");
-        await guardarCambiosAdmin([{
+        const move = {
           id_detalle: item.id_detalle,
           id_bloque: item.id_bloque,
           dia_semana: item.dia_semana,
           id_aeronave: Number(tempAeronaveId)
-        }]);
+        };
+
+        if (onGuardarCambio) {
+          await onGuardarCambio([move]);
+        } else {
+          // Fallback to adminApi
+          const { guardarCambiosAdmin } = await import("../../services/adminApi");
+          await guardarCambiosAdmin([move]);
+        }
       }
 
-      // Instead of full reload, we could ask parent to refresh data
-      // For now, we trust the caller to have handled the logic or just close and let parent re-render if it has a listener
-      // Actually, since we don't have a direct 'updateItem' prop, we'll suggest using a full refresh if possible or just close.
       closePopover();
       if (onRefresh) onRefresh();
       else window.location.reload(); 
@@ -147,11 +152,6 @@ export default function AdminCalendar({
     }
   };
 
-  const handleCancelVuelo = () => {
-    if (!activePopover) return;
-    onCancelar?.(activePopover.item.id_vuelo);
-    closePopover();
-  };
 
   const getEstadoClass = (item) => {
     const estado = item?.estado_vuelo || item?.estado_solicitud || item?.estado_mostrar;
@@ -249,18 +249,6 @@ export default function AdminCalendar({
                                 </div>
                               )}
 
-                              {week === "current" && item.id_vuelo && item.estado_vuelo !== "CANCELADO" && (
-                                <button
-                                  className="flight-cancel-btn"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    onCancelar?.(item.id_vuelo);
-                                  }}
-                                >
-                                  ×
-                                </button>
-                              )}
                             </div>
                           );
                         })}
@@ -348,13 +336,6 @@ export default function AdminCalendar({
                   disabled={loadingSave}
                 >
                   {loadingSave ? <span className="pop-spinner"></span> : 'Guardar cambios'}
-                </button>
-                <button 
-                  className="btn-cancel-v"
-                  onClick={handleCancelVuelo}
-                  disabled={loadingSave}
-                >
-                  Cancelar vuelo
                 </button>
               </div>
             </div>

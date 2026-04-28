@@ -4,32 +4,7 @@
   gap: 24px;
 }
 
-.alms__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
 
-.alms__eyebrow {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.alms__title {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary-dark);
-  margin: 0;
-}
-
-.alms__subtitle {
-  color: #64748b;
-  margin: 4px 0 0 0;
-}
 
 .alms__card {
   background: white;
@@ -40,8 +15,8 @@
 }
 
 .alms__card-header {
-  padding: 24px;
-  background-color: var(--neutral-light);
+  padding: 16px 20px;
+  background-color: white;
   border-bottom: 1px solid var(--neutral-border);
 }
 
@@ -53,16 +28,17 @@
 }
 
 .alms__week-info i {
-  font-size: 24px;
-  color: var(--primary);
+  font-size: 20px;
+  color: #1B365D;
   background: white;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
 }
 
 .alms__week-label {
@@ -75,9 +51,9 @@
 
 .alms__week-dates {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  color: var(--primary-dark);
+  color: #1B365D;
 }
 
 .alms__hint {

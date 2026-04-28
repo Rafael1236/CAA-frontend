@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = window.__APP_CONFIG__?.API_URL;
+import { API_URL } from "../api/axiosConfig";
 
 export const getAeronavesPermitidas = async () => {
   const res = await axios.get(`${API_URL}/agendar/aeronaves-permitidas`);

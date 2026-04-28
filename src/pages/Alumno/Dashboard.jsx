@@ -9,10 +9,10 @@ import EstadoOperacionesWidget from "../../components/EstadoOperacionesWidget/Es
 import {
   getMiHorario,
   getMiInfo,
+  getMisSolicitudesCancelacion
 } from "../../services/alumnoApi";
+import { API_URL, SOCKET_URL } from "../../api/axiosConfig";
 import "./Dashboard.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const CARD_ICONS = {
   licencia: (
@@ -47,15 +47,18 @@ export default function AlumnoDashboard() {
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const navigate = useNavigate();
 
-  const [weekMode, setWeekMode] = useState("current");
+  const [weekMode, setWeekMode] = useState("current"); // "current", "next", "cancelaciones"
   const [vuelos, setVuelos] = useState([]);
   const [loadingVuelos, setLoadingVuelos] = useState(false);
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [loadingSolicitudes, setLoadingSolicitudes] = useState(false);
   const [info, setInfo] = useState(null);
   useEffect(() => {
     getMiInfo().then(setInfo).catch(() => { });
   }, []);
 
   const fetchVuelos = useCallback(async () => {
+    if (weekMode === "cancelaciones") return;
     setLoadingVuelos(true);
     try {
       const data = await getMiHorario(weekMode);
@@ -67,17 +70,33 @@ export default function AlumnoDashboard() {
     }
   }, [weekMode]);
 
+  const fetchSolicitudes = useCallback(async () => {
+    if (weekMode !== "cancelaciones") return;
+    setLoadingSolicitudes(true);
+    try {
+      const data = await getMisSolicitudesCancelacion();
+      setSolicitudes(Array.isArray(data) ? data : []);
+    } catch {
+      setSolicitudes([]);
+    } finally {
+      setLoadingSolicitudes(false);
+    }
+  }, [weekMode]);
+
   useEffect(() => {
-    fetchVuelos();
-  }, [fetchVuelos]);
+    if (weekMode === "cancelaciones") {
+      fetchSolicitudes();
+    } else {
+      fetchVuelos();
+    }
+  }, [weekMode, fetchVuelos, fetchSolicitudes]);
 
   const fetchVuelosRef = useRef(fetchVuelos);
   useEffect(() => { fetchVuelosRef.current = fetchVuelos; }, [fetchVuelos]);
 
   /* ── socket: real-time vuelo updates ── */
   useEffect(() => {
-    const socketUrl = API_URL.replace(/\/api$/, "");
-    const socket = socketIO(socketUrl, {
+    const socket = socketIO(SOCKET_URL, {
       transports: ["websocket", "polling"],
       reconnectionDelay: 1000,
       reconnectionAttempts: 10,
@@ -121,8 +140,8 @@ export default function AlumnoDashboard() {
     ? [info.instructor_nombre, info.instructor_apellido].filter(Boolean).join(" ") || "—"
     : "—";
 
-  const semanaLabel = weekMode === "current" ? "Semana actual" : "Semana siguiente";
-  const estadoLabel = weekMode === "current" ? "En curso" : "Próxima";
+  const semanaLabel = weekMode === "current" ? "Semana actual" : weekMode === "next" ? "Semana siguiente" : "Mis Cancelaciones";
+  const estadoLabel = weekMode === "current" ? "En curso" : weekMode === "next" ? "Próxima" : "Variado";
 
   return (
     <>
@@ -195,15 +214,58 @@ export default function AlumnoDashboard() {
               >
                 Semana siguiente
               </button>
+              <button
+                className={`dash__tab${weekMode === "cancelaciones" ? " dash__tab--active" : ""}`}
+                onClick={() => setWeekMode("cancelaciones")}
+              >
+                Mis cancelaciones
+              </button>
             </div>
 
-            {/* Flight list */}
-            <MiHorarioList
-              vuelos={vuelos}
-              weekMode={weekMode}
-              loading={loadingVuelos}
-              onRefresh={fetchVuelos}
-            />
+            {/* Flight list / Solicitudes */}
+            {weekMode !== "cancelaciones" ? (
+              <MiHorarioList
+                vuelos={vuelos}
+                weekMode={weekMode}
+                loading={loadingVuelos}
+                onRefresh={fetchVuelos}
+              />
+            ) : (
+              <div className="mhl__list" style={{ marginTop: '20px' }}>
+                {loadingSolicitudes ? (
+                  <div className="mhl__state"><span className="mhl__spinner"/><span>Cargando solicitudes...</span></div>
+                ) : solicitudes.length === 0 ? (
+                  <div className="mhl__state mhl__state--empty">No tienes solicitudes de cancelación de vuelo.</div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {solicitudes.map((s) => (
+                      <div key={s.id_solicitud_cancelacion} style={{ background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{ fontWeight: 600 }}>Aeronave: {s.aeronave_codigo}</span>
+                          <span className={`mhl__badge mhl__badge--${s.estado.toLowerCase()}`}>
+                            {s.estado}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '4px' }}>
+                          Fecha Vuelo: {new Date(s.fecha_hora_vuelo).toLocaleString('es-SV', {timeZone: 'America/El_Salvador'})}
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '4px' }}>
+                          Motivo: {s.motivo}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#6b7280' }}>
+                          Solicitado el: {new Date(s.creado_en).toLocaleString('es-SV', {timeZone: 'America/El_Salvador'})}
+                        </div>
+                        {s.tiene_multa && (
+                          <div style={{ marginTop: '8px', color: '#dc2626', fontWeight: 600, fontSize: '0.85rem' }}>
+                            Con multa de ${s.monto_multa}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
 

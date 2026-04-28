@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = window.__APP_CONFIG__?.API_URL;
+import { API_URL } from "../api/axiosConfig";
 
 export const getBloquesHorario = async () => {
   const res = await axios.get(`${API_URL}/agendar/bloques-horario`);
@@ -32,10 +32,7 @@ export const getBloquesBloqueados = async () => {
   return res.data;
 };
 
-export const cancelarVueloProgramacion = async (id_vuelo) => {
-  const res = await axios.patch(`${API_URL}/programacion/vuelos/${id_vuelo}/cancelar`, {});
-  return res.data;
-};
+
 
 export const getVuelosActivos = async () => {
   const res = await axios.get(`${API_URL}/turno/vuelos-hoy`);

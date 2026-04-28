@@ -1,18 +1,91 @@
 .adm-layout {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background-color: var(--neutral-light);
+  background-color: #f8fafc;
+}
+
+/* ── Topbar ── */
+.adm-topbar {
+  height: 60px;
+  background-color: #1B365D;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adm-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.adm-topbar__logo {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+}
+
+.adm-topbar__divider {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+}
+
+.adm-topbar__title {
+  font-weight: 400;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.adm-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adm-topbar__role {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.adm-topbar__avatar {
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  color: #1B365D;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+/* ── Body ── */
+.adm-layout__body {
+  display: flex;
+  flex: 1;
 }
 
 .adm-layout__content {
   flex: 1;
-  margin-left: var(--sidebar-w);
-  padding: 28px;
+  margin-left: var(--sidebar-w, 240px);
+  padding: 32px;
   background-image: 
-    linear-gradient(rgba(27, 54, 93, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(27, 54, 93, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba(27, 54, 93, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 54, 93, 0.03) 1px, transparent 1px);
   background-size: 32px 32px;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
 }
 
 .adm-layout__inner {
@@ -25,7 +98,6 @@
   display: none !important;
 }
 
-/* Ensure admin pages don't have their own padding-top if they were designed for the fixed header */
 .adm-layout__content > div {
   padding-top: 0 !important;
 }

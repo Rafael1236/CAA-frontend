@@ -1,11 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getSolicitudesCancelacion } from "../../services/adminApi";
+import { io as socketIO } from "socket.io-client";
+import { SOCKET_URL } from "../../api/axiosConfig";
 import "./AdminSidebar.css";
 
 export default function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+
+  const [pendingCancelCount, setPendingCancelCount] = useState(0);
+
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const data = await getSolicitudesCancelacion();
+        const pending = Array.isArray(data) ? data.filter(s => s.estado === 'PENDIENTE').length : 0;
+        setPendingCancelCount(pending);
+      } catch (e) {
+        // Silently fail
+      }
+    };
+
+    fetchPendingCount();
+
+    const socket = socketIO(SOCKET_URL, { transports: ["websocket", "polling"] });
+
+    socket.on("nueva_solicitud_cancelacion", fetchPendingCount);
+    socket.on("solicitud_cancelacion_resuelta", fetchPendingCount);
+
+    return () => socket.disconnect();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -17,26 +43,19 @@ export default function AdminSidebar() {
     { label: "Dashboard", path: "/admin/dashboard", icon: "bi-grid-fill" },
     { 
       label: "Programación", 
-      path: "/programacion?modo=proyeccion", 
+      path: "/proyeccion?modo=proyeccion", 
       icon: "bi-calendar3",
       external: true 
     },
     { label: "Mantenimiento", path: "/admin/mantenimiento", icon: "bi-tools" },
     { label: "Perfiles", path: "/admin/perfiles", icon: "bi-person-badge" },
     { label: "Alumnos", path: "/admin/alumnos", icon: "bi-people" },
+    { label: "Cancelaciones", path: "/admin/cancelaciones", icon: "bi-x-circle", badge: pendingCancelCount },
   ];
 
   return (
     <aside className="adm-sidebar">
-      <div className="adm-sidebar__top">
-        <Link to="/admin/dashboard" className="adm-sidebar__logo">
-          <div className="adm-sidebar__logo-box">
-            <span className="adm-sidebar__logo-icon">A</span>
-          </div>
-          CAAA
-        </Link>
-      </div>
-
+      <div className="adm-sidebar__menu-title">MENÚ PRINCIPAL</div>
       <nav className="adm-sidebar__nav">
         {menuItems.map((item) => (
           item.external ? (
@@ -58,24 +77,26 @@ export default function AdminSidebar() {
                 location.pathname === item.path ? "adm-sidebar__link--active" : ""
               }`}
             >
-              <i className={`bi ${item.icon} adm-sidebar__icon`}></i>
-              {item.label}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <i className={`bi ${item.icon} adm-sidebar__icon`}></i>
+                  <span>{item.label}</span>
+                </div>
+                {item.badge > 0 && (
+                  <span style={{ backgroundColor: '#ef4444', color: 'white', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 700 }}>
+                    {item.badge}
+                  </span>
+                )}
+              </div>
             </Link>
           )
         ))}
       </nav>
 
       <div className="adm-sidebar__bottom">
-        <div className="adm-sidebar__user">
-          <div className="adm-sidebar__user-info">
-            <span className="adm-sidebar__user-name">{user?.nombre}</span>
-            <span className="adm-sidebar__user-role">Administrador</span>
-          </div>
-        </div>
-        <div className="adm-sidebar__divider" />
-        <button onClick={handleLogout} className="adm-sidebar__logout">
-          <i className="bi bi-box-arrow-right adm-sidebar__icon"></i>
-          Salir
+        <button className="adm-sidebar__logout" onClick={handleLogout}>
+          <i className="bi bi-box-arrow-left"></i>
+          Cerrar sesión
         </button>
       </div>
     </aside>

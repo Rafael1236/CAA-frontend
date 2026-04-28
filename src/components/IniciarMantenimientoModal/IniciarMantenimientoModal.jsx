@@ -139,6 +139,7 @@ export default function IniciarMantenimientoModal({ aeronave, onClose, onSuccess
                 setBloquesSeleccionados([]);
               }}>
                 <option value="CORRECTIVO">Correctivo</option>
+                <option value="25HR">25 Horas</option>
                 <option value="50HR">50 Horas</option>
                 <option value="100HR">100 Horas</option>
               </select>

@@ -193,21 +193,23 @@ export default function MantenimientoAdmin() {
     <>
 
       <div className="mnt">
-        {/* ── Cabecera ──────────────────────────────────────────────── */}
-        <div className="mnt__top">
-          <div className="mnt__top-left">
-            <div>
-              <p className="mnt__eyebrow">Panel de administración</p>
-              <h2 className="mnt__title">Mantenimiento de aeronaves</h2>
-              <p className="mnt__subtitle">Ciclos de revisión y registro de horas</p>
+        <div className="mnt__card" style={{ marginBottom: '24px' }}>
+          <div className="mnt__card-header" style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', background: 'white', borderRadius: '8px 8px 0 0', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <i className="bi bi-tools" style={{ color: '#1B365D', fontSize: '1.2rem' }}></i>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#1B365D' }}>Mantenimiento de aeronaves</h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Ciclos de revisión y registro de horas</p>
+              </div>
             </div>
+            <button
+              className="mnt__btn mnt__btn--primary"
+              style={{ backgroundColor: '#1B365D', color: 'white', padding: '8px 16px', borderRadius: '6px', fontWeight: 600, border: 'none' }}
+              onClick={() => setShowModal(true)}
+            >
+              + Horas manuales
+            </button>
           </div>
-          <button
-            className="mnt__btn mnt__btn--primary"
-            onClick={() => setShowModal(true)}
-          >
-            + Horas manuales
-          </button>
         </div>
 
         {loading ? (

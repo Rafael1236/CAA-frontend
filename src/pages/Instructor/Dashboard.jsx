@@ -12,9 +12,8 @@ import {
   avanzarEstadoVuelo,
   getReportesPendientes,
 } from "../../services/instructorApi";
+import { SOCKET_URL } from "../../api/axiosConfig";
 import "./Dashboard.css";
-
-const API_URL = window.__APP_CONFIG__?.API_URL ?? "http://localhost:5000";
 
 const DIAS = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
@@ -344,7 +343,7 @@ export default function InstructorDashboard() {
 
   // Socket.io tiempo real
   useEffect(() => {
-    const socket = socketIO(API_URL, {
+    const socket = socketIO(SOCKET_URL, {
       transports: ["websocket", "polling"],
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
@@ -442,21 +441,20 @@ export default function InstructorDashboard() {
             <h2 className="ins__title">Mi actividad semanal</h2>
             <p className="ins__subtitle">Gestioná tus vuelos y alumnos asignados.</p>
           </div>
-        </div>
-
-        <div className="ins__tabs">
-          <button
-            className={`ins__tab ${weekMode === "current" ? "ins__tab--active" : ""}`}
-            onClick={() => { setWeekMode("current"); setLoadingVuelos(true); }}
-          >
-            Semana actual
-          </button>
-          <button
-            className={`ins__tab ${weekMode === "next" ? "ins__tab--active" : ""}`}
-            onClick={() => { setWeekMode("next"); setLoadingVuelos(true); }}
-          >
-            Semana siguiente
-          </button>
+          <div className="ins__tabs">
+            <button
+              className={`ins__tab ${weekMode === "current" ? "ins__tab--active" : ""}`}
+              onClick={() => { setWeekMode("current"); setLoadingVuelos(true); }}
+            >
+              Semana actual
+            </button>
+            <button
+              className={`ins__tab ${weekMode === "next" ? "ins__tab--active" : ""}`}
+              onClick={() => { setWeekMode("next"); setLoadingVuelos(true); }}
+            >
+              Semana siguiente
+            </button>
+          </div>
         </div>
 
         <div className="ins__section">
@@ -496,6 +494,7 @@ export default function InstructorDashboard() {
 
         <div className="ins__section">
           <h3 className="ins__section-title">
+            <i className="bi bi-file-earmark-text" style={{ color: 'var(--ins-accent)' }}></i>
             Reportes enviados al alumno
             {reportesPendientes.length > 0 && (
               <span className="ins__badge-count">{reportesPendientes.length}</span>
@@ -536,13 +535,18 @@ export default function InstructorDashboard() {
         </div>
 
         <div className="ins__section ins__section--alumnos">
-          <h3 className="ins__section-title">Mis alumnos asignados</h3>
+          <h3 className="ins__section-title">
+            <i className="bi bi-people" style={{ color: 'var(--ins-accent)' }}></i>
+            Mis alumnos asignados
+          </h3>
           {semanaProxima && (
             <p className="ins__semana-label">
-              Límites para semana próxima:{" "}
-              {new Date(semanaProxima.fecha_inicio).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}
-              {" — "}
-              {new Date(semanaProxima.fecha_fin).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}
+              <i className="bi bi-calendar-event"></i> Límites para semana próxima:{" "}
+              <strong>
+                {new Date(semanaProxima.fecha_inicio).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}
+                {" — "}
+                {new Date(semanaProxima.fecha_fin).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })}
+              </strong>
             </p>
           )}
 
