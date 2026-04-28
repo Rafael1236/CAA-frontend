@@ -55,15 +55,11 @@ export default function AlumnosAdmin() {
       return;
     }
     if (!Number.isInteger(num) || num < 1) {
-      setFila(alumno.id_alumno, { error: "Número entero positivo" });
+      setFila(alumno.id_alumno, { error: "Número entero entre 1 y 6" });
       return;
     }
     if (num > 6) {
       setFila(alumno.id_alumno, { error: "Máximo 6" });
-      return;
-    }
-    if (num <= alumno.limite_vuelos) {
-      setFila(alumno.id_alumno, { error: `Mínimo ${alumno.limite_vuelos + 1}` });
       return;
     }
 
@@ -96,7 +92,7 @@ export default function AlumnosAdmin() {
           <div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: '#1B365D' }}>Gestión de Alumnos</h3>
             <p className="alms__hint" style={{ marginTop: '4px' }}>
-              Aumentá el límite de vuelos permitidos para agendar en la próxima semana.
+              Ajustá el límite de vuelos permitidos para agendar (Mínimo: 1, Máximo: 6).
             </p>
           </div>
           <div className="alms__week-info" style={{ margin: 0 }}>
@@ -132,7 +128,6 @@ export default function AlumnosAdmin() {
                       <tr key={a.id_alumno}>
                         <td>
                           <div className="alms__alumno-name">{a.nombre_completo}</div>
-                          <div className="alms__alumno-sub">ID: {String(a.id_alumno).padStart(3, '0')}</div>
                         </td>
                         <td className="text-center">
                           <span className="alms__limite-badge">{a.limite_vuelos}</span>
@@ -143,13 +138,13 @@ export default function AlumnosAdmin() {
                               <input
                                 className="alms__input"
                                 type="number"
-                                min={a.limite_vuelos + 1}
+                                min={1}
                                 max={6}
                                 value={fila.nuevoLimite}
                                 onChange={(e) =>
                                   setFila(a.id_alumno, { nuevoLimite: e.target.value, error: "" })
                                 }
-                                placeholder={`Ej: ${a.limite_vuelos + 1}`}
+                                placeholder="1 - 6"
                               />
                               <button
                                 className="alms__save-btn"
@@ -177,4 +172,5 @@ export default function AlumnosAdmin() {
       </div>
     </div>
   );
+
 }
