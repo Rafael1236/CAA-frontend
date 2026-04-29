@@ -36,12 +36,11 @@
   color: #1a202c;
   text-decoration: none;
   letter-spacing: -0.01em;
-  transition: opacity 0.2s;
+  cursor: default;
+  transition: none;
 }
 
-.header__logo:hover {
-  opacity: 0.8;
-}
+/* Removed hover effect */
 
 .header__logo-box {
   width: 32px;

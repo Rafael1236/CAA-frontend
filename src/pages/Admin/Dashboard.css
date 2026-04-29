@@ -33,28 +33,6 @@
   display: none;
 }
 
-.adm__btn-webhook {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: transparent;
-  border: 1px solid var(--adm-border);
-  color: var(--adm-text-sub);
-  padding: 9px 18px;
-  border-radius: 9px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  font-family: 'Outfit', sans-serif;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.adm__btn-webhook:hover {
-  border-color: var(--adm-border2);
-  color: var(--adm-text);
-}
 
 .adm__stats {
   display: grid;

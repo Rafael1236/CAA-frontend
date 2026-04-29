@@ -43,7 +43,7 @@ export default function AdminSidebar() {
     { label: "Dashboard", path: "/admin/dashboard", icon: "bi-grid-fill" },
     { 
       label: "Programación", 
-      path: "/proyeccion?modo=proyeccion", 
+      path: "/proyeccion?modo=proyeccion&key=caaa_proyeccion_secret_2024", 
       icon: "bi-calendar3",
       external: true 
     },

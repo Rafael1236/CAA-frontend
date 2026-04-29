@@ -23,6 +23,14 @@ axios.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Si estamos en modo proyección con una llave en la URL, la enviamos en los headers
+  const params = new URLSearchParams(window.location.search);
+  const key = params.get("key");
+  if (key) {
+    config.headers["x-proyeccion-key"] = key;
+  }
+
   return config;
 });
 
@@ -31,6 +39,14 @@ axios.interceptors.response.use(
   (res) => res,
   async (err) => {
     if (err.response?.status === 401 && !err.config._retry) {
+      // Si el error es por conflicto de sesión (otro inicio de sesión), cerramos de inmediato
+      if (err.response.data?.session_conflict) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login?reason=conflict";
+        return Promise.reject(err);
+      }
+
       err.config._retry = true;
       try {
         const { data } = await axios.post(
