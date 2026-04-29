@@ -231,24 +231,6 @@ export default function AdminCalendar({
                             >
                               <div className="flight-alumno">{item.alumno_nombre}</div>
                               <div className="flight-aeronave">{item.aeronave_codigo}</div>
-
-                              {/* Instructor change dropdown if needed */}
-                              {item.id_vuelo && item.estado_vuelo !== "CANCELADO" && instructores.length > 0 && (
-                                <div className="flight-instr-mini" onClick={e => e.stopPropagation()}>
-                                  <select
-                                    value={instrPendiente[item.id_vuelo] ?? item.id_instructor}
-                                    onChange={(e) => handleInstrChange(item.id_vuelo, e.target.value)}
-                                  >
-                                    {instructores.map(ins => (
-                                      <option key={ins.id_instructor} value={ins.id_instructor}>{ins.nombre_completo}</option>
-                                    ))}
-                                  </select>
-                                  {instrPendiente[item.id_vuelo] && Number(instrPendiente[item.id_vuelo]) !== Number(item.id_instructor) && (
-                                    <button onClick={() => handleInstrGuardar(item.id_vuelo, item.id_instructor)}>✓</button>
-                                  )}
-                                </div>
-                              )}
-
                             </div>
                           );
                         })}
@@ -289,9 +271,10 @@ export default function AdminCalendar({
 
             <div className="pop-body">
               <div className="pop-field">
-                <label>Aeronave</label>
+                <label>Aeronave { (activePopover.item.estado_solicitud === 'PUBLICADO' || week === 'current') && <small style={{ color: '#94a3b8', marginLeft: 4 }}>(Publicado - Solo lectura)</small> }</label>
                 <select 
                   value={tempAeronaveId} 
+                  disabled={activePopover.item.estado_solicitud === 'PUBLICADO' || week === 'current'}
                   onChange={e => setTempAeronaveId(e.target.value)}
                 >
                   {aeronaves

@@ -64,9 +64,7 @@ function VueloCard({ v, weekMode, horasTotales, onSolicitarCancelacion, onQuitar
           {esReal && (
             horasTotales >= 0 ? (
               <button className="mhl__btn mhl__btn--plan" onClick={onPlan}>
-                {v.loadsheet_estado === 'COMPLETADO'
-                  ? 'Ver Loadsheet'
-                  : v.loadsheet_estado === 'BORRADOR'
+                {(v.loadsheet_estado === 'ENVIADO' || v.loadsheet_estado === 'COMPLETADO')
                   ? 'Revisar plan de vuelo'
                   : 'Plan de vuelo'}
               </button>

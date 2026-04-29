@@ -25,7 +25,7 @@ import PerfilesAdmin from "./pages/Admin/Perfiles";
 import AlumnosAdmin from "./pages/Admin/Alumnos";
 import CancelacionesAdmin from "./pages/Admin/Cancelaciones";
 
-const IDLE_MS = 10 * 60 * 1000;
+const IDLE_MS = 30 * 60 * 1000;
 
 function App() {
   useEffect(() => {
@@ -42,10 +42,10 @@ function App() {
       }
     };
 
-    const logout = () => {
+    const logout = (reason = "") => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      window.location.href = reason ? `/login?reason=${reason}` : "/login";
     };
 
     const isProyeccion = () =>
@@ -63,7 +63,7 @@ function App() {
       }
 
       clearTimeout(t);
-      t = setTimeout(logout, IDLE_MS);
+      t = setTimeout(() => logout("timeout"), IDLE_MS);
     };
 
     const events = ["mousemove", "keydown", "click", "scroll", "touchstart"];

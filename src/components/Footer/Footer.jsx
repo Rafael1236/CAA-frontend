@@ -12,9 +12,7 @@ export default function Footer() {
         </div>
 
         <div className="footer__links">
-          <Link to="/" className="footer__link">Inicio</Link>
-          <Link to="/#nosotros" className="footer__link">Nosotros</Link>
-          <Link to="/programacion" className="footer__link">Programación</Link>
+          <Link to="/proyeccion" className="footer__link">Programación</Link>
         </div>
 
         <p className="footer__copy">
