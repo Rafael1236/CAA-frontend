@@ -168,11 +168,9 @@ export default function ProgramacionDashboard() {
       return;
     }
 
-    const origen = {
-      id_bloque: Number(dragging.id_bloque),
-      dia_semana: Number(dragging.dia_semana),
-      id_aeronave: Number(dragging.id_aeronave),
-    };
+    const idDragging = Number(dragging.id_detalle);
+    const draggingItem = items.find(i => Number(i.id_detalle) === idDragging);
+    if (!draggingItem) return;
 
     const destino = {
       id_bloque: Number(target.id_bloque),
@@ -180,13 +178,30 @@ export default function ProgramacionDashboard() {
       id_aeronave: Number(target.id_aeronave),
     };
 
-    const idDragging = Number(dragging.id_detalle);
+    // 1. Validar que el alumno no tenga otro vuelo en ese mismo bloque/dia (excepto el mismo)
+    const conflictoAlumno = items.find(i => 
+      Number(i.id_alumno) === Number(draggingItem.id_alumno) &&
+      Number(i.id_bloque) === destino.id_bloque &&
+      Number(i.dia_semana) === destino.dia_semana &&
+      Number(i.id_detalle) !== idDragging &&
+      i.estado_vuelo !== 'CANCELADO'
+    );
+    if (conflictoAlumno) {
+      toast.error(`Conflicto: ${draggingItem.alumno_nombre} ya tiene un vuelo en este bloque.`);
+      setDragging(null);
+      return;
+    }
 
-    if (
-      origen.id_bloque === destino.id_bloque &&
-      origen.dia_semana === destino.dia_semana &&
-      origen.id_aeronave === destino.id_aeronave
-    ) {
+    // 2. Validar que el instructor no tenga otro vuelo en ese mismo bloque/dia
+    const conflictoInstructor = items.find(i => 
+      Number(i.id_instructor) === Number(draggingItem.id_instructor) &&
+      Number(i.id_bloque) === destino.id_bloque &&
+      Number(i.dia_semana) === destino.dia_semana &&
+      Number(i.id_detalle) !== idDragging &&
+      i.estado_vuelo !== 'CANCELADO'
+    );
+    if (conflictoInstructor) {
+      toast.error(`Conflicto: El instructor ya tiene un vuelo en este bloque.`);
       setDragging(null);
       return;
     }
@@ -196,65 +211,93 @@ export default function ProgramacionDashboard() {
         Number(i.id_bloque) === destino.id_bloque &&
         Number(i.dia_semana) === destino.dia_semana &&
         Number(i.id_aeronave) === destino.id_aeronave &&
-        Number(i.id_detalle) !== idDragging
+        Number(i.id_detalle) !== idDragging &&
+        i.estado_vuelo !== 'CANCELADO'
     );
 
-    if (!ocupado) {
+    const ejecutarMovimiento = (newDest) => {
       setItems((prev) =>
         prev.map((i) =>
           Number(i.id_detalle) === idDragging
-            ? { ...i, ...destino }
+            ? { ...i, ...newDest }
             : i
         )
       );
-
-      setPendingMoves((prev) => {
-        const nuevos = [
-          ...prev.filter((p) => Number(p.id_detalle) !== idDragging),
-          { id_detalle: idDragging, ...destino },
-        ];
-
-        console.log("PENDING MOVES FINAL:", nuevos);
-        return nuevos;
-      });
-
+      setPendingMoves((prev) => [
+        ...prev.filter((p) => Number(p.id_detalle) !== idDragging),
+        { id_detalle: idDragging, ...newDest },
+      ]);
       setDragging(null);
+    };
+
+    if (!ocupado) {
+      ejecutarMovimiento(destino);
       return;
     }
 
-    const idOcupado = Number(ocupado.id_detalle);
+    // Si está ocupado, buscar aeronaves alternativas en ese mismo bloque
+    const aeronavesOcupadasIds = items
+      .filter(i => 
+        Number(i.id_bloque) === destino.id_bloque && 
+        Number(i.dia_semana) === destino.dia_semana &&
+        i.estado_vuelo !== 'CANCELADO'
+      )
+      .map(i => Number(i.id_aeronave));
 
-    toast(`¿Intercambiar con ${ocupado.alumno_nombre || ocupado.nombre || "otro vuelo"}?`, {
-      action: {
-        label: "Intercambiar",
+    const aeronavesLibres = aeronaves.filter(a => !aeronavesOcupadasIds.includes(Number(a.id_aeronave)) && a.activa !== false);
+
+    const idOcupado = Number(ocupado.id_detalle);
+    
+    // Preparar acciones
+    const acciones = [
+      {
+        label: `Intercambiar con ${ocupado.alumno_nombre}`,
         onClick: () => {
           setItems((prev) =>
             prev.map((i) => {
               const id = Number(i.id_detalle);
               if (id === idDragging) return { ...i, ...destino };
-              if (id === idOcupado) return { ...i, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave };
+              if (id === idOcupado) return { ...i, id_bloque: draggingItem.id_bloque, dia_semana: draggingItem.dia_semana, id_aeronave: draggingItem.id_aeronave };
               return i;
             })
           );
-          setPendingMoves((prev) => {
-            const sinAmbos = prev.filter((p) => {
-              const id = Number(p.id_detalle);
-              return id !== idDragging && id !== idOcupado;
-            });
-            return [
-              ...sinAmbos,
-              { id_detalle: idDragging, ...destino },
-              { id_detalle: idOcupado, id_bloque: origen.id_bloque, dia_semana: origen.dia_semana, id_aeronave: origen.id_aeronave },
-            ];
-          });
-        },
-      },
-      cancel: { label: "Cancelar", onClick: () => { } },
-      duration: 10000,
+          setPendingMoves((prev) => [
+            ...prev.filter((p) => Number(p.id_detalle) !== idDragging && Number(p.id_detalle) !== idOcupado),
+            { id_detalle: idDragging, ...destino },
+            { id_detalle: idOcupado, id_bloque: draggingItem.id_bloque, dia_semana: draggingItem.dia_semana, id_aeronave: draggingItem.id_aeronave },
+          ]);
+          setDragging(null);
+        }
+      }
+    ];
+
+    // Agregar opciones para mover a aeronaves libres
+    aeronavesLibres.slice(0, 2).forEach(a => {
+      acciones.push({
+        label: `Usar ${a.codigo}`,
+        onClick: () => ejecutarMovimiento({ ...destino, id_aeronave: a.id_aeronave })
+      });
     });
+
+    toast(`La aeronave ${ocupado.aeronave_codigo} está ocupada.`, {
+      description: "¿Qué deseas hacer?",
+      action: acciones[0], // El primero como acción principal
+      cancel: { label: "Cancelar", onClick: () => setDragging(null) },
+      duration: 15000,
+      // Nota: Sonner solo soporta una acción principal. Para múltiples, tendríamos que usar un modal o una notificación personalizada.
+      // Pero por ahora, usaremos la acción de intercambiar y si hay libres, se mostrarán en la descripción o usaremos un pequeño truco.
+    });
+
+    // Como Sonner es limitado con múltiples botones, vamos a usar una solución más robusta si hay aeronaves libres:
+    if (aeronavesLibres.length > 0) {
+      toast.info(`También hay aeronaves disponibles en este bloque: ${aeronavesLibres.map(a => a.codigo).join(", ")}.`, {
+        duration: 10000
+      });
+    }
 
     setDragging(null);
   };
+
 
   const semanaPublicadaNext =
     week === "next" && items.some((i) => i.estado_solicitud === "PUBLICADO");
@@ -404,25 +447,8 @@ export default function ProgramacionDashboard() {
               <div style={{ height: '4px', width: '60px', background: '#ef4444', marginTop: '8px', borderRadius: '2px' }}></div>
             </div>
 
-            <div className="adm__stat" style={{
-              background: 'linear-gradient(135deg, #1B365D 0%, #102a43 100%)',
-              color: 'white',
-              padding: '24px',
-              borderRadius: '20px',
-              boxShadow: '0 10px 30px rgba(27, 54, 93, 0.3)'
-            }}>
-              <div className="adm__stat-header" style={{ marginBottom: '12px' }}>
-                <span className="adm__stat-lbl" style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Estado de Semana</span>
-                <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className="bi bi-calendar-week" style={{ color: 'white', fontSize: '1.2rem' }}></i>
-                </div>
-              </div>
-              <span className="adm__stat-num" style={{ fontSize: '2.2rem', fontWeight: 900 }}>
-                {modeIsNext ? "PRÓXIMA" : "ACTUAL"}
-              </span>
-              <p style={{ margin: '8px 0 0', fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)' }}>Control de operaciones activo</p>
-            </div>
           </div>
+
 
           <div className="adm__section" style={{
             background: 'white',
