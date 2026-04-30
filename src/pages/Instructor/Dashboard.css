@@ -445,8 +445,57 @@
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .ins { padding: 80px 20px; }
-  .ins__semana-grid { grid-template-columns: 1fr; }
-  .ins__top { flex-direction: column; align-items: flex-start; gap: 1rem; }
+@media (max-width: 1024px) {
+  .ins { padding: 80px 24px; }
+  .ins__semana-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .ins { padding: 72px 12px 40px; }
+  .ins__semana-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .ins__top { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  
+  .ins__title { font-size: 1.6rem; }
+  .ins__subtitle { font-size: 0.85rem; }
+
+  .ins__tabs {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ins__tab {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .ins__section {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .ins__section-title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .ins__card {
+    padding: 16px;
+  }
+
+  .ins__table-wrap {
+    margin: 0 -16px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .ins__table {
+    min-width: 500px;
+  }
 }

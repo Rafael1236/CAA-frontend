@@ -124,6 +124,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: nowrap; /* Default no wrap for desktop */
 }
 
 .header__action-link {
@@ -138,6 +139,7 @@
   padding: 8px 12px;
   border-radius: 8px;
   transition: all 0.2s ease;
+  white-space: nowrap; /* Prevent text wrapping inside buttons */
 }
 
 .header__action-link:hover {
@@ -163,6 +165,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .header__btn-logout-new:hover {
@@ -172,6 +175,10 @@
 }
 
 @media (max-width: 1024px) {
+  .header__container {
+    padding: 0 24px;
+  }
+  
   .header__user-box {
     gap: 16px;
   }
@@ -183,22 +190,84 @@
   .header__action-link span:not(.header__action-icon) {
     display: none;
   }
+  
+  .header__btn-logout-new span:not(.header__action-icon) {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
-  .header__container {
-    padding: 0 20px;
+  .header {
+    height: auto;
+    padding: 10px 0;
+    position: sticky; /* Better for mobile overflow */
   }
 
-  .header__link {
-    display: none;
+  .header__container {
+    padding: 0 15px;
+    flex-direction: row; /* Keep logo and nav in one row if possible, or stack */
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+  }
+
+  .header__logo {
+    font-size: 1.1rem;
   }
 
   .header__nav {
-    gap: 12px;
+    width: auto;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .header__user-box {
+    width: auto;
+    gap: 10px;
   }
 
   .header__user {
     display: none;
+  }
+
+  .header__user-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .header__action-link {
+    padding: 8px;
+  }
+
+  .header__btn-logout-new {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header__container {
+    justify-content: center;
+  }
+  
+  .header__logo {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+
+  .header__nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header__user-actions {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .header__action-icon {
+    font-size: 1.3rem;
   }
 }

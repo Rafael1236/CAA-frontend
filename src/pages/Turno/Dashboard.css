@@ -353,10 +353,30 @@
 .trn__tag--verde    { background: #ecfdf5; color: #059669; }
 
 /* ── Responsive ─────────────────────────────────────────────────────────── */
-@media (max-width: 800px) {
-  .trn { padding: 80px 20px; }
-  .trn__top { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .trn__ops { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-  .trn__ticker-input-row { flex-direction: column; }
+@media (max-width: 1024px) {
+  .trn { padding: 80px 24px; }
+  .trn__cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .trn { padding: 72px 12px 40px; }
+  .trn__top { flex-direction: column; align-items: stretch; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .trn__title { font-size: 1.75rem; }
+  .trn__subtitle { font-size: 0.85rem; }
+  .trn__counter { align-self: flex-start; padding: 8px 16px; font-size: 0.8rem; }
+
+  .trn__ops { flex-direction: column; align-items: stretch; gap: 1rem; padding: 16px; }
+  .trn__ops-label { font-size: 1rem; margin-right: 0; }
+  .trn__ops-motivo { margin-left: 0; margin-top: 4px; text-align: center; }
+
+  .trn__ticker-form { padding: 16px; }
+  .trn__ticker-input-row { flex-direction: column; gap: 8px; }
   .trn__ticker-btn { padding: 12px; }
+
+  .trn__bloque { margin-bottom: 2rem; }
+  .trn__bloque-header { gap: 10px; margin-bottom: 1rem; }
+  .trn__bloque-hora { font-size: 1.1rem; }
+  
+  .trn__cards { grid-template-columns: 1fr; gap: 1rem; }
+  .trn__card { padding: 16px; }
 }

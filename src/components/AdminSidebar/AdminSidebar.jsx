@@ -5,7 +5,7 @@ import { io as socketIO } from "socket.io-client";
 import { SOCKET_URL } from "../../api/axiosConfig";
 import "./AdminSidebar.css";
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -37,6 +37,7 @@ export default function AdminSidebar() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
+    if (onClose) onClose();
   };
 
   const menuItems = [
@@ -65,6 +66,7 @@ export default function AdminSidebar() {
               target="_blank"
               rel="noopener noreferrer"
               className="adm-sidebar__link"
+              onClick={onClose}
             >
               <i className={`bi ${item.icon} adm-sidebar__icon`}></i>
               {item.label}
@@ -76,6 +78,7 @@ export default function AdminSidebar() {
               className={`adm-sidebar__link ${
                 location.pathname === item.path ? "adm-sidebar__link--active" : ""
               }`}
+              onClick={onClose}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

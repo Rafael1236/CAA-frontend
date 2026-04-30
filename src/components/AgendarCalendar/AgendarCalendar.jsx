@@ -22,6 +22,14 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
   const [aeronaves, setAeronaves] = useState([]);
   const [ocupadas, setOcupadas] = useState([]);
   const [bloqueos, setBloqueos] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [mobileDayOffset, setMobileDayOffset] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -74,14 +82,38 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
     setSelecciones([...selecciones, item]);
   };
 
+  const visibleDays = isMobile ? DIAS.slice(mobileDayOffset, mobileDayOffset + 2) : DIAS;
+
   return (
-    <div className="calendar-wrapper">
+    <div className={`calendar-wrapper ${isMobile ? 'is-mobile' : ''}`}>
+      
+      {isMobile && (
+        <div className="calendar-mobile-nav">
+          <button 
+            disabled={mobileDayOffset === 0} 
+            onClick={() => setMobileDayOffset(prev => Math.max(0, prev - 1))}
+          >
+            <i className="bi bi-chevron-left"></i> Anterior
+          </button>
+          <span className="nav-label">
+            {visibleDays[0].label} - {visibleDays[visibleDays.length - 1].label}
+          </span>
+          <button 
+            disabled={mobileDayOffset >= DIAS.length - 2} 
+            onClick={() => setMobileDayOffset(prev => Math.min(DIAS.length - 2, prev + 1))}
+          >
+            Siguiente <i className="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      )}
+
+
       <table className="calendar">
         <thead>
           <tr>
             <th>Hora</th>
             <th>Aeronave</th>
-            {DIAS.map((d) => (
+            {visibleDays.map((d) => (
               <th key={d.id}>{d.label}</th>
             ))}
           </tr>
@@ -104,7 +136,7 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
                     </div>
                   </td>
 
-                {DIAS.map((d) => {
+                {visibleDays.map((d) => {
                   if (isBloqueado(b.id_bloque, d.id)) {
                     return <td key={d.id} className="slot-almuerzo"></td>;
                   }
@@ -157,5 +189,6 @@ export default function AgendarCalendar({ selecciones, setSelecciones, bloqueado
         </tbody>
       </table>
     </div>
+
   );
 }
