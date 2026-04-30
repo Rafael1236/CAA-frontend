@@ -48,7 +48,7 @@ export default function Login() {
             <i className="bi bi-airplane-fill login__header-icon"></i>
           </div>
           <h1 className="login__brand">CAAA</h1>
-          <p className="login__subtitle">Escuela de Aviación · S.A. de C.V.</p>
+          <p className="login__subtitle">Centro de Adiestramiento Aéreo Academic SA de CV</p>
         </header>
 
         {/* Body Section */}
@@ -113,9 +113,7 @@ export default function Login() {
               Ingresar
             </button>
 
-            <Link to="#" className="login__forgot">
-              ¿Olvidaste tu contraseña?
-            </Link>
+
           </form>
         </main>
       </div>
