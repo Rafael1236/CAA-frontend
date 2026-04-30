@@ -101,10 +101,16 @@ export default function AdminCalendar({
   const handleCardClick = (e, item) => {
     e.stopPropagation();
     
-    // If we have something selected for move, and click another card, just show popover for the new card
-    // but if it's the SAME card, deselect it.
-    if (selectedForMove && selectedForMove.id_detalle === item.id_detalle) {
-      setSelectedForMove(null);
+    // If we are in "move mode" and click a different card, 
+    // we assume the user wants to move to THIS cell.
+    if (selectedForMove) {
+      if (selectedForMove.id_detalle === item.id_detalle) {
+        setSelectedForMove(null);
+        setDragging(null);
+      } else {
+        // Move to the cell where this card resides
+        handleCellClick(item.dia_semana, item.id_bloque);
+      }
       return;
     }
 
@@ -122,6 +128,7 @@ export default function AdminCalendar({
   const handleCardLongPress = (e, item) => {
     e.preventDefault();
     if (!isEditable) return;
+    setDragging(item);
     setSelectedForMove(item);
     // Vibrate if supported
     if (navigator.vibrate) navigator.vibrate(50);
@@ -136,6 +143,7 @@ export default function AdminCalendar({
       id_aeronave: selectedForMove.id_aeronave
     });
     setSelectedForMove(null);
+    setDragging(null); // Clear parent's dragging state
   };
 
   const closePopover = () => {
@@ -385,7 +393,8 @@ export default function AdminCalendar({
                   <button 
                     className="btn-move-v"
                     onClick={() => {
-                      setSelectedForMove(activePopover.item);
+                      setDragging(activePopover.item); // SET PARENT STATE
+                      setSelectedForMove(activePopover.item); 
                       closePopover();
                     }}
                   >

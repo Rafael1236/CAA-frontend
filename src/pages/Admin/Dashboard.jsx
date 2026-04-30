@@ -261,7 +261,19 @@ export default function AdminDashboard() {
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
   };
 
-  const currentWeekDisplay = week === "current" ? getWeekNumber(0) : getWeekNumber(1);
+  const getWeekRangeText = (offset = 0) => {
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(now.setDate(diff + offset * 7));
+    const saturday = new Date(monday);
+    saturday.setDate(monday.getDate() + 5);
+    
+    const month = saturday.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '');
+    return `Semana del ${monday.getDate()} al ${saturday.getDate()} de ${month}`;
+  };
+
+  const currentWeekDisplay = week === "current" ? getWeekRangeText(0) : getWeekRangeText(1);
   const modeIsNext = week === "next";
 
   return (
@@ -277,7 +289,7 @@ export default function AdminDashboard() {
               <i className="bi bi-airplane adm__stat-icon"></i>
             </div>
             <span className="adm__stat-num">{items.length}</span>
-            <span className="adm__stat-sub">Semana {currentWeekDisplay}</span>
+            <span className="adm__stat-sub">{currentWeekDisplay}</span>
           </div>
 
           <div className="adm__stat adm__stat--gold">
@@ -313,48 +325,46 @@ export default function AdminDashboard() {
         </div>
 
         <div className="adm__section">
-          <div className="adm__section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <i className="bi bi-calendar3" style={{ color: '#1B365D', fontSize: '1.2rem' }}></i>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: '#1e293b' }}>Calendario de Vuelos</h3>
+          <div className="adm__section-header">
+            <div className="adm__section-title-wrap">
+              <i className="bi bi-calendar3"></i>
+              <h3 className="adm__section-title">Calendario de Vuelos</h3>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-              <div className="adm__week-selector" style={{ background: 'transparent', border: 'none', padding: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="adm__section-controls">
+              <div className="adm__week-selector">
                 <button
                   className="adm__week-btn"
                   onClick={() => setWeek("current")}
                   disabled={week === "current"}
-                  style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid #cbd5e1', background: 'white', cursor: week === 'current' ? 'default' : 'pointer', opacity: week === 'current' ? 0.5 : 1 }}
+                  style={{ opacity: week === 'current' ? 0.5 : 1 }}
                 >
                   &lt;
                 </button>
-                <span className="adm__week-label" style={{ color: '#1B365D', fontWeight: 700, fontSize: '0.9rem' }}>Semana {currentWeekDisplay}</span>
+                <span className="adm__week-label">{currentWeekDisplay}</span>
                 <button
                   className="adm__week-btn"
                   onClick={() => setWeek("next")}
                   disabled={week === "next"}
-                  style={{ width: '28px', height: '28px', borderRadius: '4px', border: '1px solid #cbd5e1', background: 'white', cursor: week === 'next' ? 'default' : 'pointer', opacity: week === 'next' ? 0.5 : 1 }}
+                  style={{ opacity: week === 'next' ? 0.5 : 1 }}
                 >
                   &gt;
                 </button>
               </div>
 
               {(modeIsNext || !publicada) && (
-                <div className="adm__actions" style={{ display: 'flex', gap: '8px' }}>
+                <div className="adm__actions">
                   {modeIsNext && pendingMoves.length > 0 && (
                     <>
                       <button
-                        className="adm__btn"
+                        className="adm__btn adm__btn--undo"
                         onClick={deshacerCambios}
-                        style={{ border: '1px solid #ef4444', color: '#ef4444', borderRadius: '4px', padding: '6px 12px', background: 'transparent', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
                       >
                         ✕ Deshacer
                       </button>
                       <button
-                        className="adm__btn"
+                        className="adm__btn adm__btn--save"
                         onClick={guardarCambios}
-                        style={{ backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
                       >
                         ✓ Guardar ({pendingMoves.length})
                       </button>
@@ -364,7 +374,6 @@ export default function AdminDashboard() {
                     <button
                       className="adm__btn adm__btn--publish"
                       onClick={publicar}
-                      style={{ backgroundColor: '#1B365D', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 16px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <i className="bi bi-send-fill"></i> Publicar semana
                     </button>

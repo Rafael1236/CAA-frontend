@@ -61,15 +61,15 @@ export default function CancelacionesAdmin() {
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>Gestioná las solicitudes pendientes de los alumnos.</p>
           </div>
         </div>
-        
+
         <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid #e2e8f0', padding: '0 20px', background: 'white', borderRadius: '0 0 8px 8px' }}>
-          <button 
+          <button
             style={{ padding: '1rem', background: 'transparent', border: 'none', borderBottom: tab === 'PENDIENTE' ? '2px solid #1B365D' : '2px solid transparent', color: tab === 'PENDIENTE' ? '#1B365D' : '#64748b', fontWeight: tab === 'PENDIENTE' ? '700' : '500', cursor: 'pointer', transition: 'all 0.2s' }}
             onClick={() => setTab('PENDIENTE')}
           >
             Pendientes
           </button>
-          <button 
+          <button
             style={{ padding: '1rem', background: 'transparent', border: 'none', borderBottom: tab === 'HISTORIAL' ? '2px solid #1B365D' : '2px solid transparent', color: tab === 'HISTORIAL' ? '#1B365D' : '#64748b', fontWeight: tab === 'HISTORIAL' ? '700' : '500', cursor: 'pointer', transition: 'all 0.2s' }}
             onClick={() => setTab('HISTORIAL')}
           >
@@ -102,26 +102,26 @@ export default function CancelacionesAdmin() {
                   }}>{s.estado}</span>
                 </div>
                 <div className="adm-cancel__card-body">
-                  <p><strong>Fecha Vuelo:</strong> {new Date(s.fecha_hora_vuelo).toLocaleString('es-SV', {timeZone: 'America/El_Salvador'})}</p>
+                  <p><strong>Fecha Vuelo:</strong> {new Date(s.fecha_hora_vuelo).toLocaleString('es-SV', { timeZone: 'America/El_Salvador' })}</p>
                   <p><strong>Motivo:</strong> {s.justificacion}</p>
-                  <p><strong>Solicitado el:</strong> {new Date(s.fecha_solicitud).toLocaleString('es-SV', {timeZone: 'America/El_Salvador'})}</p>
+                  <p><strong>Solicitado el:</strong> {new Date(s.fecha_solicitud).toLocaleString('es-SV', { timeZone: 'America/El_Salvador' })}</p>
                   <p><strong>Cancelaciones en el mes:</strong> {s.cancelaciones_aceptadas_mes}</p>
                   {s.con_multa && (
                     <div style={{ marginTop: '12px', color: '#b91c1c', backgroundColor: '#fef2f2', padding: '8px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 600 }}>
-                      ⚠ Multa de ${s.monto_multa} aceptada por el alumno
+                      ⚠ Costo de ${s.monto_multa} aceptada por el alumno
                     </div>
                   )}
                 </div>
                 {tab === 'PENDIENTE' && (
                   <div className="adm-cancel__card-actions">
-                    <button 
+                    <button
                       className="adm-cancel__btn adm-cancel__btn--reject"
                       onClick={() => handleResolver(s.id_solicitud, 'RECHAZADA')}
                       disabled={processing === s.id_solicitud}
                     >
                       {processing === s.id_solicitud ? 'Procesando...' : 'Rechazar'}
                     </button>
-                    <button 
+                    <button
                       className="adm-cancel__btn adm-cancel__btn--accept"
                       onClick={() => handleResolver(s.id_solicitud, 'ACEPTADA')}
                       disabled={processing === s.id_solicitud}

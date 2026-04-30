@@ -325,32 +325,20 @@ export default function ProgramacionDashboard() {
             <div>
               <h3 className="prog__section-title">Calendario Semanal</h3>
               <p className="prog__section-hint">
-                Arrastra los vuelos o usa el selector para reorganizar la flota
+                {getWeekRangeText(week === 'current' ? 0 : 1)}
               </p>
             </div>
 
             <div className="prog__actions">
-              <div className="adm__week-selector" style={{ background: '#f1f5f9', padding: '4px', borderRadius: '12px', display: 'flex', gap: '4px' }}>
+              <div className="prog__week-selector">
                 <button
-                  className="adm__week-btn"
-                  style={{
-                    background: week === 'current' ? 'white' : 'transparent',
-                    boxShadow: week === 'current' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none',
-                    color: week === 'current' ? '#1B365D' : '#64748b',
-                    border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer'
-                  }}
+                  className={`prog__week-btn-week ${week === 'current' ? 'prog__week-btn-week--active' : ''}`}
                   onClick={() => setWeek("current")}
                 >
                   Actual
                 </button>
                 <button
-                  className="adm__week-btn"
-                  style={{
-                    background: week === 'next' ? 'white' : 'transparent',
-                    boxShadow: week === 'next' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none',
-                    color: week === 'next' ? '#1B365D' : '#64748b',
-                    border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer'
-                  }}
+                  className={`prog__week-btn-week ${week === 'next' ? 'prog__week-btn-week--active' : ''}`}
                   onClick={() => setWeek("next")}
                 >
                   Próxima

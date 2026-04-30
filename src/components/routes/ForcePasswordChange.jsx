@@ -16,7 +16,7 @@ export default function ForcePasswordChange({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  const mustCompleteProfile = user?.must_change_password || user?.must_set_email;
+  const mustCompleteProfile = user?.must_complete_profile;
 
   if (mustCompleteProfile && location.pathname !== "/perfil") {
     return <Navigate to="/perfil" replace />;
