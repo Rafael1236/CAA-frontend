@@ -197,18 +197,18 @@ export default function PaginaProgramacion() {
         <div className="pp__topbar">
           <div className="pp__topbar-left">
             <span className="pp__topbar-label">METAR MSSS</span>
-            <span className="pp__topbar-decoded-text" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+            <div className="pp__topbar-metar-list">
               {metar && metar.decoded ? (
                 formatMetarResumen(metar.decoded).map((p, idx) => (
-                  <span key={idx} dangerouslySetInnerHTML={{ __html: p }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }} />
+                  <span key={idx} dangerouslySetInnerHTML={{ __html: p }} className="pp__topbar-metar-item" />
                 ))
-              ) : metar ? metar.raw : "Cargando…"}
+              ) : metar ? <span className="pp__topbar-raw">{metar.raw}</span> : "Cargando…"}
               {metar?.decoded?.condicion && (
                 <span className={`pp__topbar-badge pp__topbar-badge--${String(metar.decoded.condicion).toLowerCase()}`}>
                   {metar.decoded.condicion}
                 </span>
               )}
-            </span>
+            </div>
           </div>
           <div className="pp__topbar-right">
             <span className="pp__topbar-clock">{clock} CST</span>
@@ -223,7 +223,7 @@ export default function PaginaProgramacion() {
                 Programación de <span className="pp__accent">vuelos</span>
               </h1>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <div className="pp__hdr-right">
               <div className="pp__hdr-clock-new">
                 <span className="pp__clock-time">{clock}</span>
                 <span className="pp__clock-date">{new Date().toLocaleDateString('es-SV', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
@@ -304,21 +304,21 @@ export default function PaginaProgramacion() {
                           <div className="pp__flight-time">
                             <span className="pp__time-val">{formatHora(v.hora_inicio)}</span>
                           </div>
-                          <div className="pp__flight-info" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-                            <div>
+                          <div className="pp__flight-info">
+                            <div className="pp__info-group">
                               <span className="pp__info-label">ESTUDIANTE</span>
                               <span className="pp__info-main">{v.alumno_nombre}</span>
                             </div>
-                            <div>
+                            <div className="pp__info-group">
                               <span className="pp__info-label">INSTRUCTOR</span>
                               <span className="pp__info-main">Cap. {v.instructor_nombre}</span>
                             </div>
-                            <div>
+                            <div className="pp__info-group">
                               <span className="pp__info-label">AERONAVE</span>
                               <span className="pp__info-main">{v.aeronave_codigo} ({v.aeronave_modelo})</span>
                             </div>
                           </div>
-                          <div style={{ textAlign: 'right' }}>
+                          <div className="pp__flight-status">
                             <span className={`pp__status-badge ${meta.cls}`}>
                               <span className="pp__status-dot" /> {meta.label}
                             </span>

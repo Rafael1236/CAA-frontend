@@ -41,109 +41,88 @@ export default function Login() {
 
   return (
     <div className="login">
-
-      <div className="login__bg-img" />
-      <div className="login__mesh" />
-      <div className="login__grid" />
-      <div className="login__glow-red" />
-      <div className="login__glow-blue" />
-
-      <form onSubmit={handleSubmit} className="login__card">
-
-        <div className="login__logo">
-          <span className="login__logo-icon">✈</span>
-          CAAA
-        </div>
-
-        <h2 className="login__title">Iniciar sesión</h2>
-
-        {reason === "timeout" && (
-          <div style={{
-            backgroundColor: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid #ef4444",
-            color: "#ef4444",
-            padding: "12px",
-            borderRadius: "8px",
-            fontSize: "0.85rem",
-            marginBottom: "16px",
-            textAlign: "center"
-          }}>
-            Su sesión fue cerrada por inactividad.
+      <div className="login__card">
+        {/* Header Section */}
+        <header className="login__header">
+          <div className="login__icon-container">
+            <i className="bi bi-airplane-fill login__header-icon"></i>
           </div>
-        )}
+          <h1 className="login__brand">CAAA</h1>
+          <p className="login__subtitle">Escuela de Aviación · S.A. de C.V.</p>
+        </header>
 
-        {reason === "conflict" && (
-          <div style={{
-            backgroundColor: "rgba(245, 158, 11, 0.1)",
-            border: "1px solid #f59e0b",
-            color: "#f59e0b",
-            padding: "12px",
-            borderRadius: "8px",
-            fontSize: "0.85rem",
-            marginBottom: "16px",
-            textAlign: "center"
-          }}>
-            Sesión cerrada: se ha iniciado sesión en otro dispositivo.
-          </div>
-        )}
-        <div className="login__field">
-          <label className="login__label">Usuario</label>
-          <input
-            className="login__input"
-            type="text"
-            placeholder="Tu usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-          />
-        </div>
+        {/* Body Section */}
+        <main className="login__body">
+          <h2 className="login__form-title">Iniciar Sesión</h2>
 
-        <div className="login__field">
-          <label className="login__label">Contraseña</label>
-          <div className="login__input-wrap">
-            <input
-              className="login__input"
-              type={showPassword ? "text" : "password"}
-              placeholder="Tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-            <button
-              type="button"
-              className="login__eye"
-              onClick={() => setShowPassword((v) => !v)}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-            >
-              {showPassword ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                  <line x1="1" y1="1" x2="23" y2="23" />
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              )}
+          {reason === "timeout" && (
+            <div className="alert alert-danger text-center mb-4" style={{ fontSize: '0.85rem' }}>
+              Su sesión fue cerrada por inactividad.
+            </div>
+          )}
+
+          {reason === "conflict" && (
+            <div className="alert alert-warning text-center mb-4" style={{ fontSize: '0.85rem' }}>
+              Sesión cerrada: se ha iniciado sesión en otro dispositivo.
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            <div className="login__field">
+              <label className="login__label">Usuario</label>
+              <div className="login__input-container">
+                <i className="bi bi-person login__field-icon"></i>
+                <input
+                  className="login__input"
+                  type="text"
+                  placeholder="u5"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  autoComplete="username"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="login__field">
+              <label className="login__label">Contraseña</label>
+              <div className="login__input-container">
+                <i className="bi bi-lock login__field-icon"></i>
+                <input
+                  className="login__input"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="login__eye"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                >
+                  <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="login__submit">
+              <i className="bi bi-box-arrow-in-right"></i>
+              Ingresar
             </button>
-          </div>
-        </div>
 
-        <button type="submit" className="login__submit">
-          Ingresar
-        </button>
+            <Link to="#" className="login__forgot">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </form>
+        </main>
+      </div>
 
-
-
-        <p className="login__footer">
-          © {new Date().getFullYear()} Centro de Adiestramiento Aéreo Académico
-        </p>
-
-      </form>
+      <footer className="login__page-footer">
+        CAAA © {new Date().getFullYear()} · Sistema de Gestión de Vuelos
+      </footer>
     </div>
   );
 }

@@ -21,7 +21,18 @@ export const updatePerfilInfo = async (username) => {
   return res.data;
 };
 
-export const updatePerfilAlumno = async ({ telefono, numero_licencia, certificado_medico, seguro_vida, seguro_vida_vencimiento }) => {
-  const res = await axios.put(`${API_URL}/usuario/update-perfil-alumno`, { telefono, numero_licencia, certificado_medico, seguro_vida, seguro_vida_vencimiento });
+export const updatePerfilAlumno = async ({ telefono, numero_licencia, certificado_medico, certificado_medico_numero, seguro_vida_vencimiento, seguro_vida_numero }) => {
+  const res = await axios.put(`${API_URL}/usuario/update-perfil-alumno`, { 
+    telefono, 
+    numero_licencia, 
+    certificado_medico, 
+    certificado_medico_numero, 
+    seguro_vida_vencimiento, 
+    seguro_vida_numero 
+  });
+  return res.data;
+};
+export const refreshToken = async () => {
+  const res = await axios.get(`${API_URL}/auth/refresh`);
   return res.data;
 };
