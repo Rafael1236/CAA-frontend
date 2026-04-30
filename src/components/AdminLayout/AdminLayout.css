@@ -16,8 +16,19 @@
   padding: 0 24px;
   position: sticky;
   top: 0;
-  z-index: 200;
+  z-index: 500; /* Higher z-index for topbar */
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.adm-topbar__menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 8px;
 }
 
 .adm-topbar__left {
@@ -79,18 +90,32 @@
 
 .adm-layout__content {
   flex: 1;
-  margin-left: var(--sidebar-w, 240px);
+  margin-left: 240px;
   padding: 32px;
   background-image: 
     linear-gradient(rgba(27, 54, 93, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(27, 54, 93, 0.03) 1px, transparent 1px);
   background-size: 32px 32px;
   min-height: calc(100vh - 60px);
+  transition: margin-left 0.3s ease;
 }
 
 .adm-layout__inner {
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.adm-layout__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ── Reset styles for admin pages ── */
@@ -101,3 +126,48 @@
 .adm-layout__content > div {
   padding-top: 0 !important;
 }
+
+/* ── Responsiveness ── */
+@media (max-width: 768px) {
+  .adm-topbar__menu-btn {
+    display: block;
+  }
+
+  .adm-layout__content {
+    margin-left: 0;
+    padding: 16px 12px;
+  }
+
+  .adm-topbar__title {
+    display: none;
+  }
+
+  .adm-topbar__divider {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .adm-topbar {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .adm-topbar__logo {
+    font-size: 1.1rem;
+  }
+
+  .adm-topbar__role {
+    display: none;
+  }
+
+  .adm-topbar__right {
+    gap: 8px;
+  }
+
+  .adm-layout__content {
+    padding: 12px 10px;
+    min-height: calc(100vh - 56px);
+  }
+}
+

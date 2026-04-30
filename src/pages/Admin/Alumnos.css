@@ -183,6 +183,66 @@
   animation: alms-spin 1s ease-in-out infinite;
 }
 
-@keyframes alms-spin {
-  to { transform: rotate(360deg); }
+@media (max-width: 768px) {
+  .alms {
+    gap: 16px;
+  }
+
+  .alms__card {
+    border-radius: 0;
+    margin: 0 -12px;
+    border-left: none;
+    border-right: none;
+  }
+
+  .alms__card-header {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .alms__week-info {
+    width: 100%;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0;
+  }
+
+  .alms__week-info i {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .alms__week-dates {
+    font-size: 14px;
+  }
+
+  .alms__hint {
+    font-size: 13px;
+  }
+
+  .alms__table th, .alms__table td {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .alms__table {
+    min-width: 500px;
+  }
+
+  .alms__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .alms__input {
+    width: 60px;
+    padding: 6px 10px;
+  }
+
+  .alms__save-btn {
+    padding: 6px 12px;
+    min-width: 70px;
+  }
 }

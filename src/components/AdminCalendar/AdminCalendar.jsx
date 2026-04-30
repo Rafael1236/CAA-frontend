@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./AdminCalendar.css";
 
 const DIAS = [
@@ -56,6 +56,14 @@ export default function AdminCalendar({
   const [loadingSave, setLoadingSave] = useState(false);
   const [tempAeronaveId, setTempAeronaveId] = useState("");
   const [tempInstructorId, setTempInstructorId] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [mobileDayOffset, setMobileDayOffset] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // id_vuelo → id_instructor seleccionado (pendiente de guardar)
   const [instrPendiente, setInstrPendiente] = useState({});
@@ -88,22 +96,46 @@ export default function AdminCalendar({
         Number(i.dia_semana) === Number(dia_semana)
     );
 
+  const [selectedForMove, setSelectedForMove] = useState(null); 
+
   const handleCardClick = (e, item) => {
     e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
     
-    // Position popover relative to the card, adjusting for window bounds
+    // If we have something selected for move, and click another card, just show popover for the new card
+    // but if it's the SAME card, deselect it.
+    if (selectedForMove && selectedForMove.id_detalle === item.id_detalle) {
+      setSelectedForMove(null);
+      return;
+    }
+
+    // Toggle popover
+    const rect = e.currentTarget.getBoundingClientRect();
     let x = rect.left + window.scrollX;
     let y = rect.bottom + window.scrollY + 5;
-
-    // Boundary check (approx 280px width)
-    if (x + 280 > window.innerWidth) {
-      x = window.innerWidth - 300;
-    }
+    if (x + 280 > window.innerWidth) x = window.innerWidth - 300;
 
     setActivePopover({ item, x, y });
     setTempAeronaveId(item.id_aeronave);
     setTempInstructorId(item.id_instructor);
+  };
+
+  const handleCardLongPress = (e, item) => {
+    e.preventDefault();
+    if (!isEditable) return;
+    setSelectedForMove(item);
+    // Vibrate if supported
+    if (navigator.vibrate) navigator.vibrate(50);
+  };
+
+  const handleCellClick = (dia_semana, id_bloque) => {
+    if (!selectedForMove || !isEditable) return;
+    
+    handleDrop({
+      dia_semana,
+      id_bloque,
+      id_aeronave: selectedForMove.id_aeronave
+    });
+    setSelectedForMove(null);
   };
 
   const closePopover = () => {
@@ -116,14 +148,12 @@ export default function AdminCalendar({
     const { item } = activePopover;
 
     try {
-      // 1. Change Instructor if modified
       if (Number(tempInstructorId) !== Number(item.id_instructor)) {
         if (onCambiarInstructor) {
           await onCambiarInstructor(item.id_detalle, Number(tempInstructorId));
         }
       }
 
-      // 2. Change Aircraft if modified
       if (Number(tempAeronaveId) !== Number(item.id_aeronave)) {
         const move = {
           id_detalle: item.id_detalle,
@@ -135,7 +165,6 @@ export default function AdminCalendar({
         if (onGuardarCambio) {
           await onGuardarCambio([move]);
         } else {
-          // Fallback to adminApi
           const { guardarCambiosAdmin } = await import("../../services/adminApi");
           await guardarCambiosAdmin([move]);
         }
@@ -152,7 +181,6 @@ export default function AdminCalendar({
     }
   };
 
-
   const getEstadoClass = (item) => {
     const estado = item?.estado_vuelo || item?.estado_solicitud || item?.estado_mostrar;
     if (["SALIDA_HANGAR", "EN_VUELO", "REGRESO_HANGAR", "FINALIZANDO"].includes(estado)) {
@@ -163,18 +191,45 @@ export default function AdminCalendar({
     return "programado";
   };
 
+  const visibleDays = isMobile ? DIAS.slice(mobileDayOffset, mobileDayOffset + 3) : DIAS;
+  const visibleDates = isMobile ? dates.slice(mobileDayOffset, mobileDayOffset + 3) : dates;
+
   return (
-    <div className="admin-calendar-root">
+    <div className={`admin-calendar-root ${selectedForMove ? 'mode-moving' : ''} ${isMobile ? 'is-mobile' : ''}`}>
+      
+      {isMobile && (
+        <div className="calendar-mobile-nav">
+          <button 
+            disabled={mobileDayOffset === 0} 
+            onClick={() => setMobileDayOffset(prev => Math.max(0, prev - 1))}
+          >
+            <i className="bi bi-chevron-left"></i> Anterior
+          </button>
+          <span className="nav-label">
+            {visibleDays[0].label} - {visibleDays[visibleDays.length - 1].label}
+          </span>
+          <button 
+            disabled={mobileDayOffset >= DIAS.length - 3} 
+            onClick={() => setMobileDayOffset(prev => Math.min(DIAS.length - 3, prev + 1))}
+          >
+            Siguiente <i className="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      )}
+
+
+
       <div className="admin-calendar-container">
         <table className="admin-calendar-modern">
           <thead>
             <tr>
               <th className="corner-cell"></th>
-              {dates.map((date, idx) => {
+              {visibleDates.map((date, idx) => {
                 const isToday = date.getTime() === today.getTime();
+                const dayInfo = visibleDays[idx];
                 return (
                   <th key={idx} className={isToday ? "current-day" : ""}>
-                    <div className="day-label">{DIAS[idx].label} {date.getDate()}</div>
+                    <div className="day-label">{dayInfo.label} {date.getDate()}</div>
                   </th>
                 );
               })}
@@ -184,7 +239,7 @@ export default function AdminCalendar({
             {bloques.map((b) => (
               <tr key={b.id_bloque}>
                 <td className="time-cell">{formatHora(b.hora_inicio)}</td>
-                {DIAS.map((d) => {
+                {visibleDays.map((d) => {
                   const bloqueado = isBloqueado(d.id, b.id_bloque);
                   const itemsInCell = findItemsForCell(b.id_bloque, d.id);
                   const disabled = !isEditable;
@@ -192,7 +247,8 @@ export default function AdminCalendar({
                   return (
                     <td
                       key={d.id}
-                      className={`calendar-cell ${bloqueado ? "lunch-cell" : ""} ${disabled ? "readonly" : ""}`}
+                      className={`calendar-cell ${bloqueado ? "lunch-cell" : ""} ${disabled ? "readonly" : ""} ${selectedForMove ? 'target-cell' : ''}`}
+                      onClick={() => handleCellClick(d.id, b.id_bloque)}
                       onDragOver={disabled || bloqueado ? undefined : (e) => e.preventDefault()}
                       onDrop={
                         disabled || bloqueado || !dragging
@@ -211,14 +267,16 @@ export default function AdminCalendar({
                           const modified = pendingMoves.some(
                             (m) => m.id_detalle === item?.id_detalle
                           );
+                          const isSelected = selectedForMove?.id_detalle === item.id_detalle;
                           const estadoClass = getEstadoClass(item);
 
                           return (
                             <div
                               key={item.id_detalle}
-                              className={`flight-card ${estadoClass} ${modified ? "is-dirty" : ""}`}
+                              className={`flight-card ${estadoClass} ${modified ? "is-dirty" : ""} ${isSelected ? 'selected-for-move' : ''}`}
                               draggable={!disabled}
                               onClick={(e) => handleCardClick(e, item)}
+                              onContextMenu={(e) => handleCardLongPress(e, item)}
                               onDragStart={(e) => {
                                 if (disabled) return;
                                 setDragging({
@@ -231,6 +289,7 @@ export default function AdminCalendar({
                             >
                               <div className="flight-alumno">{item.alumno_nombre}</div>
                               <div className="flight-aeronave">{item.aeronave_codigo}</div>
+                              {isSelected && <div className="move-indicator">Moviendo...</div>}
                             </div>
                           );
                         })}
@@ -243,6 +302,7 @@ export default function AdminCalendar({
           </tbody>
         </table>
       </div>
+
 
       <div className="calendar-legend">
         <div className="legend-item"><span className="dot programado"></span> Programado</div>
@@ -320,6 +380,18 @@ export default function AdminCalendar({
                 >
                   {loadingSave ? <span className="pop-spinner"></span> : 'Guardar cambios'}
                 </button>
+
+                {isEditable && (
+                  <button 
+                    className="btn-move-v"
+                    onClick={() => {
+                      setSelectedForMove(activePopover.item);
+                      closePopover();
+                    }}
+                  >
+                    Mover vuelo
+                  </button>
+                )}
               </div>
             </div>
           </div>

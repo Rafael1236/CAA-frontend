@@ -95,6 +95,22 @@
   color: white;
 }
 
-.adm-cancel__btn--accept:hover:not(:disabled) {
-  background-color: #1d4ed8;
+@media (max-width: 768px) {
+  .adm-cancel__list {
+    grid-template-columns: 1fr;
+  }
+
+  .adm-cancel__card {
+    padding: 16px;
+  }
+
+  .adm-cancel__card-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .adm-cancel__btn {
+    width: 100%;
+    text-align: center;
+  }
 }

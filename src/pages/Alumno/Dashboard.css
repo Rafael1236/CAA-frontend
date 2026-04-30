@@ -280,6 +280,7 @@
   .dash__sidebar {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 }
 
@@ -291,20 +292,56 @@
 
 @media (max-width: 660px) {
   .dash {
-    padding: 84px 16px 40px;
-  }
-
-  .dash__cards {
-    grid-template-columns: 1fr 1fr;
+    padding: 72px 12px 40px;
   }
 
   .dash__top {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .dash__eyebrow {
+    font-size: 0.65rem;
+  }
+
+  .dash__title {
+    font-size: 1.6rem;
+  }
+
+  .dash__cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .dash__card {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .dash__card-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dash__card-value {
+    font-size: 0.9rem;
   }
 
   .dash__sidebar {
     grid-template-columns: 1fr;
+  }
+
+  .dash__table-wrap {
+    margin: 0 -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .dash__table {
+    min-width: 450px;
   }
 }
 

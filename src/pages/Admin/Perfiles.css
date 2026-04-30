@@ -230,5 +230,41 @@
   text-align: left;
 }
 
-.text-danger { color: #dc2626 !important; }
-.text-warning { color: #d97706 !important; }
+@media (max-width: 768px) {
+  .perf__card, .perf__section {
+    padding: 16px;
+  }
+
+  .perf__selector-card {
+    max-width: 100%;
+  }
+
+  .perf__soleado-card {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .perf__soleado-desc {
+    max-width: 100%;
+  }
+
+  .perf__toggle {
+    justify-content: center;
+  }
+
+  .perf__section-title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .perf__info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .perf__field-val {
+    font-size: 14px;
+  }
+}

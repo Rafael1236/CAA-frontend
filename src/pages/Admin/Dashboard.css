@@ -307,33 +307,84 @@
 
 @media (max-width: 1024px) {
   .adm__stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
   }
 }
 
-@media (max-width: 600px) {
-  .adm {
-    padding: 88px 16px 40px;
+@media (max-width: 768px) {
+  .adm__stat-num {
+    font-size: 1.75rem;
   }
 
-  .adm__top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .adm__stats {
-    grid-template-columns: 1fr 1fr;
+  .adm__stat-lbl {
+    font-size: 0.65rem;
   }
 
   .adm__section-header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .adm__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .adm__btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .adm__table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  .adm__cancel-table {
+    min-width: 500px;
+  }
+}
+
+@media (max-width: 640px) {
+  .adm__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .adm__stat {
+    padding: 12px;
+  }
+
+  .adm__section-header > div:first-child {
+    flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+  }
+
+  .adm__week-selector {
+    width: 100%;
+    justify-content: center;
   }
 
   .adm__tabs {
-    flex-wrap: wrap;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .adm__tab {
+    width: 100%;
+    text-align: center;
   }
 }
+
 
 /* ── Cancellations Table ── */
 .adm__cancel-table {

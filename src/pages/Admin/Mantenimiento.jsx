@@ -227,8 +227,8 @@ export default function MantenimientoAdmin() {
                       <th className="mnt__th">Tipo</th>
                       <th className="mnt__th">Estado</th>
                       <th className="mnt__th mnt__th--num">Horas acum.</th>
-                      <th className="mnt__th mnt__th--num">Próx. revisión</th>
-                      <th className="mnt__th">Tipo rev.</th>
+                      <th className="mnt__th mnt__th--num mnt__hide-tablet">Próx. revisión</th>
+                      <th className="mnt__th mnt__hide-tablet">Tipo rev.</th>
                       <th className="mnt__th mnt__th--num">Horas restantes</th>
                       <th className="mnt__th">Progreso</th>
                       <th className="mnt__th"></th>
@@ -242,9 +242,9 @@ export default function MantenimientoAdmin() {
                       const cerca = parseFloat(a.horas_restantes) <= 5;
                       return (
                         <tr key={a.id_aeronave} className="mnt__tr">
-                          <td className="mnt__td mnt__td--codigo">{a.codigo}</td>
-                          <td className="mnt__td">{a.tipo}</td>
-                           <td className="mnt__td">
+                          <td className="mnt__td mnt__td--codigo" data-label="Aeronave">{a.codigo}</td>
+                          <td className="mnt__td" data-label="Tipo">{a.tipo}</td>
+                           <td className="mnt__td" data-label="Estado">
                             {a.requiere_mantenimiento && (
                               <span className="mnt__status-badge mnt__status-badge--requiere">
                                 ⚠ Requiere mantenimiento
@@ -254,19 +254,19 @@ export default function MantenimientoAdmin() {
                               {enMant ? "En Mantenimiento" : cerca ? "Próx. Revisión" : "Operativo"}
                             </span>
                           </td>
-                          <td className="mnt__td mnt__td--num">
+                          <td className="mnt__td mnt__td--num" data-label="Horas acum.">
                             {parseFloat(a.horas_acumuladas).toFixed(1)}h
                           </td>
-                          <td className="mnt__td mnt__td--num">
+                          <td className="mnt__td mnt__td--num mnt__hide-tablet" data-label="Próx. revisión">
                             {parseFloat(a.horas_proxima_revision).toFixed(1)}h
                           </td>
-                          <td className="mnt__td">
+                          <td className="mnt__td mnt__hide-tablet" data-label="Tipo rev.">
                             <span className="mnt__tipo-badge">{a.tipo_proxima_revision}</span>
                           </td>
-                          <td className={`mnt__td mnt__td--num ${alerta}`}>
+                          <td className={`mnt__td mnt__td--num ${alerta}`} data-label="Horas restantes">
                             {restantes.toFixed(1)}h
                           </td>
-                          <td className="mnt__td mnt__td--barra">
+                          <td className="mnt__td mnt__td--barra" data-label="Progreso">
                             <BarraHoras
                               acumuladas={parseFloat(a.horas_acumuladas)}
                               proxima={parseFloat(a.horas_proxima_revision)}
@@ -294,21 +294,22 @@ export default function MantenimientoAdmin() {
                               </div>
                             ) : cerca ? (
                               <button
-                                className="mnt__btn mnt__btn--sm mnt__btn--danger"
-                                onClick={() => handleIniciarMantenimiento(a)}
-                              >
-                                Iniciar mantenimiento
-                              </button>
-                            ) : (
-                              <button
-                                className="mnt__btn mnt__btn--sm"
-                                onClick={() => handleIniciarMantenimiento(a)}
-                              >
-                                Mantenimiento preventivo
-                              </button>
-                            )}
-                          </td>
-                        </tr>
+                                  className="mnt__btn mnt__btn--sm mnt__btn--danger"
+                                  onClick={() => handleIniciarMantenimiento(a)}
+                                >
+                                  Iniciar mantenimiento
+                                </button>
+                              ) : (
+                                <button
+                                  className="mnt__btn mnt__btn--sm"
+                                  onClick={() => handleIniciarMantenimiento(a)}
+                                >
+                                  Mantenimiento preventivo
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+
                       );
                     })}
                   </tbody>
@@ -345,10 +346,10 @@ export default function MantenimientoAdmin() {
                     <thead>
                       <tr>
                         <th className="mnt__th">Aeronave</th>
-                         <th className="mnt__th">Tipo</th>
-                         <th className="mnt__th">Estado</th>
-                         <th className="mnt__th">Fecha programada</th>
-                         <th className="mnt__th mnt__th--num">Horas al mant.</th>
+                        <th className="mnt__th">Tipo</th>
+                        <th className="mnt__th">Estado</th>
+                        <th className="mnt__th">Fecha programada</th>
+                        <th className="mnt__th mnt__th--num">Horas al mant.</th>
                         {tabMant === "completados" && (
                           <th className="mnt__th">Completado</th>
                         )}
@@ -360,23 +361,23 @@ export default function MantenimientoAdmin() {
                     <tbody>
                       {listaMant.map((m) => (
                         <tr key={m.id_mantenimiento} className="mnt__tr">
-                          <td className="mnt__td mnt__td--codigo">{m.aeronave_codigo}</td>
-                          <td className="mnt__td">
+                          <td className="mnt__td mnt__td--codigo" data-label="Aeronave">{m.aeronave_codigo}</td>
+                          <td className="mnt__td" data-label="Tipo">
                             <span className="mnt__tipo-badge">{m.tipo}</span>
                           </td>
-                          <td className="mnt__td">
+                          <td className="mnt__td" data-label="Estado">
                             <span className={`mnt__status-badge ${m.estado === 'PENDIENTE' ? 'mnt__status-badge--pendiente' : 'mnt__status-badge--mantenimiento'}`}>
                               {m.estado === 'PENDIENTE' ? 'PENDIENTE' : m.estado}
                             </span>
                           </td>
-                          <td className="mnt__td">{formatFecha(m.fecha_programada)}</td>
-                          <td className="mnt__td mnt__td--num">
+                          <td className="mnt__td" data-label="Fecha programada">{formatFecha(m.fecha_programada)}</td>
+                          <td className="mnt__td mnt__td--num" data-label="Horas al mant.">
                             {m.horas_al_mantenimiento != null
                               ? `${parseFloat(m.horas_al_mantenimiento).toFixed(1)}h`
                               : "—"}
                           </td>
                           {tabMant === "completados" && (
-                            <td className="mnt__td">{formatFecha(m.fecha_completado)}</td>
+                            <td className="mnt__td" data-label="Completado">{formatFecha(m.fecha_completado)}</td>
                           )}
                           {tabMant === "pendientes" && (
                             <td className="mnt__td">
