@@ -48,7 +48,7 @@ export default function Login() {
             <i className="bi bi-airplane-fill login__header-icon"></i>
           </div>
           <h1 className="login__brand">CAAA</h1>
-          <p className="login__subtitle">Centro de Adiestramiento Aéreo Academic SA de CV</p>
+          <p className="login__subtitle">Centro de Adiestramiento Aéreo Académico SA de CV</p>
         </header>
 
         {/* Body Section */}
